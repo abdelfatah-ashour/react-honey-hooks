@@ -1,3 +1,3 @@
-export interface useQueryType {
+export interface ParamsType {
     [key: string]: string | number | boolean | undefined;
 }

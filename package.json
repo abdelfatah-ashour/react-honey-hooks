@@ -32,7 +32,11 @@
         "trailingComma": "es5"
     },
     "name": "react-honey-hooks",
-    "author": "Abdelfatah Ashour",
+    "author": {
+        "name": "Abdelfatah Ashour",
+        "email": "abdelfatahashour4@gmail.com",
+        "url": "https://www.linkedin.com/in/abdelfatah-ashour"
+    },
     "module": "dist/react-honey-hooks.esm.js",
     "description": "A React Hooks version of the Honey Hooks library",
     "size-limit": [

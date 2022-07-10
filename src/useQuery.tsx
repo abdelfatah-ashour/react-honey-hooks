@@ -1,14 +1,21 @@
-import { useQueryType } from "./types";
+import { useEffect, useState } from "react";
+import { ParamsType } from "./types";
 
 export function useQuery() {
-    const search = window.location.search || "";
-    const urlSearchParams = new URLSearchParams(search);
-    const params: useQueryType = Object.fromEntries(urlSearchParams.entries());
+    const [query, setQuery] = useState<ParamsType>({});
 
-    return Object.keys(params).length
-        ? params
-        : {
-              page: 1,
-              search: "",
-          };
+    useEffect(() => {
+        if (window) {
+            const search = window.location.search || "";
+            const urlSearchParams = new URLSearchParams(search);
+            const params: ParamsType = Object.fromEntries(urlSearchParams.entries());
+            if (params) {
+                setQuery(params);
+            } else {
+                setQuery({});
+            }
+        }
+    }, []);
+
+    return query;
 }
