@@ -14,10 +14,10 @@
         "start": "tsdx watch",
         "build": "tsdx build",
         "test": "tsdx test --passWithNoTests",
+        "lint": "tsdx lint",
         "prepare": "tsdx build",
         "size": "size-limit",
-        "analyze": "size-limit --why",
-        "semantic-release": "semantic-release"
+        "analyze": "size-limit --why"
     },
     "peerDependencies": {
         "react": ">=16"
@@ -29,12 +29,13 @@
     },
     "prettier": {
         "printWidth": 80,
+        "semi": false,
+        "singleQuote": false,
         "trailingComma": "es5"
     },
     "name": "react-honey-hooks",
     "author": "Abdelfatah Ashour",
     "module": "dist/react-honey-hooks.esm.js",
-    "description": "A React Hooks version of the Honey Hooks library",
     "size-limit": [
         {
             "path": "dist/react-honey-hooks.cjs.production.min.js",
@@ -55,11 +56,6 @@
         "size-limit": "^7.0.8",
         "tsdx": "^0.14.1",
         "tslib": "^2.4.0",
-        "typescript": "^3.9.10",
-        "semantic-release": "^19.0.3"
-    },
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/abdelfatahashour4/react-honey-hooks.git"
+        "typescript": "^3.9.10"
     }
 }
