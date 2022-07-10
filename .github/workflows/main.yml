@@ -7,17 +7,12 @@ jobs:
         runs-on: ${{ matrix.os }}
         strategy:
             matrix:
-                node: ["10.x", "12.x", "14.x"]
+                node: ["12.x", "14.x"]
                 os: [ubuntu-latest, windows-latest, macOS-latest]
 
         steps:
             - name: Checkout repo
               uses: actions/checkout@v2
-
-            - name: Use Node ${{ matrix.node }}
-              uses: actions/setup-node@v1
-              with:
-                  node-version: ${{ matrix.node }}
 
             - name: Install deps and build (with cache)
               uses: bahmutov/npm-install@v1
@@ -31,4 +26,4 @@ jobs:
             - name: Publish
               run: yarn publish --access public
               env:
-                  NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+                  NPM_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
