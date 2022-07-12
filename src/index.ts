@@ -1,3 +1,3 @@
-import { useQuery } from "./useQuery";
+import { useQuery } from "./useQuery"
 
-export { useQuery };
+export { useQuery }

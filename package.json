@@ -1,61 +1,59 @@
 {
-    "version": "1.0.1",
-    "license": "MIT",
-    "main": "dist/index.js",
-    "typings": "dist/index.d.ts",
-    "files": [
-        "dist",
-        "src"
-    ],
-    "engines": {
-        "node": ">=10"
+    "name": "react-honey-hooks",
+    "version": "1.0.0",
+    "description": "",
+    "main": "./dist/cjs/index.js",
+    "module": "./dist/esm/index.js",
+    "types": "./dist/esm/index.d.ts",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/abdelfatahashour4/react-honey-hooks.git"
     },
     "scripts": {
-        "start": "tsdx watch",
-        "build": "tsdx build",
-        "test": "tsdx test --passWithNoTests",
-        "lint": "tsdx lint",
-        "prepare": "tsdx build",
-        "size": "size-limit",
-        "analyze": "size-limit --why"
+        "lint": "eslint \"{**/*,*}.{js,ts,jsx,tsx}\"",
+        "prettier": "prettier --write \"{src,tests,example/src}/**/*.{js,ts,jsx,tsx}\"",
+        "test": "jest --config jestconfig.json",
+        "build": "npm run build:esm && npm run build:cjs",
+        "build:esm": "tsc",
+        "build:cjs": "tsc --module commonjs --outDir dist/cjs",
+        "prepare": "npm run build",
+        "prepublishOnly": "npm test && npm run prettier && npm run lint"
+    },
+    "author": "Abdelfatah Ashour",
+    "license": "MIT",
+    "devDependencies": {
+        "@testing-library/react": "^13.3.0",
+        "@types/jest": "^28.1.4",
+        "@types/react": "^18.0.15",
+        "@typescript-eslint/eslint-plugin": "^5.30.6",
+        "@typescript-eslint/parser": "^5.30.6",
+        "eslint": "^8.19.0",
+        "eslint-config-prettier": "^8.5.0",
+        "eslint-plugin-prettier": "^4.2.1",
+        "eslint-plugin-react": "^7.30.1",
+        "eslint-plugin-react-hooks": "^4.6.0",
+        "jest": "^28.1.2",
+        "jest-canvas-mock": "^2.4.0",
+        "jest-environment-jsdom": "^28.1.2",
+        "prettier": "^2.7.1",
+        "react": "^18.2.0",
+        "react-dom": "^18.2.0",
+        "ts-jest": "^28.0.5",
+        "typescript": "^4.7.4"
     },
     "peerDependencies": {
         "react": ">=16"
     },
-    "husky": {
-        "hooks": {
-            "pre-commit": "tsdx lint"
-        }
-    },
-    "prettier": {
-        "printWidth": 80,
-        "semi": false,
-        "singleQuote": false,
-        "trailingComma": "es5"
-    },
-    "name": "react-honey-hooks",
-    "author": "Abdelfatah Ashour",
-    "module": "dist/react-honey-hooks.esm.js",
-    "size-limit": [
-        {
-            "path": "dist/react-honey-hooks.cjs.production.min.js",
-            "limit": "10 KB"
-        },
-        {
-            "path": "dist/react-honey-hooks.esm.js",
-            "limit": "10 KB"
-        }
+    "keywords": [
+        "react",
+        "typescript",
+        "awesome-hooks",
+        "honey-hooks",
+        "honey-hooks-react"
     ],
-    "devDependencies": {
-        "@size-limit/preset-small-lib": "^7.0.8",
-        "@types/react": "^18.0.15",
-        "@types/react-dom": "^18.0.6",
-        "husky": "^8.0.1",
-        "react": "^18.2.0",
-        "react-dom": "^18.2.0",
-        "size-limit": "^7.0.8",
-        "tsdx": "^0.14.1",
-        "tslib": "^2.4.0",
-        "typescript": "^3.9.10"
-    }
+    "files": [
+        "dist",
+        "LICENSE",
+        "README.md"
+    ]
 }

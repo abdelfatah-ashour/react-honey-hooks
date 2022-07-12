@@ -1,5 +1,4 @@
-*.log
-.DS_Store
 node_modules
-.cache
+.idea
 dist
+yarn-error.log
