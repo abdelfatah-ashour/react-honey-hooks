@@ -10,8 +10,8 @@
         "url": "git+https://github.com/abdelfatahashour4/react-honey-hooks.git"
     },
     "scripts": {
-        "lint": "eslint \"{**/*,*}.{js,ts,jsx,tsx}\"",
-        "prettier": "prettier --write \"{src,tests,example/src}/**/*.{js,ts,jsx,tsx}\"",
+        "lint": "eslint \"{**/*,*}.{js,ts,jsx,tsx}\" --fix",
+        "prettier": "prettier --write \"{src,tests,example/src}/**/*.{js,ts,jsx,tsx}\" --fix",
         "test": "jest --config jestconfig.json",
         "build": "npm run build:esm && npm run build:cjs",
         "build:esm": "tsc",
