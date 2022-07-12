@@ -25,11 +25,11 @@ jobs:
 
             - name: Fix Eslint errors
               run: npm run lint
-              
+
             - name: Build
-              run: yarn build
+              run: npm run build
 
             - name: Publish
-              run: yarn publish --access public
+              run: npm publish
               env:
                   NPM_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
