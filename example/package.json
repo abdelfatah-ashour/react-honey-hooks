@@ -1,20 +1,24 @@
 {
   "name": "example",
   "version": "1.0.0",
-  "description": "",
   "main": "index.js",
+  "license": "MIT",
   "scripts": {
-    "start": "parcel src/index.html"
+    "start": "parcel index.html",
+    "build": "parcel build index.html"
   },
-  "keywords": [],
-  "author": "Abdelfatah Ashour",
-  "license": "ISC",
+  "dependencies": {
+    "react-app-polyfill": "^1.0.0"
+  },
+  "alias": {
+    "react": "../node_modules/react",
+    "react-dom": "../node_modules/react-dom/profiling",
+    "scheduler/tracing": "../node_modules/scheduler/tracing-profiling"
+  },
   "devDependencies": {
-    "@types/react": "^18.0.15",
-    "@types/react-dom": "^18.0.6",
-    "my-react-typescript-package": "^1.0.0",
-    "parcel": "^2.6.2",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "@types/react": "^16.9.11",
+    "@types/react-dom": "^16.8.4",
+    "parcel": "^1.12.3",
+    "typescript": "^3.4.5"
   }
 }
