@@ -32,6 +32,3 @@ jobs:
 
             - name: Build
               run: npm run build
-            - run: npm publish --access public
-              env:
-                  NPM_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
