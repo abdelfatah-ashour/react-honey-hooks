@@ -1,31 +1,31 @@
-import { useEffect, useState } from "react";
-import { DownCountDateType } from "./types";
-import { calcValeusOfDownCountDate } from "./utils/calcValuesOfDownCountDate";
+import { useEffect, useState } from "react"
+import { DownCountDateType } from "./types"
+import { calcValeusOfDownCountDate } from "./utils/calcValuesOfDownCountDate"
 
 type UseCountdownDateType = {
-    days: number;
-    hours: number;
-    minutes: number;
-    seconds: number;
-};
+  days: number
+  hours: number
+  minutes: number
+  seconds: number
+}
 
 export default function useCountdownDate(date: Date): UseCountdownDateType {
-    const parseDate: number = new Date(date).getTime();
-    const [countDown, setCountDown] = useState<number>(parseDate - new Date().getTime());
-    const { days, hours, minutes, seconds }: DownCountDateType = calcValeusOfDownCountDate(countDown);
+  const parseDate: number = new Date(date).getTime()
+  const [countDown, setCountDown] = useState<number>(parseDate - new Date().getTime())
+  const { days, hours, minutes, seconds }: DownCountDateType = calcValeusOfDownCountDate(countDown)
 
-    useEffect(() => {
-        const downInterval = setInterval(() => {
-            setCountDown(parseDate - new Date().getTime());
-        }, 1000);
+  useEffect(() => {
+    const downInterval = setInterval(() => {
+      setCountDown(parseDate - new Date().getTime())
+    }, 1000)
 
-        return () => clearInterval(downInterval);
-    }, [parseDate]);
+    return () => clearInterval(downInterval)
+  }, [parseDate])
 
-    return {
-        days: days,
-        hours: hours,
-        minutes: minutes,
-        seconds: seconds,
-    };
+  return {
+    days: days,
+    hours: hours,
+    minutes: minutes,
+    seconds: seconds,
+  }
 }
