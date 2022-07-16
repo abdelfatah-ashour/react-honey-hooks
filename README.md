@@ -1,10 +1,10 @@
 <h1><b>🍯 React Honey Hooks</b></h1>
 <p>A React Hooks version of the Honey Hooks library</p>
-
+<p>🌴 Support Tree Shaking</p>
 <h3>Hooks available:</h3>
 <ul>
-  <li>useQuery</li>
-  <li>useDownCountDate</li>
+  <li><a href="#use-query">useQuery</a></li>
+  <li><a href="#use-count-down-date">useCountDownDate</a></li>
 </ul>
 
 <h3>Next Hooks</h3>
@@ -18,7 +18,7 @@
 <h3>Content Table:</h3>
 <ul>
   <li><a href="#use-query"></a>useQuery</li>
-  <li><a href="#use-down-count-date"></a>useDownCountDate</li>
+  <li><a href="#use-down-count-date"></a>useCountDownDate</li>
 </ul>
 
 <br/>
@@ -26,13 +26,15 @@
 <div id="use-query"><h4><b>🍯 useQuery</b></h4></div>
 <br/>
 
+```
+- First we navigate to the page
+- Example: https://example.com?query=value
+- Then we use the hook to get the query value
+```
+
+### Javascript
+
 ```javascript
-// First we navigate to the page
-// Example: https://example.com?query=value
-// Then we use the hook to get the query value
-
-// usage:
-
 // ES5
 var useQuery = require("react-honey-hooks").useQuery;
 var query = useQuery();
@@ -40,18 +42,16 @@ console.log(query); // {query: "value"}
 
 // or
 
-var honey = require("react-honey-hooks")
+var honey = require("react-honey-hooks");
 var query = honey.useQuery();
 
 console.log(query); // {query: "value"}
-
-
 
 // ES6
 import { useQuery } from "react-honey-hooks";
 
 function Example() {
-const { query } = useQuery(); // {query: "value"}
+    const { query } = useQuery(); // {query: "value"}
 
     return (
         <>
@@ -59,14 +59,16 @@ const { query } = useQuery(); // {query: "value"}
             <p>Query value: {JSON.stringify({ query }, null, 2)}</p>
         </>
     );
-
 }
+```
 
-// TypeScript
+### TypeScript
+
+```typescript
 import { useQuery, ParamsType } from "react-honey-hooks";
 
 function Example() {
-const { query } = useQuery<ParamsType>(); // {query: "value"}
+    const { query } = useQuery<ParamsType>(); // {query: "value"}
 
     return (
         <>
@@ -74,35 +76,17 @@ const { query } = useQuery<ParamsType>(); // {query: "value"}
             <p>Query value: {JSON.stringify({ query }, null, 2)}</p>
         </>
     );
-
 }
-
 ```
 
 <br/>
 
-<div id="use-down-count-date"><h4><b>🍯 useDownCountDate</b></h4></div>
+<div id="use-down-count-date"><h4><b>🍯 useCountDownDate</b></h4></div>
 <br/>
 
+### JavaScript
+
 ```javascript
-// usage:
-
-// ES5
-var useCountdownDate = require("react-honey-hooks").useCountdownDate;
-var dummyDate = Date.now(); // Sat Jul 19 2022 11:09:25 GMT+0200 (Eastern European Standard Time)
-var dummyToDay = new Date(date); // Sat Jul 16 2022 11:09:25 GMT+0200 (Eastern European Standard Time)
-var countDownDate = useCountdownDate(dummyDate);
-console.log(countDownDate); // dummy output {days: 2, hours: 23, minutes: 59, seconds: 59}
-
-// or
-
-var honey = require("react-honey-hooks");
-var dummyDate = Date.now(); // Sat Jul 19 2022 11:09:25 GMT+0200 (Eastern European Standard Time)
-var dummyToDay = new Date(date); // Sat Jul 16 2022 11:09:25 GMT+0200 (Eastern European Standard Time)
-var countDownDate = honey.useCountdownDate(dummyDate);
-console.log(countDownDate); // dummy output {days: 2, hours: 23, minutes: 59, seconds: 59}
-
-// ES6
 import { useCountdownDate } from "react-honey-hooks";
 
 function Example() {
@@ -115,8 +99,11 @@ function Example() {
         </>
     );
 }
+```
 
-// TypeScript
+### TypeScript
+
+```typescript
 import { useCountdownDate, DownCountDateType } from "react-honey-hooks";
 
 function Example() {

@@ -1,5 +1,5 @@
-require("jest-canvas-mock")
+require("jest-canvas-mock");
 
 it("Common test", () => {
-  expect("starting a testing").toBe("starting a testing")
-})
+    expect("starting a testing").toBe("starting a testing");
+});
