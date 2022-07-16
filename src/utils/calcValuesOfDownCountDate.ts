@@ -1,16 +1,16 @@
-import { messageError } from '../helper/messageError';
-import { DownCountDateType } from '../types';
+import { messageError } from "../helper/messageError";
+import { DownCountDateType } from "../types";
 
 export function calcValeusOfDownCountDate(
   countDown: number
 ): DownCountDateType {
   try {
-    if (typeof countDown !== 'number') {
-      throw new Error('Date is not valid');
+    if (typeof countDown !== "number") {
+      throw new Error("Date is not valid");
     }
 
     if (countDown < 0) {
-      throw new Error('Date is not valid');
+      throw new Error("Date is not valid");
     }
 
     // calculate time left
@@ -27,7 +27,7 @@ export function calcValeusOfDownCountDate(
       days: days,
       hours: hours,
       minutes: minutes,
-      seconds: seconds,
+      seconds: seconds
     };
   } catch (error) {
     console.error(messageError(error));
@@ -35,7 +35,7 @@ export function calcValeusOfDownCountDate(
       days: 0,
       hours: 0,
       minutes: 0,
-      seconds: 0,
+      seconds: 0
     };
   }
 }

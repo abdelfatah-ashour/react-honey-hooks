@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
-import { ParamsType } from './types';
+import { useEffect, useState } from "react";
+import { ParamsType } from "./types";
 
 export default function useQuery() {
   const [query, setQuery] = useState<ParamsType>({});

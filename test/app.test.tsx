@@ -1,3 +1,3 @@
 describe("React honey hooks", () => {
-    expect(true).toBe(true);
+  expect(true).toBe(true);
 });
