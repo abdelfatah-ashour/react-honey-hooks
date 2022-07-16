@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { DownCountDateType } from "./types";
+import { CountDwonDateType } from "./types";
 import { calcValeusOfDownCountDate } from "./utils/calcValuesOfDownCountDate";
 
 type UseCountdownDateType = {
@@ -19,7 +19,7 @@ export default function useCountdownDate(date: Date): UseCountdownDateType {
     hours,
     minutes,
     seconds
-  }: DownCountDateType = calcValeusOfDownCountDate(countDown);
+  }: CountDwonDateType = calcValeusOfDownCountDate(countDown);
 
   useEffect(() => {
     const downInterval = setInterval(() => {
