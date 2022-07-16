@@ -1,7 +1,7 @@
 export interface ParamsType {
-  [key: string]: string | number | boolean | undefined
+  [key: string]: string | number | boolean | undefined;
 }
 
 export interface DownCountDateType {
-  [key: string]: number
+  [key: string]: number;
 }
