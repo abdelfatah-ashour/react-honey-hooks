@@ -1,22 +1,37 @@
-name: Publish
-on:
-    release:
-        types: [published]
+name: CI
+on: [push]
 jobs:
     build:
-        runs-on: ubuntu-latest
+        name: Build, lint, and test on Node ${{ matrix.node }} and ${{ matrix.os }}
+
+        runs-on: ${{ matrix.os }}
+        strategy:
+            matrix:
+                node: ["12.x", "14.x"]
+                os: [ubuntu-latest, windows-latest, macOS-latest]
         steps:
-            - uses: actions/checkout@v1
-            - uses: actions/setup-node@v1
+            - name: Checkout repo
+              uses: actions/checkout@v2
+
+            - name: Use Node ${{ matrix.node }}
+              uses: actions/setup-node@v1
               with:
-                  node-version: 14
-                  registry-url: https://registry.npmjs.org/
-            - run: npm install
-            - run: npm run build
-            - run: npm run test
-            - uses: mikeal/merge-release@master
+                  node-version: ${{ matrix.node }}
+
+            - name: Install deps and build (with cache)
+              uses: bahmutov/npm-install@v1
+
+            - name: running lint
+              run: npm run prettier
+
+            - name: Fix Eslint errors
+              run: npm run lint
+
+            - name: running tests
+              run: npm run test
+
+            - name: Build
+              run: npm run build
+            - run: npm publish --access public
               env:
-                GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-                NPM_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
-                DEPLOY_DIR: /
-                SRC_PACKAGE_DIR: /
+                  NPM_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
