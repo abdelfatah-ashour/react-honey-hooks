@@ -21,7 +21,7 @@ A React Hooks version of the Honey Hooks library
 #### **Content Table**
 
 -   <a href="#use-query">useQuery</a>
--   <a href="#use-down-count-date">useCountDownDate</a>
+-   <a href="#use-count-down-date">useCountDownDate</a>
 
 <br/>
 
