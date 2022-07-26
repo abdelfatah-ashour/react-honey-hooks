@@ -1,9 +1,9 @@
 import { messageError } from "../helper/messageError";
-import { DownCountDateType } from "../types";
+import { CountDwonDateType } from "../types";
 
 export function calcValeusOfDownCountDate(
   countDown: number
-): DownCountDateType {
+): CountDwonDateType {
   try {
     if (typeof countDown !== "number") {
       throw new Error("Date is not valid");
