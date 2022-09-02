@@ -51,7 +51,7 @@ function Example() {
   const { query } = useQuery(); // {query: "value"}
   return (
     <>
-      <h3> 🍯 useQury:</h3>
+      <h3> 🍯 useQuery:</h3>
       <p>Query value: {JSON.stringify({ query }, null, 2)}</p>
     </>
   );
@@ -63,11 +63,11 @@ function Example() {
 ```typescript
 import { useQuery, ParamsType } from "react-honey-hooks";
 function Example() {
-  const { query } = useQuery<ParamsType>(); // {query: "value"}
+  const query = useQuery<ParamsType>(); // {query: "value"}
   return (
     <>
-      <h3>useQury: 🍯</h3>
-      <p>Query value: {JSON.stringify({ query }, null, 2)}</p>
+      <h3>useQuery: 🍯</h3>
+      <p>Query value: {JSON.stringify(query, null, 2)}</p>
     </>
   );
 }
@@ -83,11 +83,11 @@ function Example() {
 ```javascript
 import { useCountdownDate } from "react-honey-hooks";
 function Example() {
-  const { days, hours, minutes, seconds } = useCountdownDate(Date.now()); // {days: 0, hours: 0, minutes: 0, seconds: 0}
+  const countDown = useCountdownDate(Date.now()); // {days: 0, hours: 0, minutes: 0, seconds: 0}
   return (
     <>
       <h3> 🍯 useCountdownDate:</h3>
-      <p>DownCount Date value: {JSON.stringify({ days, hours, minutes, seconds }, null, 2)}</p>
+      <p>DownCount Date value: {JSON.stringify(countDown, null, 2)}</p>
     </>
   );
 }
@@ -98,11 +98,12 @@ function Example() {
 ```typescript
 import { useCountdownDate, DownCountDateType } from "react-honey-hooks";
 function Example() {
-  const { days, hours, minutes, seconds }: DownCountDateType = useCountdownDate(Date.now()); // {days: 0, hours: 0, minutes: 0, seconds: 0}
+  const countDown: DownCountDateType = useCountdownDate(Date.now()); // {days: 0, hours: 0, minutes: 0, seconds: 0}
+
   return (
     <>
       <h3> 🍯 useCountdownDate:</h3>
-      <p>DownCount Date value: {JSON.stringify({ days, hours, minutes, seconds }, null, 2)}</p>
+      <p>DownCount Date value: {JSON.stringify(countDown, null, 2)}</p>
     </>
   );
 }

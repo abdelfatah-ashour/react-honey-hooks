@@ -1,5 +1,5 @@
 import useQuery from "./useQuery";
 import useDownCountDate from "./useCountdownDate";
-import { ParamsType, CountDwonDateType } from "./types";
+import { ParamsType, CountDownDateType } from "./types";
 
-export { ParamsType, CountDwonDateType, useQuery, useDownCountDate };
+export { ParamsType, CountDownDateType, useQuery, useDownCountDate };
