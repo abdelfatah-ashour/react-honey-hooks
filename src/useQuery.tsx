@@ -3,7 +3,7 @@ import { ParamsType, QueryType } from "./types";
 
 export default function useQuery() {
   let search: string = window.location.search;
-  const [query, setQuery] = useState<QueryType | object>({});
+  const [query, setQuery] = useState<QueryType | any>({});
 
   useEffect(() => {
     if (typeof window !== "undefined") {

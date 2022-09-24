@@ -9,7 +9,7 @@ type UseCountdownDateType = {
   seconds: number;
 };
 
-export default function useCountdownDate(date: Date): UseCountdownDateType {
+export function useCountdownDate(date: Date): UseCountdownDateType {
   const parseDate: number = new Date(date).getTime();
   const [countDown, setCountDown] = useState<number>(parseDate - new Date().getTime());
   const { days, hours, minutes, seconds }: CountDownDateType = calcValuesOfDownCountDate(countDown);

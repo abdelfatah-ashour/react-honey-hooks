@@ -40,15 +40,25 @@ A React Hooks version of the Honey Hooks library
 // ES5
 var useQuery = require("react-honey-hooks").useQuery;
 var query = useQuery();
+
+// https://abc.com?query=value
 console.log(query); // {query: "value"}
+
 // or
+
 var honey = require("react-honey-hooks");
+
 var query = honey.useQuery();
+// https://abc.com?query=value
 console.log(query); // {query: "value"}
+
 // ES6
 import { useQuery } from "react-honey-hooks";
 function Example() {
-  const { query } = useQuery(); // {query: "value"}
+  // https://abc.com?query=value
+  const query = useQuery();
+  console.log(query); // {query: "value"}
+
   return (
     <>
       <h3> 🍯 useQuery:</h3>
