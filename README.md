@@ -10,7 +10,7 @@ A React Hooks version of the Honey Hooks library
 
 - **<a href="#use-query">useQuery</a>**
 - **<a href="#use-count-down-date">useCountDownDate</a>**
-- **<a href="use-out-side-element">useOutsideElement</a>**
+- **<a href="#use-out-side-element">useOutsideElement</a>**
 
 #### **Next Hooks**
 
