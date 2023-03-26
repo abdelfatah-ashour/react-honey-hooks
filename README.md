@@ -10,6 +10,7 @@ A React Hooks version of the Honey Hooks library
 
 - **<a href="#use-query">useQuery</a>**
 - **<a href="#use-count-down-date">useCountDownDate</a>**
+- **<a href="use-out-side-element">useOutsideElement</a>**
 
 #### **Next Hooks**
 
@@ -22,10 +23,11 @@ A React Hooks version of the Honey Hooks library
 
 - <a href="#use-query">useQuery</a>
 - <a href="#use-count-down-date">useCountDownDate</a>
+- <a href="#use-out-side-element">useOutsideElement</a>
 
 <br/>
 
-<div id="use-query"><h4><b>🍯 useQuery</b></h4></div>
+<h3 id="use-query"><b>🍯 useQuery</b></h3>
 <br/>
 
 ```
@@ -85,7 +87,7 @@ function Example() {
 
 <br/>
 
-<div id="use-count-down-date"><h4><b>🍯 useCountDownDate</b></h4></div>
+<h3 id="use-count-down-date"><b>🍯 useCountDownDate</b></h3>
 <br/>
 
 ### JavaScript
@@ -114,6 +116,71 @@ function Example() {
     <>
       <h3> 🍯 useCountdownDate:</h3>
       <p>DownCount Date value: {JSON.stringify(countDown, null, 2)}</p>
+    </>
+  );
+}
+```
+
+<br/>
+
+<h3 id="use-out-side-element"> <b>🍯 useOutsideElement</b></h3>
+<br/>
+
+### JavaScript
+
+```javascript
+import { useRef } from "react";
+import { useCountdownDate } from "react-honey-hooks";
+
+function Example() {
+  const refElem = useRef(null);
+
+  useOutsideElement({
+    ref: refElem,
+    callback: _onClick
+  });
+
+  function _onClick() {
+    // Do something
+    alert("clicked outside paragraph");
+  }
+
+  return (
+    <>
+      <h3> 🍯 useOutsideElement:</h3>
+      <p ref={refElem} onClick={_onClick}>
+        click outside paragraph
+      </p>
+    </>
+  );
+}
+```
+
+### TypeScript
+
+```typescript
+import { useRef, RefObject } from "react";
+import { useCountdownDate } from "react-honey-hooks";
+
+function Example() {
+  const refElem = useRef<RefObject<HTMLElement>>(null);
+
+  useOutsideElement({
+    ref: refElem,
+    callback: _onClick
+  });
+
+  function _onClick() {
+    // Do something
+    alert("clicked outside paragraph");
+  }
+
+  return (
+    <>
+      <h3> 🍯 useOutsideElement:</h3>
+      <p ref={refElem} onClick={_onClick}>
+        click outside paragraph
+      </p>
     </>
   );
 }
