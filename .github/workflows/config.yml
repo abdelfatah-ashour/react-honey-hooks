@@ -20,8 +20,8 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Install tsdx
-        run: npm install tsdx --save-dev
+      - name: Install tsdx globally
+        run: npm install -g tsdx
 
       - name: Build package
         run: npm run build
