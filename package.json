@@ -1,6 +1,6 @@
 {
   "name": "react-honey-hooks",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "Small, typed React hooks: URL query params, countdowns and click-outside detection.",
   "license": "MIT",
   "author": "Abdelfatah Ashour",
