@@ -32,6 +32,7 @@ Requires React 18 or newer.
 - [`useOnlineStatus`](#useonlinestatus): know when the network drops
 - [`usePageVisibility`](#usepagevisibility): know when the tab is hidden
 - [`useIdle`](#useidle): know when the user stops interacting
+- [`usePermission`](#usepermission): whether a browser permission is granted
 
 ---
 
@@ -848,5 +849,42 @@ function Presence() {
   const idle = useIdle(5 * 60_000);
 
   return <span>{idle ? "Away" : "Online"}</span>;
+}
+```
+
+---
+
+### `usePermission`
+
+```ts
+function usePermission(name: PermissionName | string): PermissionValue;
+
+type PermissionValue = "granted" | "denied" | "prompt" | "pending" | "unsupported";
+```
+
+Asks the Permissions API for the state of a browser permission, such as `"geolocation"`,
+`"notifications"`, `"camera"` or `"microphone"`, and re-renders when the user changes it in
+the browser's settings.
+
+- `"prompt"` means the browser will ask the user the next time the feature is used.
+- It is `"pending"` while the browser answers, during server rendering and on the first render
+  while hydrating.
+- It is `"unsupported"` when the browser has no Permissions API or doesn't know `name`, as
+  browsers support different permissions. Treat it like `"prompt"`: try the feature.
+- When `name` changes it is `"pending"` again, and answers for the old name are ignored.
+
+This hook only reads the state. To ask for a permission, use the feature itself, for example
+`navigator.geolocation.getCurrentPosition`.
+
+```tsx
+import { usePermission } from "react-honey-hooks";
+
+function LocationButton({ onLocate }: { onLocate: () => void }) {
+  const permission = usePermission("geolocation");
+
+  if (permission === "denied") {
+    return <p>Location is blocked. Allow it in your browser's site settings.</p>;
+  }
+  return <button onClick={onLocate}>Use my location</button>;
 }
 ```

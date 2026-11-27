@@ -27,6 +27,7 @@ export { useLocalStorage, type SetStoredValue } from "./useLocalStorage";
 export { useMediaQuery } from "./useMediaQuery";
 export { useOnlineStatus } from "./useOnlineStatus";
 export { usePageVisibility } from "./usePageVisibility";
+export { usePermission, type PermissionValue } from "./usePermission";
 export { useQuery, type Query, type QueryParams } from "./useQuery";
 export {
   useQueryState,

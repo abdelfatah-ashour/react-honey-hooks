@@ -19,7 +19,9 @@ function CopyButton({ text }: { text: string }) {
 // click. Refused writes are covered by the unit tests.
 let canRead = false;
 beforeAll(async () => {
-  canRead = await commands.grantClipboardRead();
+  canRead =
+    (await commands.grantPermission("clipboard-read")) &&
+    (await commands.grantPermission("clipboard-write"));
 });
 
 describe("useCopyToClipboard in a real browser", () => {

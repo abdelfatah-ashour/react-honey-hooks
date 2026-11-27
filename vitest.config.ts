@@ -18,13 +18,15 @@ const goOfflineFor: BrowserCommand<[ms: number]> = async (context, ms) => {
 };
 
 /**
- * Lets the page read the clipboard back, where the browser supports granting that; resolves
- * whether it did. Playwright supports these permissions in Chromium only at the time of writing.
+ * Grants the page a permission such as `"geolocation"` or `"clipboard-read"`, where the browser
+ * supports granting it; resolves whether it did. At the time of writing Playwright grants
+ * geolocation in all three browsers but clipboard access in Chromium only. Grants last for the
+ * rest of the run in that browser.
  */
-const grantClipboardRead: BrowserCommand = async (context) => {
+const grantPermission: BrowserCommand<[name: string]> = async (context, name) => {
   if (context.provider.name !== "playwright") return false;
   try {
-    await context.context.grantPermissions(["clipboard-read", "clipboard-write"]);
+    await context.context.grantPermissions([name]);
     return true;
   } catch {
     return false;
@@ -59,7 +61,7 @@ export default defineConfig({
             enabled: true,
             headless: true,
             provider: playwright(),
-            commands: { goOfflineFor, grantClipboardRead },
+            commands: { goOfflineFor, grantPermission },
             instances: [{ browser: "chromium" }, { browser: "firefox" }, { browser: "webkit" }],
           },
         },
