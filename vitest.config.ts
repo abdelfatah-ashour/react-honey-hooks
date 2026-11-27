@@ -17,6 +17,20 @@ const goOfflineFor: BrowserCommand<[ms: number]> = async (context, ms) => {
   setTimeout(() => void browserContext.setOffline(false), ms);
 };
 
+/**
+ * Lets the page read the clipboard back, where the browser supports granting that; resolves
+ * whether it did. Playwright supports these permissions in Chromium only at the time of writing.
+ */
+const grantClipboardRead: BrowserCommand = async (context) => {
+  if (context.provider.name !== "playwright") return false;
+  try {
+    await context.context.grantPermissions(["clipboard-read", "clipboard-write"]);
+    return true;
+  } catch {
+    return false;
+  }
+};
+
 export default defineConfig({
   test: {
     restoreMocks: true,
@@ -45,7 +59,7 @@ export default defineConfig({
             enabled: true,
             headless: true,
             provider: playwright(),
-            commands: { goOfflineFor },
+            commands: { goOfflineFor, grantClipboardRead },
             instances: [{ browser: "chromium" }, { browser: "firefox" }, { browser: "webkit" }],
           },
         },

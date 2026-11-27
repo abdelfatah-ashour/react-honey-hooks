@@ -2,6 +2,7 @@
 declare module "vitest/browser" {
   interface BrowserCommands {
     goOfflineFor: (ms: number) => Promise<void>;
+    grantClipboardRead: () => Promise<boolean>;
   }
 }
 

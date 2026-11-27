@@ -4,6 +4,7 @@ export {
   type ClickOutsideOptions,
   type ClickOutsideRefs,
 } from "./useClickOutside";
+export { useCopyToClipboard, type CopyToClipboard } from "./useCopyToClipboard";
 export {
   useCountdown,
   type Countdown,
