@@ -31,6 +31,7 @@ Requires React 18 or newer.
 - [`useWindowSize`](#usewindowsize): the window's width and height
 - [`useOnlineStatus`](#useonlinestatus): know when the network drops
 - [`usePageVisibility`](#usepagevisibility): know when the tab is hidden
+- [`useIdle`](#useidle): know when the user stops interacting
 
 ---
 
@@ -819,3 +820,33 @@ npm run build     # tsup → dist/ (ESM, CJS, .d.ts)
 ## License
 
 MIT
+
+---
+
+### `useIdle`
+
+```ts
+function useIdle(ms: number): boolean;
+```
+
+Returns `true` once `ms` milliseconds pass with no activity on the page, and `false` again as
+soon as the user is back.
+
+- Activity is any pointer movement or press, key press, wheel, touch or scroll (of the page or
+  any element). The tab becoming visible again also counts; the tab being hidden does not, so
+  a user who switched tabs goes idle as usual.
+- It starts `false`, and is `false` during server rendering.
+- Changing `ms` restarts the wait from `false`. A delay that isn't a positive, finite number
+  never goes idle.
+
+Frequent events such as `pointermove` only record the time, so listening is cheap.
+
+```tsx
+import { useIdle } from "react-honey-hooks";
+
+function Presence() {
+  const idle = useIdle(5 * 60_000);
+
+  return <span>{idle ? "Away" : "Online"}</span>;
+}
+```
