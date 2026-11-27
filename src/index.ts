@@ -25,6 +25,7 @@ export { useLocalStorage, type SetStoredValue } from "./useLocalStorage";
 export { useMediaQuery } from "./useMediaQuery";
 export { useOnlineStatus } from "./useOnlineStatus";
 export { usePageVisibility } from "./usePageVisibility";
+export { usePrefersColorScheme, type ColorScheme } from "./usePrefersColorScheme";
 export { usePrefersReducedMotion } from "./usePrefersReducedMotion";
 export { usePrevious } from "./usePrevious";
 export { useQuery, type Query, type QueryParams } from "./useQuery";

@@ -731,6 +731,35 @@ function Faq() {
 
 ---
 
+### `usePrefersColorScheme`
+
+```ts
+function usePrefersColorScheme(): ColorScheme;
+
+type ColorScheme = "light" | "dark";
+```
+
+Returns the colour scheme the user's system asks for, updating when they change it. Anything
+other than dark, including no preference, counts as `"light"`. It returns `"light"` during
+server rendering and hydration, then the real setting.
+
+```tsx
+import { useEffect, type ReactNode } from "react";
+import { usePrefersColorScheme } from "react-honey-hooks";
+
+function ThemeRoot({ children }: { children: ReactNode }) {
+  const scheme = usePrefersColorScheme();
+
+  useEffect(() => {
+    document.documentElement.dataset.theme = scheme;
+  }, [scheme]);
+
+  return children;
+}
+```
+
+---
+
 ### `usePrefersReducedMotion`
 
 ```ts
