@@ -12,8 +12,10 @@ export {
 } from "./useCountdown";
 export { useDebouncedCallback, type DebouncedFunction } from "./useDebouncedCallback";
 export { useDebouncedValue } from "./useDebouncedValue";
+export { useInterval } from "./useInterval";
 export { useLocalStorage, type SetStoredValue } from "./useLocalStorage";
 export { useMediaQuery } from "./useMediaQuery";
 export { useOnlineStatus } from "./useOnlineStatus";
 export { usePageVisibility } from "./usePageVisibility";
 export { useQuery, type Query, type QueryParams } from "./useQuery";
+export { useTimeout } from "./useTimeout";

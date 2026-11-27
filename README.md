@@ -16,6 +16,8 @@ Requires React 18 or newer.
 - [`useClickOutside`](#useclickoutside): detect presses outside an element
 - [`useDebouncedValue`](#usedebouncedvalue): a value that waits for changes to settle
 - [`useDebouncedCallback`](#usedebouncedcallback): a function that waits for calls to stop
+- [`useInterval`](#useinterval): run something every few milliseconds
+- [`useTimeout`](#usetimeout): run something once after a delay
 - [`useLocalStorage`](#uselocalstorage): state that survives reloads and syncs across tabs
 - [`useMediaQuery`](#usemediaquery): match a CSS media query
 - [`useOnlineStatus`](#useonlinestatus): know when the network drops
@@ -234,6 +236,69 @@ function NoteEditor({ save }: { save: (text: string) => void }) {
       onBlur={saveSoon.flush}
     />
   );
+}
+```
+
+---
+
+### `useInterval`
+
+```ts
+function useInterval(callback: () => void, delayMs: number | null): void;
+```
+
+Calls `callback` every `delayMs` milliseconds. Pass `null` to pause. Any delay that is not a
+positive, finite number also pauses, because a 0 ms interval would run as fast as the browser
+allows. Changing `delayMs` restarts the interval. The latest `callback` is always called
+without restarting it, so inline functions are fine.
+
+```tsx
+import { useState } from "react";
+import { useInterval } from "react-honey-hooks";
+
+function Stopwatch() {
+  const [seconds, setSeconds] = useState(0);
+  const [running, setRunning] = useState(false);
+
+  useInterval(
+    () => {
+      setSeconds((s) => s + 1);
+    },
+    running ? 1000 : null,
+  );
+
+  return (
+    <button
+      onClick={() => {
+        setRunning((r) => !r);
+      }}
+    >
+      {seconds}s, {running ? "pause" : "start"}
+    </button>
+  );
+}
+```
+
+---
+
+### `useTimeout`
+
+```ts
+function useTimeout(callback: () => void, delayMs: number | null): void;
+```
+
+Calls `callback` once, `delayMs` milliseconds after mounting. Changing `delayMs` starts the
+wait again from now, and `null` (or a negative or non-finite delay) cancels it until a valid
+delay is given. A delay of 0 calls it after the current task. The latest `callback` is always
+called, and nothing runs after the component unmounts.
+
+```tsx
+import { useTimeout } from "react-honey-hooks";
+
+function Toast({ message, onDismiss }: { message: string; onDismiss: () => void }) {
+  useTimeout(onDismiss, 4000);
+
+  return <div role="status">{message}</div>;
 }
 ```
 
