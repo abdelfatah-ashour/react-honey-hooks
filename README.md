@@ -22,6 +22,7 @@ Requires React 18 or newer.
 - [`useThrottledCallback`](#usethrottledcallback): a function that runs at most every few ms
 - [`useEventListener`](#useeventlistener): listen to any DOM event, typed
 - [`useHotkey`](#usehotkey): keyboard shortcuts such as `mod+k`
+- [`useLongPress`](#uselongpress): press and hold an element
 - [`useElementSize`](#useelementsize): measure an element as it resizes
 - [`useInView`](#useinview): know when an element scrolls into view
 - [`useInterval`](#useinterval): run something every few milliseconds
@@ -546,6 +547,54 @@ function ResponsiveCard() {
   const { width } = useElementSize(ref);
 
   return <div ref={ref}>{width < 400 ? <CompactLayout /> : <WideLayout />}</div>;
+}
+```
+
+---
+
+### `useLongPress`
+
+```ts
+function useLongPress(
+  ref: RefObject<HTMLElement | null>,
+  handler: (event: PointerEvent) => void,
+  options?: LongPressOptions,
+): void;
+
+interface LongPressOptions {
+  delayMs?: number; // how long to hold, default 500
+  enabled?: boolean; // default true
+}
+```
+
+Calls `handler` with the `pointerdown` event when the element is pressed and held for
+`delayMs`, with the main mouse button, a pen or one finger.
+
+- Releasing, leaving the element or moving more than 10 px before `delayMs` cancels the press,
+  so scrolling and dragging don't trigger it. Other mouse buttons and second fingers are
+  ignored.
+- The click that follows a long press is cancelled, so one element can have a click action
+  and a long-press action.
+- Setting `enabled` to `false` cancels a press in progress. A delay that isn't a finite number
+  of 0 or more never fires.
+- The latest `handler` is always called, so inline functions are fine.
+
+Only pointer presses count, so give keyboard users another way to reach the same action, for
+example a menu button.
+
+```tsx
+import { useRef } from "react";
+import { useLongPress } from "react-honey-hooks";
+
+function MessageBubble({ onOpen, onShowActions }: MessageBubbleProps) {
+  const ref = useRef<HTMLButtonElement>(null);
+  useLongPress(ref, onShowActions);
+
+  return (
+    <button ref={ref} onClick={onOpen}>
+      …
+    </button>
+  );
 }
 ```
 

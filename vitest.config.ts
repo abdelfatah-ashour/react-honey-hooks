@@ -33,6 +33,22 @@ const grantPermission: BrowserCommand<[name: string]> = async (context, name) =>
   }
 };
 
+/** Presses the real mouse's main button where the pointer is; move it first with `hover`. */
+const mouseDown: BrowserCommand = async (context) => {
+  if (context.provider.name !== "playwright") {
+    throw new Error(`mouseDown is not supported by the ${context.provider.name} provider`);
+  }
+  await context.page.mouse.down();
+};
+
+/** Releases the real mouse's main button. */
+const mouseUp: BrowserCommand = async (context) => {
+  if (context.provider.name !== "playwright") {
+    throw new Error(`mouseUp is not supported by the ${context.provider.name} provider`);
+  }
+  await context.page.mouse.up();
+};
+
 export default defineConfig({
   test: {
     restoreMocks: true,
@@ -61,7 +77,7 @@ export default defineConfig({
             enabled: true,
             headless: true,
             provider: playwright(),
-            commands: { goOfflineFor, grantPermission },
+            commands: { goOfflineFor, grantPermission, mouseDown, mouseUp },
             instances: [{ browser: "chromium" }, { browser: "firefox" }, { browser: "webkit" }],
           },
         },
