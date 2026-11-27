@@ -36,5 +36,10 @@ export {
   type SetQueryOptions,
 } from "./useQueryState";
 export { useSessionStorage } from "./useSessionStorage";
+export {
+  useThrottledCallback,
+  type ThrottledFunction,
+  type ThrottleOptions,
+} from "./useThrottledCallback";
 export { useTimeout } from "./useTimeout";
 export { useWindowSize, type WindowSize } from "./useWindowSize";
