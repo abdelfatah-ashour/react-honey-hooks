@@ -11,4 +11,5 @@ export {
   type CountdownTarget,
 } from "./useCountdown";
 export { useMediaQuery } from "./useMediaQuery";
+export { useOnlineStatus } from "./useOnlineStatus";
 export { useQuery, type Query, type QueryParams } from "./useQuery";

@@ -15,6 +15,7 @@ Requires React 18 or newer.
 - [`useCountdown`](#usecountdown): count down to a date
 - [`useClickOutside`](#useclickoutside): detect presses outside an element
 - [`useMediaQuery`](#usemediaquery): match a CSS media query
+- [`useOnlineStatus`](#useonlinestatus): know when the network drops
 
 ---
 
@@ -178,6 +179,33 @@ function Navigation() {
   const reduceMotion = useMediaQuery("(prefers-reduced-motion: reduce)");
 
   return isWide ? <Sidebar animated={!reduceMotion} /> : <BottomTabs />;
+}
+```
+
+---
+
+### `useOnlineStatus`
+
+```ts
+function useOnlineStatus(): boolean;
+```
+
+Returns `navigator.onLine` and re-renders on the browser's `online` and `offline` events.
+`false` means the browser has no network connection at all; `true` does not guarantee a
+request will succeed. During server rendering, and on the first render while hydrating, it
+returns `true`.
+
+```tsx
+import { useOnlineStatus } from "react-honey-hooks";
+
+function SaveButton({ onSave }: { onSave: () => void }) {
+  const online = useOnlineStatus();
+
+  return (
+    <button disabled={!online} onClick={onSave}>
+      {online ? "Save" : "Offline: changes will sync later"}
+    </button>
+  );
 }
 ```
 

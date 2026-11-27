@@ -1,6 +1,21 @@
 import { fileURLToPath } from "node:url";
 import { playwright } from "@vitest/browser-playwright";
 import { defineConfig } from "vitest/config";
+import type { BrowserCommand } from "vitest/node";
+
+/**
+ * Cuts the real browser's network for `ms` milliseconds, which page code can't do itself.
+ * It returns straight away and restores the network on the server side, because in Chromium
+ * going offline also cuts the page's own connection to Vitest.
+ */
+const goOfflineFor: BrowserCommand<[ms: number]> = async (context, ms) => {
+  if (context.provider.name !== "playwright") {
+    throw new Error(`goOfflineFor is not supported by the ${context.provider.name} provider`);
+  }
+  const browserContext = context.context;
+  await browserContext.setOffline(true);
+  setTimeout(() => void browserContext.setOffline(false), ms);
+};
 
 export default defineConfig({
   test: {
@@ -30,6 +45,7 @@ export default defineConfig({
             enabled: true,
             headless: true,
             provider: playwright(),
+            commands: { goOfflineFor },
             instances: [{ browser: "chromium" }, { browser: "firefox" }, { browser: "webkit" }],
           },
         },
