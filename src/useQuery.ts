@@ -1,6 +1,14 @@
 import { useMemo, useSyncExternalStore } from "react";
 
-export type QueryParams = Readonly<Record<string, string>>;
+/** Query params keyed by `K`. Every key may be missing from the URL, so values are optional. */
+export type QueryParams<K extends string = string> = Readonly<Partial<Record<K, string>>>;
+
+export interface Query<K extends string = string> {
+  /** One value per key; for repeated keys (`?tag=a&tag=b`) the last value wins. */
+  readonly params: QueryParams<K>;
+  /** Every value of `key` in URL order, or an empty array when it is absent. */
+  readonly getAll: (key: K) => readonly string[];
+}
 
 function subscribe(onChange: () => void): () => void {
   window.addEventListener("popstate", onChange);
@@ -19,10 +27,15 @@ function getServerSearch(): string {
 }
 
 /**
- * Returns the current URL's query string as a read-only object, re-reading it on
- * back/forward navigation. For repeated keys (`?tag=a&tag=b`) the last value wins.
+ * Reads the current URL's query string, re-reading it on back/forward navigation.
  */
-export function useQuery(): QueryParams {
+export function useQuery<K extends string = string>(): Query<K> {
   const search = useSyncExternalStore(subscribe, getSearch, getServerSearch);
-  return useMemo(() => Object.fromEntries(new URLSearchParams(search)), [search]);
+  return useMemo(() => {
+    const searchParams = new URLSearchParams(search);
+    return {
+      params: Object.fromEntries(searchParams) as QueryParams<K>,
+      getAll: (key: K) => searchParams.getAll(key),
+    };
+  }, [search]);
 }

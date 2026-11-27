@@ -1,7 +1,7 @@
 {
   "name": "react-honey-hooks",
   "version": "2.0.1",
-  "description": "Small, typed React hooks: URL query params, countdowns and click-outside detection.",
+  "description": "Small, typed, dependency-free React hooks: URL query params, countdowns and click-outside detection.",
   "license": "MIT",
   "author": "Abdelfatah Ashour",
   "repository": {
@@ -46,13 +46,14 @@
   "scripts": {
     "build": "tsup",
     "dev": "tsup --watch",
-    "test": "vitest run",
-    "test:watch": "vitest",
+    "test": "vitest run --project unit",
+    "test:watch": "vitest --project unit",
+    "test:e2e": "tsup && vitest run --project e2e",
     "typecheck": "tsc --noEmit",
     "lint": "eslint .",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "check": "npm run typecheck && npm run lint && npm run format:check && npm test",
+    "check": "npm run typecheck && npm run lint && npm run format:check && npm test && npm run test:e2e",
     "prepublishOnly": "npm run check && npm run build"
   },
   "peerDependencies": {
@@ -66,10 +67,12 @@
     "@types/node": "^22.20.7",
     "@types/react": "^19.3.3",
     "@types/react-dom": "^19.3.0",
+    "@vitest/browser-playwright": "^5.1.2",
     "eslint": "^10.16.0",
     "eslint-plugin-react-hooks": "^7.1.1",
     "jiti": "^2.7.0",
     "jsdom": "^31.0.1",
+    "playwright": "^1.65.1",
     "prettier": "^3.10.1",
     "publint": "^0.3.25",
     "react": "^19.3.1",
@@ -77,6 +80,7 @@
     "tsup": "^9.0.0",
     "typescript": "^6.0.3",
     "typescript-eslint": "^8.74.0",
-    "vitest": "^5.1.2"
+    "vitest": "^5.1.2",
+    "vitest-browser-react": "^2.3.0"
   }
 }

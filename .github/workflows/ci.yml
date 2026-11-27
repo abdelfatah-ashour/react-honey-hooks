@@ -19,6 +19,8 @@ jobs:
           node-version: ${{ matrix.node-version }}
           cache: npm
       - run: npm ci
+      # e2e tests run the built bundle in real browsers.
+      - run: npx playwright install --with-deps chromium firefox webkit
       - run: npm run check
       - run: npm run build
       - run: npx publint && npx attw --pack .

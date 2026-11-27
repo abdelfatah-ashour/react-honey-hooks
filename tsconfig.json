@@ -18,7 +18,8 @@
     "isolatedModules": true,
     "forceConsistentCasingInFileNames": true,
     "skipLibCheck": true,
-    "noEmit": true
+    "noEmit": true,
+    "paths": { "react-honey-hooks": ["./src/index.ts"] }
   },
-  "include": ["src", "test", "*.config.ts"]
+  "include": ["src", "e2e", "*.config.ts"]
 }

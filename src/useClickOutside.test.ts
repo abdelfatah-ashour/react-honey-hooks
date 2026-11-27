@@ -1,5 +1,7 @@
 import { fireEvent, renderHook } from "@testing-library/react";
-import { useClickOutside } from "./useClickOutside";
+import { createElement } from "react";
+import { renderToString } from "react-dom/server";
+import { useClickOutside, type ClickOutsideRefs } from "./useClickOutside";
 
 function setupDom() {
   const target = document.createElement("div");
@@ -77,6 +79,61 @@ describe("useClickOutside", () => {
     expect(handler).not.toHaveBeenCalled();
   });
 
+  it("treats a press inside any of several elements as inside", () => {
+    const { target, outside, ref } = setupDom();
+    const popover = document.createElement("div");
+    document.body.append(popover);
+    const handler = vi.fn();
+    const { rerender } = renderHook(() => {
+      useClickOutside([ref, { current: popover }, { current: null }], handler);
+    });
+    rerender();
+
+    fireEvent.mouseDown(target);
+    fireEvent.mouseDown(popover);
+    expect(handler).not.toHaveBeenCalled();
+
+    fireEvent.mouseDown(outside);
+    expect(handler).toHaveBeenCalledTimes(1);
+  });
+
+  it("follows a ref swapped between renders", () => {
+    const { target, outside, ref } = setupDom();
+    const handler = vi.fn();
+    const { rerender } = renderHook(
+      ({ current }) => {
+        useClickOutside(current, handler);
+      },
+      { initialProps: { current: ref as ClickOutsideRefs } },
+    );
+
+    rerender({ current: { current: outside } });
+    fireEvent.mouseDown(outside);
+    expect(handler).not.toHaveBeenCalled();
+
+    fireEvent.mouseDown(target);
+    expect(handler).toHaveBeenCalledTimes(1);
+  });
+
+  it("ignores presses while disabled and resumes once enabled again", () => {
+    const { outside, ref } = setupDom();
+    const handler = vi.fn();
+    const { rerender } = renderHook(
+      ({ enabled }) => {
+        useClickOutside(ref, handler, { enabled });
+      },
+      { initialProps: { enabled: false } },
+    );
+
+    fireEvent.mouseDown(outside);
+    fireEvent.touchStart(outside);
+    expect(handler).not.toHaveBeenCalled();
+
+    rerender({ enabled: true });
+    fireEvent.mouseDown(outside);
+    expect(handler).toHaveBeenCalledTimes(1);
+  });
+
   it("does nothing while the ref is not attached", () => {
     const { outside } = setupDom();
     const handler = vi.fn();
@@ -87,5 +144,20 @@ describe("useClickOutside", () => {
     fireEvent.mouseDown(outside);
 
     expect(handler).not.toHaveBeenCalled();
+  });
+
+  it("renders on the server without touching the document", () => {
+    function Probe() {
+      useClickOutside({ current: null }, () => {});
+      return "ok";
+    }
+
+    expect(renderToString(createElement(Probe))).toBe("ok");
+  });
+
+  it("only accepts element refs", () => {
+    expectTypeOf(useClickOutside).toBeCallableWith({ current: document.body }, () => {});
+    // @ts-expect-error -- a ref to a non-element is rejected
+    expectTypeOf(useClickOutside).toBeCallableWith({ current: "nope" }, () => {});
   });
 });

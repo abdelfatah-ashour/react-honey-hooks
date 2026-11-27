@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 const SECOND = 1000;
 const MINUTE = 60 * SECOND;
@@ -9,12 +9,20 @@ const DAY = 24 * HOUR;
 export type CountdownTarget = Date | number | string;
 
 export interface Countdown {
-  days: number;
-  hours: number;
-  minutes: number;
-  seconds: number;
-  totalMilliseconds: number;
-  isExpired: boolean;
+  readonly days: number;
+  readonly hours: number;
+  readonly minutes: number;
+  readonly seconds: number;
+  readonly totalMilliseconds: number;
+  readonly isExpired: boolean;
+}
+
+export interface CountdownOptions {
+  /**
+   * Called once each time a running countdown reaches zero. It is not called on mount when
+   * the target has already passed. The latest function is always used.
+   */
+  onExpire?: () => void;
 }
 
 /** Invalid dates map to 0 (the epoch) so they read as expired and compare stably. */
@@ -29,9 +37,13 @@ function remainingUntil(targetTime: number): number {
 
 /**
  * Counts down to `target`, updating once per second until it is reached.
- * Remaining time never goes below zero; `isExpired` becomes `true` at zero.
+ * Remaining time never goes below zero; `isExpired` becomes `true` at zero, and
+ * `onExpire` is called then.
  */
-export function useCountdown(target: CountdownTarget): Countdown {
+export function useCountdown(
+  target: CountdownTarget,
+  { onExpire }: CountdownOptions = {},
+): Countdown {
   const targetTime = toTime(target);
   const [state, setState] = useState(() => ({
     targetTime,
@@ -43,6 +55,17 @@ export function useCountdown(target: CountdownTarget): Countdown {
   }
 
   const isExpired = state.remaining === 0;
+
+  const onExpireRef = useRef(onExpire);
+  useEffect(() => {
+    onExpireRef.current = onExpire;
+  });
+
+  const wasExpired = useRef(isExpired);
+  useEffect(() => {
+    if (isExpired && !wasExpired.current) onExpireRef.current?.();
+    wasExpired.current = isExpired;
+  }, [isExpired]);
 
   useEffect(() => {
     if (isExpired) return;
