@@ -731,6 +731,30 @@ function Faq() {
 
 ---
 
+### `usePrefersReducedMotion`
+
+```ts
+function usePrefersReducedMotion(): boolean;
+```
+
+Returns whether the user has asked their system to reduce motion
+(`prefers-reduced-motion: reduce`), updating when they change the setting. It returns `false`
+during server rendering and hydration, then the real setting.
+
+```tsx
+import { usePrefersReducedMotion } from "react-honey-hooks";
+
+function Carousel({ slides }: { slides: Slide[] }) {
+  const reduceMotion = usePrefersReducedMotion();
+
+  return (
+    <Slider slides={slides} autoplay={!reduceMotion} transition={reduceMotion ? "none" : "slide"} />
+  );
+}
+```
+
+---
+
 ## Migrating from v2
 
 | v2                                                   | v3                                                                                     |

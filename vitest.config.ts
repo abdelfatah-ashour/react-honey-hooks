@@ -31,6 +31,23 @@ const grantClipboardRead: BrowserCommand = async (context) => {
   }
 };
 
+/** The user preferences `emulateMedia` can set; `null` goes back to the browser's own value. */
+interface MediaPreferences {
+  reducedMotion?: "reduce" | "no-preference" | null;
+  colorScheme?: "light" | "dark" | "no-preference" | null;
+}
+
+/** Sets the media features the page sees (such as reduced motion), which page code can't do. */
+const emulateMedia: BrowserCommand<[preferences: MediaPreferences]> = async (
+  context,
+  preferences,
+) => {
+  if (context.provider.name !== "playwright") {
+    throw new Error(`emulateMedia is not supported by the ${context.provider.name} provider`);
+  }
+  await context.page.emulateMedia(preferences);
+};
+
 export default defineConfig({
   test: {
     restoreMocks: true,
@@ -59,7 +76,7 @@ export default defineConfig({
             enabled: true,
             headless: true,
             provider: playwright(),
-            commands: { goOfflineFor, grantClipboardRead },
+            commands: { goOfflineFor, grantClipboardRead, emulateMedia },
             instances: [{ browser: "chromium" }, { browser: "firefox" }, { browser: "webkit" }],
           },
         },
