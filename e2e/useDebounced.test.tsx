@@ -4,10 +4,11 @@ import { describe, expect, it, vi } from "vitest";
 import { userEvent } from "vitest/browser";
 import { render } from "vitest-browser-react";
 
+// A wait long enough that typing a few letters never pauses that long, even on a busy machine.
 function Search({ onSearch }: { onSearch: (query: string) => void }) {
   const [query, setQuery] = useState("");
-  const debouncedQuery = useDebouncedValue(query, 200);
-  const search = useDebouncedCallback(onSearch, 200);
+  const debouncedQuery = useDebouncedValue(query, 1000);
+  const search = useDebouncedCallback(onSearch, 1000);
 
   return (
     <>

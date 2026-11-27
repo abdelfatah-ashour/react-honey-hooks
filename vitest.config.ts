@@ -18,10 +18,11 @@ const goOfflineFor: BrowserCommand<[ms: number]> = async (context, ms) => {
 };
 
 /**
- * Grants the page a permission such as `"geolocation"` or `"clipboard-read"`, where the browser
- * supports granting it; resolves whether it did. At the time of writing Playwright grants
- * geolocation in all three browsers but clipboard access in Chromium only. Grants last for the
- * rest of the run in that browser.
+ * Grants the page a permission such as `"geolocation"` or `"clipboard-read"`; resolves whether
+ * it did. At the time of writing Playwright grants geolocation in all three browsers but
+ * clipboard access in Chromium only. Only ask a browser for permissions it knows: Playwright
+ * keeps a refused one in the browser's list and sends it again, so every later grant in that
+ * browser fails too. Grants last for the rest of the run in that browser.
  */
 const grantPermission: BrowserCommand<[name: string]> = async (context, name) => {
   if (context.provider.name !== "playwright") return false;
