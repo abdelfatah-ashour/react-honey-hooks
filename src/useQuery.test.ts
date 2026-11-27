@@ -2,6 +2,7 @@ import { act, renderHook } from "@testing-library/react";
 import { createElement } from "react";
 import { renderToString } from "react-dom/server";
 import { useQuery } from "./useQuery";
+import { useQueryState } from "./useQueryState";
 
 function navigate(url: string) {
   window.history.pushState(null, "", url);
@@ -33,6 +34,18 @@ describe("useQuery", () => {
     act(() => {
       navigate("/?page=2");
       window.dispatchEvent(new PopStateEvent("popstate"));
+    });
+
+    expect(result.current.params).toEqual({ page: "2" });
+  });
+
+  it("updates when useQueryState changes the URL", () => {
+    navigate("/?page=1");
+    const { result } = renderHook(() => useQuery<"page">());
+    const writer = renderHook(() => useQueryState<"page">());
+
+    act(() => {
+      writer.result.current[1]({ page: "2" });
     });
 
     expect(result.current.params).toEqual({ page: "2" });

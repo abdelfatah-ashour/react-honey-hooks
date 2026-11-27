@@ -26,4 +26,10 @@ export { useMediaQuery } from "./useMediaQuery";
 export { useOnlineStatus } from "./useOnlineStatus";
 export { usePageVisibility } from "./usePageVisibility";
 export { useQuery, type Query, type QueryParams } from "./useQuery";
+export {
+  useQueryState,
+  type QueryUpdates,
+  type SetQuery,
+  type SetQueryOptions,
+} from "./useQueryState";
 export { useTimeout } from "./useTimeout";

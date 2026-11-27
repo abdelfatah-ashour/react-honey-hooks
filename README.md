@@ -1,7 +1,8 @@
 # 🍯 React Honey Hooks
 
-Small, typed React hooks. Tree-shakeable, zero dependencies, about 1 kB gzipped, ESM + CJS,
-SSR-safe, and tested in real Chromium, Firefox and WebKit.
+Small, typed React hooks. Zero dependencies, ESM + CJS, SSR-safe, and tested in real
+Chromium, Firefox and WebKit. Tree-shakeable: all 16 hooks are about 3 kB minified and
+gzipped, and your bundle only includes the ones you import.
 
 ```bash
 npm install react-honey-hooks
@@ -12,6 +13,7 @@ Requires React 18 or newer.
 ## Hooks
 
 - [`useQuery`](#usequery): read the URL's query params
+- [`useQueryState`](#usequerystate): read and update the URL's query params
 - [`useCountdown`](#usecountdown): count down to a date
 - [`useClickOutside`](#useclickoutside): detect presses outside an element
 - [`useCopyToClipboard`](#usecopytoclipboard): copy text and show that it worked
@@ -64,8 +66,52 @@ function Products() {
 }
 ```
 
-The hook does not observe `history.pushState` calls made by client-side routers; use your
-router's own hook there.
+It also re-renders when [`useQueryState`](#usequerystate) changes the URL. It does not observe
+`history.pushState` calls made by client-side routers; use your router's own hook there.
+
+---
+
+### `useQueryState`
+
+```ts
+function useQueryState<K extends string = string>(): readonly [Query<K>, SetQuery<K>];
+
+type SetQuery<K extends string = string> = (
+  updates: Partial<Record<K, string | readonly string[] | null>>,
+  options?: { mode?: "replace" | "push" }, // defaults to "replace"
+) => void;
+```
+
+Reads the query string exactly like `useQuery`, and adds `setQuery` to change it without a
+router:
+
+- A string sets a key, an array sets repeated keys (`?tag=a&tag=b`), and `null` or `[]`
+  removes it. Keys you leave out are kept, and updated keys keep their place in the URL.
+- By default the current history entry is replaced. Pass `{ mode: "push" }` to add an entry,
+  so the browser's Back button undoes the change.
+- Every `useQuery` and `useQueryState` on the page re-renders with the new URL.
+- An update that changes nothing writes nothing, and `history.state` is kept, so routers that
+  store data there are not disturbed. `setQuery` keeps its identity.
+
+```tsx
+import { useQueryState } from "react-honey-hooks";
+
+// https://example.com/products?category=books&page=3
+function Pagination() {
+  const [{ params }, setQuery] = useQueryState<"page">();
+  const page = Number(params.page ?? "1");
+
+  return (
+    <button
+      onClick={() => {
+        setQuery({ page: String(page + 1) }, { mode: "push" });
+      }}
+    >
+      Next page
+    </button>
+  );
+}
+```
 
 ---
 

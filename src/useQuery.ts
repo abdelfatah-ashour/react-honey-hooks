@@ -1,4 +1,5 @@
 import { useMemo, useSyncExternalStore } from "react";
+import { getSearch, getServerSearch, subscribeToSearch } from "./querySearch";
 
 /** Query params keyed by `K`. Every key may be missing from the URL, so values are optional. */
 export type QueryParams<K extends string = string> = Readonly<Partial<Record<K, string>>>;
@@ -10,27 +11,11 @@ export interface Query<K extends string = string> {
   readonly getAll: (key: K) => readonly string[];
 }
 
-function subscribe(onChange: () => void): () => void {
-  window.addEventListener("popstate", onChange);
-  return () => {
-    window.removeEventListener("popstate", onChange);
-  };
-}
-
-function getSearch(): string {
-  return window.location.search;
-}
-
-/** No URL exists on the server; hydration then picks up the real query string. */
-function getServerSearch(): string {
-  return "";
-}
-
 /**
  * Reads the current URL's query string, re-reading it on back/forward navigation.
  */
 export function useQuery<K extends string = string>(): Query<K> {
-  const search = useSyncExternalStore(subscribe, getSearch, getServerSearch);
+  const search = useSyncExternalStore(subscribeToSearch, getSearch, getServerSearch);
   return useMemo(() => {
     const searchParams = new URLSearchParams(search);
     return {

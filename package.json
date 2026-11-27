@@ -1,7 +1,7 @@
 {
   "name": "react-honey-hooks",
-  "version": "3.0.0",
-  "description": "Small, typed, dependency-free React hooks: URL query params, countdowns and click-outside detection.",
+  "version": "3.1.0",
+  "description": "Small, typed, dependency-free React hooks: URL query state, local storage, media queries, debouncing, timers, hotkeys, event listeners, visibility, clipboard and more.",
   "license": "MIT",
   "author": "Abdelfatah Ashour",
   "repository": {
@@ -17,7 +17,13 @@
     "typescript",
     "countdown",
     "click-outside",
-    "query-params"
+    "query-params",
+    "local-storage",
+    "media-query",
+    "debounce",
+    "hotkeys",
+    "intersection-observer",
+    "clipboard"
   ],
   "type": "module",
   "sideEffects": false,
