@@ -25,6 +25,7 @@ Requires React 18 or newer.
 - [`useInterval`](#useinterval): run something every few milliseconds
 - [`useTimeout`](#usetimeout): run something once after a delay
 - [`useLocalStorage`](#uselocalstorage): state that survives reloads and syncs across tabs
+- [`useSessionStorage`](#usesessionstorage): state that survives reloads in this tab only
 - [`useMediaQuery`](#usemediaquery): match a CSS media query
 - [`useOnlineStatus`](#useonlinestatus): know when the network drops
 - [`usePageVisibility`](#usepagevisibility): know when the tab is hidden
@@ -583,6 +584,40 @@ function ThemeToggle() {
       }}
     >
       Switch to {theme === "light" ? "dark" : "light"} mode
+    </button>
+  );
+}
+```
+
+---
+
+### `useSessionStorage`
+
+```ts
+function useSessionStorage<T>(
+  key: string,
+  initialValue: T,
+): readonly [value: T, set: SetStoredValue<T>, remove: () => void];
+```
+
+Works exactly like [`useLocalStorage`](#uselocalstorage), but keeps the value in
+`sessionStorage`: it survives reloads, but belongs to this tab and is gone when the tab closes.
+Hooks using the same key in this tab stay in sync, and the same key in `localStorage` is a
+separate value.
+
+```tsx
+import { useSessionStorage } from "react-honey-hooks";
+
+function CheckoutSteps() {
+  const [step, setStep] = useSessionStorage("checkout-step", 1);
+
+  return (
+    <button
+      onClick={() => {
+        setStep((s) => s + 1);
+      }}
+    >
+      Step {step}: continue
     </button>
   );
 }

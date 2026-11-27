@@ -32,4 +32,5 @@ export {
   type SetQuery,
   type SetQueryOptions,
 } from "./useQueryState";
+export { useSessionStorage } from "./useSessionStorage";
 export { useTimeout } from "./useTimeout";
