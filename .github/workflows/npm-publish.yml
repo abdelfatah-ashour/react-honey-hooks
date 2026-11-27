@@ -15,18 +15,18 @@ concurrency:
 
 permissions:
   contents: write # create the git tag and GitHub release
-  id-token: write # npm provenance
+  id-token: write # npm trusted publishing (OIDC) and provenance
 
 jobs:
   release:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
-          node-version: 22
-          cache: npm
+          # Trusted publishing needs Node >= 22.14 and npm >= 11.5.1; Node 24 ships both.
+          node-version: 24
           registry-url: https://registry.npmjs.org/
 
       - name: Read version and check npm
@@ -66,12 +66,12 @@ jobs:
         if: steps.version.outputs.publish == 'true'
         run: npx publint && npx attw --pack .
 
-      # check and build already ran above, so skip prepublishOnly.
+      # Authenticates through npm trusted publishing (OIDC), so no npm token is stored.
+      # Provenance is attached automatically. check and build already ran above, so
+      # prepublishOnly is skipped.
       - name: Publish to npm
         if: steps.version.outputs.publish == 'true'
-        run: npm publish --ignore-scripts --provenance --access public --tag "${{ steps.version.outputs.dist-tag }}"
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.npm_token }}
+        run: npm publish --ignore-scripts --access public --tag "${{ steps.version.outputs.dist-tag }}"
 
       # Runs even when npm already has the version, so a re-run fills in a release that
       # failed to be created last time.
