@@ -50,7 +50,9 @@ describe("useQuery in a real browser", () => {
   });
 
   it("follows real back and forward navigation", async () => {
-    window.history.replaceState(null, "", "?page=1");
+    // Push both entries rather than replacing the first: in WebKit, Back from a push sometimes
+    // landed on the URL from before a replaceState made in this frame just before it.
+    window.history.pushState(null, "", "?page=1");
     window.history.pushState(null, "", "?page=2");
     const screen = await render(<Filters />);
     await expect.element(screen.getByTestId("page")).toHaveTextContent("2");
