@@ -20,6 +20,7 @@ export {
   type EventListenerTarget,
 } from "./useEventListener";
 export { useHotkey, type HotkeyOptions } from "./useHotkey";
+export { useHover } from "./useHover";
 export { useIdle } from "./useIdle";
 export { useInView, type InViewOptions } from "./useInView";
 export { useInterval } from "./useInterval";

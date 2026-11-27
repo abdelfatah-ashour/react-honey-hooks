@@ -23,6 +23,7 @@ Requires React 18 or newer.
 - [`useEventListener`](#useeventlistener): listen to any DOM event, typed
 - [`useHotkey`](#usehotkey): keyboard shortcuts such as `mod+k`
 - [`useLongPress`](#uselongpress): press and hold an element
+- [`useHover`](#usehover): know when the pointer is over an element
 - [`useElementSize`](#useelementsize): measure an element as it resizes
 - [`useInView`](#useinview): know when an element scrolls into view
 - [`useInterval`](#useinterval): run something every few milliseconds
@@ -594,6 +595,41 @@ function MessageBubble({ onOpen, onShowActions }: MessageBubbleProps) {
     <button ref={ref} onClick={onOpen}>
       …
     </button>
+  );
+}
+```
+
+---
+
+### `useHover`
+
+```ts
+function useHover(ref: RefObject<Element | null>): boolean;
+```
+
+Returns whether a mouse or pen pointer is over the element, including over its children.
+
+- Touch is ignored: touch screens have no hover, and a tap would otherwise leave it `true`.
+- It is `false` during server rendering and when the pointer leaves the window.
+- It checks the ref's current element as the pointer moves, so it follows the ref to a new
+  element.
+
+For purely visual effects, CSS `:hover` is simpler. Use this when hovering changes what
+renders, for example to load a preview.
+
+```tsx
+import { useRef } from "react";
+import { useHover } from "react-honey-hooks";
+
+function UserLink({ user }: { user: User }) {
+  const ref = useRef<HTMLAnchorElement>(null);
+  const hovered = useHover(ref);
+
+  return (
+    <a ref={ref} href={user.url}>
+      {user.name}
+      {hovered && <ProfilePreview userId={user.id} />}
+    </a>
   );
 }
 ```
