@@ -16,6 +16,7 @@ Requires React 18 or newer.
 - [`useClickOutside`](#useclickoutside): detect presses outside an element
 - [`useMediaQuery`](#usemediaquery): match a CSS media query
 - [`useOnlineStatus`](#useonlinestatus): know when the network drops
+- [`usePageVisibility`](#usepagevisibility): know when the tab is hidden
 
 ---
 
@@ -206,6 +207,36 @@ function SaveButton({ onSave }: { onSave: () => void }) {
       {online ? "Save" : "Offline: changes will sync later"}
     </button>
   );
+}
+```
+
+---
+
+### `usePageVisibility`
+
+```ts
+function usePageVisibility(): boolean;
+```
+
+Returns whether the page is visible, and re-renders when the user switches tabs, minimises
+the window or locks the screen (the `visibilitychange` event). Use it to pause polling,
+video or animations nobody can see. During server rendering, and on the first render while
+hydrating, it returns `true`.
+
+```tsx
+import { useEffect } from "react";
+import { usePageVisibility } from "react-honey-hooks";
+
+function LivePrices({ refresh }: { refresh: () => void }) {
+  const visible = usePageVisibility();
+
+  useEffect(() => {
+    if (!visible) return;
+    const id = setInterval(refresh, 5000);
+    return () => clearInterval(id);
+  }, [visible, refresh]);
+
+  return <PriceTable />;
 }
 ```
 
