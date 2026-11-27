@@ -14,6 +14,7 @@ export {
 } from "./useCountdown";
 export { useDebouncedCallback, type DebouncedFunction } from "./useDebouncedCallback";
 export { useDebouncedValue } from "./useDebouncedValue";
+export { useDocumentTitle, type DocumentTitleOptions } from "./useDocumentTitle";
 export { useElementSize, type ElementSize, type ElementSizeOptions } from "./useElementSize";
 export {
   useEventListener,
@@ -25,6 +26,7 @@ export { useHover } from "./useHover";
 export { useIdle } from "./useIdle";
 export { useInterval } from "./useInterval";
 export { useInView, type InViewOptions } from "./useInView";
+export { useIsClient } from "./useIsClient";
 export { useLocalStorage, type SetStoredValue } from "./useLocalStorage";
 export { useLongPress, type LongPressOptions } from "./useLongPress";
 export { useMediaQuery } from "./useMediaQuery";
@@ -50,4 +52,10 @@ export {
 } from "./useThrottledCallback";
 export { useTimeout } from "./useTimeout";
 export { useToggle, type ToggleActions } from "./useToggle";
+export {
+  useUndoState,
+  type SetUndoState,
+  type UndoControls,
+  type UndoStateOptions,
+} from "./useUndoState";
 export { useWindowSize, type WindowSize } from "./useWindowSize";

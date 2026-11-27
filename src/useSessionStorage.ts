@@ -1,6 +1,7 @@
 import { createStorageStore, useStoredValue, type SetStoredValue } from "./storage";
 
-const store = createStorageStore(() => sessionStorage);
+// Marked pure so bundlers drop it from apps that never import this hook.
+const store = /* @__PURE__ */ createStorageStore(() => sessionStorage);
 
 /**
  * Keeps a JSON-serialisable value in `sessionStorage` under `key`: like `useLocalStorage`, but

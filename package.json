@@ -1,7 +1,7 @@
 {
   "name": "react-honey-hooks",
   "version": "3.1.0",
-  "description": "Small, typed, dependency-free React hooks: URL query state, local storage, media queries, debouncing, timers, hotkeys, event listeners, visibility, clipboard and more.",
+  "description": "Small, typed, dependency-free React hooks: URL query state, local and session storage, media queries, element and window size, debouncing, throttling, timers, hotkeys, long press, hover, idle detection, permissions, scroll lock, undo and more.",
   "license": "MIT",
   "author": "Abdelfatah Ashour",
   "repository": {
@@ -23,7 +23,13 @@
     "debounce",
     "hotkeys",
     "intersection-observer",
-    "clipboard"
+    "clipboard",
+    "session-storage",
+    "throttle",
+    "resize-observer",
+    "long-press",
+    "scroll-lock",
+    "undo-redo"
   ],
   "type": "module",
   "sideEffects": false,

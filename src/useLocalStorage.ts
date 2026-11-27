@@ -2,7 +2,8 @@ import { createStorageStore, useStoredValue, type SetStoredValue } from "./stora
 
 export type { SetStoredValue } from "./storage";
 
-const store = createStorageStore(() => localStorage);
+// Marked pure so bundlers drop it from apps that never import this hook.
+const store = /* @__PURE__ */ createStorageStore(() => localStorage);
 
 /**
  * Keeps a JSON-serialisable value in `localStorage` under `key`, like `useState` that survives

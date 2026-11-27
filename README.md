@@ -1,7 +1,7 @@
 # 🍯 React Honey Hooks
 
 Small, typed React hooks. Zero dependencies, ESM + CJS, SSR-safe, and tested in real
-Chromium, Firefox and WebKit. Tree-shakeable: all 30 hooks are about 5 kB minified and
+Chromium, Firefox and WebKit. Tree-shakeable: all 33 hooks are under 6 kB minified and
 gzipped, and your bundle only includes the ones you import.
 
 ```bash
@@ -14,10 +14,12 @@ Requires React 18 or newer.
 
 - [`useQuery`](#usequery): read the URL's query params
 - [`useQueryState`](#usequerystate): read and update the URL's query params
+- [`useUndoState`](#useundostate): state with undo and redo
 - [`useCountdown`](#usecountdown): count down to a date
 - [`useBroadcastChannel`](#usebroadcastchannel): message other tabs of your site
 - [`useClickOutside`](#useclickoutside): detect presses outside an element
 - [`useScrollLock`](#usescrolllock): stop the page scrolling behind a modal
+- [`useDocumentTitle`](#usedocumenttitle): set the browser tab's title
 - [`useCopyToClipboard`](#usecopytoclipboard): copy text and show that it worked
 - [`useDebouncedValue`](#usedebouncedvalue): a value that waits for changes to settle
 - [`useDebouncedCallback`](#usedebouncedcallback): a function that waits for calls to stop
@@ -38,6 +40,7 @@ Requires React 18 or newer.
 - [`usePageVisibility`](#usepagevisibility): know when the tab is hidden
 - [`useIdle`](#useidle): know when the user stops interacting
 - [`usePermission`](#usepermission): whether a browser permission is granted
+- [`useIsClient`](#useisclient): render browser-only content without a hydration mismatch
 - [`usePrefersColorScheme`](#usepreferscolorscheme): follow the system's light or dark mode
 - [`usePrefersReducedMotion`](#useprefersreducedmotion): respect the reduced-motion setting
 - [`usePrevious`](#useprevious): the value before it last changed
@@ -123,6 +126,66 @@ function Pagination() {
     >
       Next page
     </button>
+  );
+}
+```
+
+---
+
+### `useUndoState`
+
+```ts
+function useUndoState<T>(
+  initial: T | (() => T),
+  options?: UndoStateOptions,
+): readonly [value: T, set: SetUndoState<T>, controls: UndoControls];
+
+type SetUndoState<T> = (value: T | ((previous: T) => T)) => void;
+
+interface UndoStateOptions {
+  limit?: number; // how many steps can be undone, default 100
+}
+
+interface UndoControls {
+  readonly undo: () => void;
+  readonly redo: () => void;
+  readonly canUndo: boolean;
+  readonly canRedo: boolean;
+  readonly clearHistory: () => void; // forget the steps, keep the value
+}
+```
+
+Works like `useState`, and remembers earlier values so they can be undone and redone.
+
+- Each `set` that changes the value adds a step to undo. Setting the value it already has adds
+  nothing, and setting a new value after undoing clears the steps to redo.
+- Up to `limit` steps are kept, dropping the oldest first. A limit of 0 keeps no history.
+- `initial` and `set` accept functions just like `useState`, so to store a function, wrap it:
+  `set(() => myFunction)`.
+- `set`, `undo`, `redo` and `clearHistory` keep their identity, so they are safe in effect
+  dependencies and memoised children.
+
+```tsx
+import { useUndoState } from "react-honey-hooks";
+
+function TitleEditor() {
+  const [title, setTitle, { undo, redo, canUndo, canRedo }] = useUndoState("Untitled");
+
+  return (
+    <>
+      <input
+        value={title}
+        onChange={(event) => {
+          setTitle(event.target.value);
+        }}
+      />
+      <button onClick={undo} disabled={!canUndo}>
+        Undo
+      </button>
+      <button onClick={redo} disabled={!canRedo}>
+        Redo
+      </button>
+    </>
   );
 }
 ```
@@ -292,6 +355,38 @@ function Drawer({ open, children }: { open: boolean; children: React.ReactNode }
   useScrollLock(open);
 
   return open ? <aside className="drawer">{children}</aside> : null;
+}
+```
+
+---
+
+### `useDocumentTitle`
+
+```ts
+function useDocumentTitle(title: string, options?: DocumentTitleOptions): void;
+
+interface DocumentTitleOptions {
+  restoreOnUnmount?: boolean; // default false
+}
+```
+
+Sets the browser tab's title, and updates it whenever `title` changes. With
+`restoreOnUnmount`, the title from before the component mounted comes back when it unmounts,
+which suits a temporary title such as an unread count or "Unsaved changes". The option is
+read when the component unmounts. It does nothing during server rendering.
+
+In React 19 you can also render `<title>` anywhere in your components. This hook also works in
+React 18, and can restore the previous title.
+
+```tsx
+import { useDocumentTitle } from "react-honey-hooks";
+
+function Inbox({ unread }: { unread: number }) {
+  useDocumentTitle(unread > 0 ? `Inbox (${String(unread)})` : "Inbox", {
+    restoreOnUnmount: true,
+  });
+
+  return <MessageList />;
 }
 ```
 
@@ -1216,5 +1311,32 @@ function LocationButton({ onLocate }: { onLocate: () => void }) {
     return <p>Location is blocked. Allow it in your browser's site settings.</p>;
   }
   return <button onClick={onLocate}>Use my location</button>;
+}
+```
+
+---
+
+### `useIsClient`
+
+```ts
+function useIsClient(): boolean;
+```
+
+Returns `false` during server rendering and on the first render while hydrating, then `true`.
+Use it to render content that only makes sense in the browser, such as something that reads
+`localStorage` or the user's time zone, without the server's HTML and the first client render
+disagreeing.
+
+In an app without server rendering it is `true` from the very first render, so unlike the
+common `useEffect` version it costs no extra render.
+
+```tsx
+import { useIsClient } from "react-honey-hooks";
+
+function LocalTime({ date }: { date: Date }) {
+  const isClient = useIsClient();
+
+  // The server doesn't know the user's time zone, so it renders a placeholder.
+  return <time>{isClient ? date.toLocaleTimeString() : "--:--"}</time>;
 }
 ```
