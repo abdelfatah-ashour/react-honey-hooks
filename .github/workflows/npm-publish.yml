@@ -57,6 +57,9 @@ jobs:
         run: npm ci
 
       - if: steps.version.outputs.publish == 'true'
+        run: npx playwright install --with-deps chromium firefox webkit
+
+      - if: steps.version.outputs.publish == 'true'
         run: npm run check
 
       - if: steps.version.outputs.publish == 'true'

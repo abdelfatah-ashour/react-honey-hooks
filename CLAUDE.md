@@ -27,7 +27,11 @@ A bug fix starts with a failing test that reproduces the bug.
 
 ## Conventions
 
-- One hook per file in `src/`, with its tests next to it in `src/<hookName>.test.ts`.
+- One hook per file in `src/`, with its unit tests next to it in `src/<hookName>.test.ts`.
+- Real-browser e2e tests live in `e2e/<hookName>.test.tsx`. They import from
+  `"react-honey-hooks"`, which resolves to the built `dist/` bundle, and run in Chromium,
+  Firefox and WebKit. Cover each hook's main flows there with real user events.
+- No runtime dependencies: only `react` as a peer dependency.
 - Export each hook and its public types from `src/index.ts` as named exports.
 - Hooks must be SSR-safe and must not need memoised callbacks from callers.
 - Add a JSDoc comment to each exported hook and document it in `README.md` (TypeScript
@@ -36,8 +40,9 @@ A bug fix starts with a failing test that reproduces the bug.
 ## Commands
 
 ```bash
-npm test             # Vitest (jsdom)
+npm test             # unit tests: Vitest (jsdom)
 npm run test:watch
-npm run check        # typecheck + lint + format check + tests; must pass before committing
+npm run test:e2e     # build, then run e2e/ in real browsers (npx playwright install first)
+npm run check        # typecheck + lint + format check + unit + e2e; must pass before committing
 npm run build        # tsup -> dist/
 ```
