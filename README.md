@@ -39,6 +39,7 @@ Requires React 18 or newer.
 - [`usePageVisibility`](#usepagevisibility): know when the tab is hidden
 - [`useIdle`](#useidle): know when the user stops interacting
 - [`usePermission`](#usepermission): whether a browser permission is granted
+- [`useIsClient`](#useisclient): render browser-only content without a hydration mismatch
 
 ---
 
@@ -1152,5 +1153,32 @@ function LocationButton({ onLocate }: { onLocate: () => void }) {
     return <p>Location is blocked. Allow it in your browser's site settings.</p>;
   }
   return <button onClick={onLocate}>Use my location</button>;
+}
+```
+
+---
+
+### `useIsClient`
+
+```ts
+function useIsClient(): boolean;
+```
+
+Returns `false` during server rendering and on the first render while hydrating, then `true`.
+Use it to render content that only makes sense in the browser, such as something that reads
+`localStorage` or the user's time zone, without the server's HTML and the first client render
+disagreeing.
+
+In an app without server rendering it is `true` from the very first render, so unlike the
+common `useEffect` version it costs no extra render.
+
+```tsx
+import { useIsClient } from "react-honey-hooks";
+
+function LocalTime({ date }: { date: Date }) {
+  const isClient = useIsClient();
+
+  // The server doesn't know the user's time zone, so it renders a placeholder.
+  return <time>{isClient ? date.toLocaleTimeString() : "--:--"}</time>;
 }
 ```

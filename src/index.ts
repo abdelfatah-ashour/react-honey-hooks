@@ -24,6 +24,7 @@ export { useHotkey, type HotkeyOptions } from "./useHotkey";
 export { useHover } from "./useHover";
 export { useIdle } from "./useIdle";
 export { useInView, type InViewOptions } from "./useInView";
+export { useIsClient } from "./useIsClient";
 export { useInterval } from "./useInterval";
 export { useLocalStorage, type SetStoredValue } from "./useLocalStorage";
 export { useLongPress, type LongPressOptions } from "./useLongPress";
