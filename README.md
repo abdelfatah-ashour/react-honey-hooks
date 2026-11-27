@@ -14,6 +14,7 @@ Requires React 18 or newer.
 
 - [`useQuery`](#usequery): read the URL's query params
 - [`useQueryState`](#usequerystate): read and update the URL's query params
+- [`useAsync`](#useasync): run async work, keeping only the newest result
 - [`useUndoState`](#useundostate): state with undo and redo
 - [`useCountdown`](#usecountdown): count down to a date
 - [`useBroadcastChannel`](#usebroadcastchannel): message other tabs of your site
@@ -127,6 +128,59 @@ function Pagination() {
       Next page
     </button>
   );
+}
+```
+
+---
+
+### `useAsync`
+
+```ts
+function useAsync<A extends unknown[], R>(
+  fn: (signal: AbortSignal, ...args: A) => Promise<R>,
+): AsyncResult<A, R>;
+
+interface AsyncResult<A extends unknown[], R> {
+  readonly status: "idle" | "pending" | "success" | "error";
+  readonly data: R | undefined; // the last successful result
+  readonly error: Error | undefined; // why the last call failed
+  readonly run: (...args: A) => Promise<R | undefined>;
+  readonly cancel: () => void;
+}
+```
+
+Runs async work when you call `run`, and tracks its status, result and error.
+
+- `fn` receives an `AbortSignal` first: pass it to `fetch` so abandoned requests stop.
+- Starting a new call aborts the one in progress, and only the newest call's result counts, so
+  a slow early response can't overwrite a newer one.
+- `data` keeps the last successful result while a new call is pending, so the page doesn't
+  flash empty. `error` is cleared by the next success.
+- `run` resolves to the result, or to `undefined` if the call failed, was superseded or was
+  cancelled. It never rejects, so you don't need `catch`.
+- `cancel` aborts the call in progress and goes back to the status before it. Unmounting aborts
+  it too.
+- The latest `fn` is always used, and `run` and `cancel` keep their identity.
+
+To load when a value changes, call `run` from an effect:
+
+```tsx
+import { useEffect } from "react";
+import { useAsync } from "react-honey-hooks";
+
+function UserCard({ id }: { id: string }) {
+  const { status, data, error, run } = useAsync(async (signal, userId: string) => {
+    const response = await fetch(`/api/users/${userId}`, { signal });
+    if (!response.ok) throw new Error(`Request failed: ${String(response.status)}`);
+    return (await response.json()) as User;
+  });
+
+  useEffect(() => {
+    void run(id);
+  }, [run, id]);
+
+  if (status === "error") return <p role="alert">{error?.message}</p>;
+  return <p>{data ? data.name : "Loading…"}</p>;
 }
 ```
 
