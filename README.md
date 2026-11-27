@@ -15,6 +15,7 @@ Requires React 18 or newer.
 - [`useQuery`](#usequery): read the URL's query params
 - [`useQueryState`](#usequerystate): read and update the URL's query params
 - [`useAsync`](#useasync): run async work, keeping only the newest result
+- [`useScript`](#usescript): load an external script once
 - [`useUndoState`](#useundostate): state with undo and redo
 - [`useCountdown`](#usecountdown): count down to a date
 - [`useBroadcastChannel`](#usebroadcastchannel): message other tabs of your site
@@ -181,6 +182,39 @@ function UserCard({ id }: { id: string }) {
 
   if (status === "error") return <p role="alert">{error?.message}</p>;
   return <p>{data ? data.name : "Loading…"}</p>;
+}
+```
+
+---
+
+### `useScript`
+
+```ts
+function useScript(src: string | null): ScriptStatus;
+
+type ScriptStatus = "idle" | "loading" | "ready" | "error";
+```
+
+Loads a third-party script, such as a maps, payments or chat widget, and tells you when it is
+ready to use.
+
+- Each `src` gets one async `<script>` tag, shared by every component that asks for it, so
+  rendering ten maps loads the library once.
+- A `<script>` the page already has for `src`, for example in its HTML, counts as `"ready"`.
+- Pass `null` to load nothing yet (`"idle"`), for example until the user opens the widget.
+- The tag stays when components unmount: removing it wouldn't unload the code. A script that
+  failed stays failed until the page reloads.
+- During server rendering it is `"loading"` (or `"idle"` for `null`).
+
+```tsx
+import { useScript } from "react-honey-hooks";
+
+function Map({ center }: { center: LatLng }) {
+  const status = useScript("https://maps.example.com/sdk.js");
+
+  if (status === "error") return <p>The map couldn't load.</p>;
+  if (status !== "ready") return <p>Loading map…</p>;
+  return <MapView center={center} />;
 }
 ```
 
