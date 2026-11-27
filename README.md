@@ -16,6 +16,7 @@ Requires React 18 or newer.
 - [`useClickOutside`](#useclickoutside): detect presses outside an element
 - [`useDebouncedValue`](#usedebouncedvalue): a value that waits for changes to settle
 - [`useDebouncedCallback`](#usedebouncedcallback): a function that waits for calls to stop
+- [`useEventListener`](#useeventlistener): listen to any DOM event, typed
 - [`useInterval`](#useinterval): run something every few milliseconds
 - [`useTimeout`](#usetimeout): run something once after a delay
 - [`useLocalStorage`](#uselocalstorage): state that survives reloads and syncs across tabs
@@ -235,6 +236,69 @@ function NoteEditor({ save }: { save: (text: string) => void }) {
       }}
       onBlur={saveSoon.flush}
     />
+  );
+}
+```
+
+---
+
+### `useEventListener`
+
+```ts
+// window (the default), document, or an element ref; the event type is checked against it
+function useEventListener<K extends keyof WindowEventMap>(
+  type: K,
+  handler: (event: WindowEventMap[K]) => void,
+  options?: EventListenerHookOptions & { target?: Window },
+): void;
+function useEventListener<K extends keyof DocumentEventMap>(
+  type: K,
+  handler: (event: DocumentEventMap[K]) => void,
+  options: EventListenerHookOptions & { target: Document },
+): void;
+function useEventListener<K extends keyof HTMLElementEventMap>(
+  type: K,
+  handler: (event: HTMLElementEventMap[K]) => void,
+  options: EventListenerHookOptions & { target: RefObject<HTMLElement | null> },
+): void;
+
+interface EventListenerHookOptions {
+  enabled?: boolean; // defaults to true
+  capture?: boolean;
+  passive?: boolean;
+  once?: boolean;
+}
+```
+
+Adds an event listener for as long as the component is mounted. The handler receives the
+right event type (`KeyboardEvent` for `"keydown"`, and so on), and an event name the target
+doesn't have is a compile error. The latest `handler` is always called without
+re-subscribing, so inline functions are fine. The listener moves when the ref's element,
+`type` or options change, and `{ enabled: false }` removes it.
+
+```tsx
+import { useRef, useState } from "react";
+import { useEventListener } from "react-honey-hooks";
+
+function Gallery({ onClose }: { onClose: () => void }) {
+  const [scrolled, setScrolled] = useState(false);
+  const listRef = useRef<HTMLUListElement>(null);
+
+  useEventListener("keydown", (event) => {
+    if (event.key === "Escape") onClose();
+  });
+  useEventListener(
+    "scroll",
+    () => {
+      setScrolled((listRef.current?.scrollTop ?? 0) > 0);
+    },
+    { target: listRef, passive: true },
+  );
+
+  return (
+    <ul ref={listRef} className={scrolled ? "with-shadow" : undefined}>
+      {/* … */}
+    </ul>
   );
 }
 ```

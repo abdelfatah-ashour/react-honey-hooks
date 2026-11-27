@@ -12,6 +12,11 @@ export {
 } from "./useCountdown";
 export { useDebouncedCallback, type DebouncedFunction } from "./useDebouncedCallback";
 export { useDebouncedValue } from "./useDebouncedValue";
+export {
+  useEventListener,
+  type EventListenerHookOptions,
+  type EventListenerTarget,
+} from "./useEventListener";
 export { useInterval } from "./useInterval";
 export { useLocalStorage, type SetStoredValue } from "./useLocalStorage";
 export { useMediaQuery } from "./useMediaQuery";
