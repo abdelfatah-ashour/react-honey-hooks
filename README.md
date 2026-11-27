@@ -1,187 +1,148 @@
-# 🍯 **React Honey Hooks**
+# 🍯 React Honey Hooks
 
-A React Hooks version of the Honey Hooks library
+Small, typed React hooks. Tree-shakeable, zero dependencies, ESM + CJS, SSR-safe.
 
-> #### 🌴 **Support Tree Shaking**
-
-<br/>
-
-#### **Hooks available**:
-
-- **<a href="#use-query">useQuery</a>**
-- **<a href="#use-count-down-date">useCountDownDate</a>**
-- **<a href="#use-out-side-element">useOutsideElement</a>**
-
-#### **Next Hooks**
-
-- 🔥 useTranslate
-- 🔥 useMouse
-
-<br/>
-
-#### **Content Table**
-
-- <a href="#use-query">useQuery</a>
-- <a href="#use-count-down-date">useCountDownDate</a>
-- <a href="#use-out-side-element">useOutsideElement</a>
-
-<br/>
-
-<h3 id="use-query"><b>🍯 useQuery</b></h3>
-<br/>
-
-```
-- First we navigate to the page
-- Example: https://example.com?query=value
-- Then we use the hook to get the query value
+```bash
+npm install react-honey-hooks
 ```
 
-### Javascript
+Requires React 18 or newer.
 
-```javascript
-// ES5
-var useQuery = require("react-honey-hooks").useQuery;
-var query = useQuery();
+## Hooks
 
-// https://abc.com?query=value
-console.log(query); // {query: "value"}
+- [`useQuery`](#usequery): read the URL's query params
+- [`useCountdown`](#usecountdown): count down to a date
+- [`useClickOutside`](#useclickoutside): detect presses outside an element
 
-// or
+---
 
-var honey = require("react-honey-hooks");
+### `useQuery`
 
-var query = honey.useQuery();
-// https://abc.com?query=value
-console.log(query); // {query: "value"}
+```ts
+function useQuery(): Readonly<Record<string, string>>;
+```
 
-// ES6
+Returns the current URL's query string as an object. It re-reads on browser back/forward
+navigation (`popstate`) and keeps the same object identity while the URL is unchanged, so
+it is safe to use in effect dependencies. During server rendering it returns `{}`.
+
+```tsx
 import { useQuery } from "react-honey-hooks";
-function Example() {
-  // https://abc.com?query=value
-  const query = useQuery();
-  console.log(query); // {query: "value"}
 
+// https://example.com/products?category=books&sort=price
+function Products() {
+  const { category = "all", sort } = useQuery();
   return (
-    <>
-      <h3> 🍯 useQuery:</h3>
-      <p>Query value: {JSON.stringify({ query }, null, 2)}</p>
-    </>
+    <p>
+      Showing {category}, sorted by {sort ?? "relevance"}
+    </p>
   );
 }
 ```
 
-### TypeScript
+For repeated keys (`?tag=a&tag=b`) the last value wins. The hook does not observe
+`history.pushState` calls made by client-side routers; use your router's own hook there.
 
-```typescript
-import { useQuery, ParamsType } from "react-honey-hooks";
-function Example() {
-  const query = useQuery<ParamsType>(); // {query: "value"}
+---
+
+### `useCountdown`
+
+```ts
+function useCountdown(target: Date | number | string): Countdown;
+
+interface Countdown {
+  days: number;
+  hours: number;
+  minutes: number;
+  seconds: number;
+  totalMilliseconds: number;
+  isExpired: boolean;
+}
+```
+
+Updates once per second until `target` is reached, then stops its timer. Remaining time
+never goes negative; a past or invalid date is reported as expired.
+
+```tsx
+import { useCountdown } from "react-honey-hooks";
+
+const LAUNCH = new Date("2027-01-01T00:00:00Z");
+
+function Launch() {
+  const { days, hours, minutes, seconds, isExpired } = useCountdown(LAUNCH);
+
+  if (isExpired) return <p>We have lift-off 🚀</p>;
   return (
-    <>
-      <h3>useQuery: 🍯</h3>
-      <p>Query value: {JSON.stringify(query, null, 2)}</p>
-    </>
+    <p>
+      {days}d {hours}h {minutes}m {seconds}s
+    </p>
   );
 }
 ```
 
-<br/>
+---
 
-<h3 id="use-count-down-date"><b>🍯 useCountDownDate</b></h3>
-<br/>
+### `useClickOutside`
 
-### JavaScript
-
-```javascript
-import { useCountdownDate } from "react-honey-hooks";
-function Example() {
-  const countDown = useCountdownDate(Date.now()); // {days: 0, hours: 0, minutes: 0, seconds: 0}
-  return (
-    <>
-      <h3> 🍯 useCountdownDate:</h3>
-      <p>DownCount Date value: {JSON.stringify(countDown, null, 2)}</p>
-    </>
-  );
-}
+```ts
+function useClickOutside(
+  ref: RefObject<Element | null>,
+  handler: (event: MouseEvent | TouchEvent) => void,
+): void;
 ```
 
-### TypeScript
+Calls `handler` when a mouse press or touch starts outside the referenced element. Presses on
+the element or its descendants are ignored. The latest `handler` is always used, so inline
+functions are fine and no `useCallback` is needed.
 
-```typescript
-import { useCountdownDate, DownCountDateType } from "react-honey-hooks";
-function Example() {
-  const countDown: DownCountDateType = useCountdownDate(Date.now()); // {days: 0, hours: 0, minutes: 0, seconds: 0}
+```tsx
+import { useRef, useState } from "react";
+import { useClickOutside } from "react-honey-hooks";
 
-  return (
-    <>
-      <h3> 🍯 useCountdownDate:</h3>
-      <p>DownCount Date value: {JSON.stringify(countDown, null, 2)}</p>
-    </>
-  );
-}
-```
+function Dropdown() {
+  const [open, setOpen] = useState(false);
+  const menuRef = useRef<HTMLDivElement>(null);
 
-<br/>
-
-<h3 id="use-out-side-element"> <b>🍯 useOutsideElement</b></h3>
-<br/>
-
-### JavaScript
-
-```javascript
-import { useRef } from "react";
-import { useCountdownDate } from "react-honey-hooks";
-
-function Example() {
-  const refElem = useRef(null);
-
-  useOutsideElement({
-    ref: refElem,
-    callback: _onClick
+  useClickOutside(menuRef, () => {
+    setOpen(false);
   });
 
-  function _onClick() {
-    // Do something
-    alert("clicked outside paragraph");
-  }
-
   return (
-    <>
-      <h3> 🍯 useOutsideElement:</h3>
-      <p ref={refElem} onClick={_onClick}>
-        click outside paragraph
-      </p>
-    </>
+    <div ref={menuRef}>
+      <button onClick={() => setOpen((o) => !o)}>Menu</button>
+      {open && <ul>{/* … */}</ul>}
+    </div>
   );
 }
 ```
 
-### TypeScript
+---
 
-```typescript
-import { useRef, RefObject } from "react";
-import { useCountdownDate } from "react-honey-hooks";
+## Migrating from v1
 
-function Example() {
-  const refElem = useRef<RefObject<HTMLElement>>(null);
+| v1                                     | v2                                                                           |
+| -------------------------------------- | ---------------------------------------------------------------------------- |
+| `useCountdownDate(date)`               | `useCountdown(date)`, which also returns `totalMilliseconds` and `isExpired` |
+| `useOnClickOutSide(ref, handler)`      | `useClickOutside(ref, handler)`                                              |
+| `useOutsideElement({ ref, callback })` | `useClickOutside(ref, callback)`                                             |
+| `useQuery()`                           | `useQuery()`, which now updates on back/forward navigation                   |
+| `ParamsType`, `CountDownDateType`      | `QueryParams`, `Countdown`                                                   |
 
-  useOutsideElement({
-    ref: refElem,
-    callback: _onClick
-  });
+Other changes:
 
-  function _onClick() {
-    // Do something
-    alert("clicked outside paragraph");
-  }
+- React 18 or newer is required (the hooks use `useSyncExternalStore`).
+- A past or invalid date no longer logs a console error. It is reported as `isExpired: true`.
+- `useClickOutside` now listens for touches as well as mouse presses.
 
-  return (
-    <>
-      <h3> 🍯 useOutsideElement:</h3>
-      <p ref={refElem} onClick={_onClick}>
-        click outside paragraph
-      </p>
-    </>
-  );
-}
+## Development
+
+```bash
+npm install
+npm test          # Vitest, jsdom
+npm run check     # typecheck + lint + format check + tests
+npm run build     # tsup → dist/ (ESM, CJS, .d.ts)
 ```
+
+## License
+
+MIT
