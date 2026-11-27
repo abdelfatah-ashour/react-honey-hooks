@@ -18,6 +18,7 @@ Requires React 18 or newer.
 - [`useDebouncedCallback`](#usedebouncedcallback): a function that waits for calls to stop
 - [`useEventListener`](#useeventlistener): listen to any DOM event, typed
 - [`useHotkey`](#usehotkey): keyboard shortcuts such as `mod+k`
+- [`useInView`](#useinview): know when an element scrolls into view
 - [`useInterval`](#useinterval): run something every few milliseconds
 - [`useTimeout`](#usetimeout): run something once after a delay
 - [`useLocalStorage`](#uselocalstorage): state that survives reloads and syncs across tabs
@@ -357,6 +358,40 @@ function Editor({ save }: { save: () => void }) {
   );
 
   return paletteOpen ? <CommandPalette /> : <Document />;
+}
+```
+
+---
+
+### `useInView`
+
+```ts
+function useInView(ref: RefObject<Element | null>, options?: InViewOptions): boolean;
+
+interface InViewOptions {
+  once?: boolean; // stay true after the first time in view
+  root?: Element | Document | null; // defaults to the viewport
+  rootMargin?: string; // e.g. "200px 0px" to trigger early
+  threshold?: number | readonly number[]; // 0 (any pixel, the default) to 1 (all of it)
+}
+```
+
+Returns whether the referenced element is in view, using an `IntersectionObserver`. It is
+`false` until the first observation, during server rendering and while the ref holds no
+element. With `once` it stays `true` after the element first appears, which suits lazy
+loading and entrance animations. The observer follows the ref to a new element and picks up
+changed options (an inline `threshold` array is fine), and disconnects on unmount. In the rare
+browser without `IntersectionObserver` it returns `true`, so content is never hidden forever.
+
+```tsx
+import { useRef } from "react";
+import { useInView } from "react-honey-hooks";
+
+function LazyChart({ data }: { data: readonly number[] }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const visible = useInView(ref, { once: true, rootMargin: "200px" });
+
+  return <div ref={ref}>{visible ? <Chart data={data} /> : <ChartSkeleton />}</div>;
 }
 ```
 
