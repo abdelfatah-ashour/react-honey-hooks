@@ -1,6 +1,6 @@
 import { renderHook, waitFor } from "@testing-library/react";
 import { createElement } from "react";
-import { renderToString } from "react-dom/server";
+import { renderOnServer } from "./testing/renderOnServer";
 import { useBroadcastChannel } from "./useBroadcastChannel";
 
 afterEach(() => {
@@ -98,7 +98,7 @@ describe("useBroadcastChannel", () => {
       return createElement("span", null, "cart");
     }
 
-    expect(renderToString(createElement(CartBadge))).toBe("<span>cart</span>");
+    expect(renderOnServer(createElement(CartBadge))).toBe("<span>cart</span>");
   });
 
   it("does nothing in browsers without BroadcastChannel", () => {

@@ -1,6 +1,6 @@
 import { act, renderHook } from "@testing-library/react";
 import { createElement } from "react";
-import { renderToString } from "react-dom/server";
+import { renderOnServer } from "./testing/renderOnServer";
 import { installMatchMedia } from "./testing/installMatchMedia";
 import { usePrefersReducedMotion } from "./usePrefersReducedMotion";
 
@@ -37,6 +37,6 @@ describe("usePrefersReducedMotion", () => {
       return createElement("p", null, usePrefersReducedMotion() ? "still" : "animated");
     }
 
-    expect(renderToString(createElement(Animation))).toBe("<p>animated</p>");
+    expect(renderOnServer(createElement(Animation))).toBe("<p>animated</p>");
   });
 });

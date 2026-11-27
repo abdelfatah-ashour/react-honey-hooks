@@ -1,6 +1,6 @@
 import { act, renderHook } from "@testing-library/react";
 import { createElement } from "react";
-import { renderToString } from "react-dom/server";
+import { renderOnServer } from "./testing/renderOnServer";
 import { installMatchMedia } from "./testing/installMatchMedia";
 import { usePrefersColorScheme } from "./usePrefersColorScheme";
 
@@ -37,6 +37,6 @@ describe("usePrefersColorScheme", () => {
       return createElement("p", null, usePrefersColorScheme());
     }
 
-    expect(renderToString(createElement(Theme))).toBe("<p>light</p>");
+    expect(renderOnServer(createElement(Theme))).toBe("<p>light</p>");
   });
 });
