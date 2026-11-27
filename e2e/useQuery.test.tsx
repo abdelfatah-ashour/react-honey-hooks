@@ -50,7 +50,9 @@ describe("useQuery in a real browser", () => {
   });
 
   it("follows real back and forward navigation", async () => {
-    window.history.replaceState(null, "", "?page=1");
+    // Both entries are pushed: under load, WebKit's Back in a test iframe can return to an
+    // entry as it was before a replaceState, so Back must land on an entry this test pushed.
+    window.history.pushState(null, "", "?page=1");
     window.history.pushState(null, "", "?page=2");
     const screen = await render(<Filters />);
     await expect.element(screen.getByTestId("page")).toHaveTextContent("2");
