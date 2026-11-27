@@ -1,7 +1,7 @@
 # 🍯 React Honey Hooks
 
 Small, typed React hooks. Zero dependencies, ESM + CJS, SSR-safe, and tested in real
-Chromium, Firefox and WebKit. Tree-shakeable: all 16 hooks are about 3 kB minified and
+Chromium, Firefox and WebKit. Tree-shakeable: all 21 hooks are about 3.5 kB minified and
 gzipped, and your bundle only includes the ones you import.
 
 ```bash
@@ -15,6 +15,7 @@ Requires React 18 or newer.
 - [`useQuery`](#usequery): read the URL's query params
 - [`useQueryState`](#usequerystate): read and update the URL's query params
 - [`useCountdown`](#usecountdown): count down to a date
+- [`useBroadcastChannel`](#usebroadcastchannel): message other tabs of your site
 - [`useClickOutside`](#useclickoutside): detect presses outside an element
 - [`useCopyToClipboard`](#usecopytoclipboard): copy text and show that it worked
 - [`useDebouncedValue`](#usedebouncedvalue): a value that waits for changes to settle
@@ -28,6 +29,10 @@ Requires React 18 or newer.
 - [`useMediaQuery`](#usemediaquery): match a CSS media query
 - [`useOnlineStatus`](#useonlinestatus): know when the network drops
 - [`usePageVisibility`](#usepagevisibility): know when the tab is hidden
+- [`usePrefersColorScheme`](#usepreferscolorscheme): follow the system's light or dark mode
+- [`usePrefersReducedMotion`](#useprefersreducedmotion): respect the reduced-motion setting
+- [`usePrevious`](#useprevious): the value before it last changed
+- [`useToggle`](#usetoggle): a boolean with `toggle`, `setTrue` and `setFalse`
 
 ---
 
@@ -160,6 +165,46 @@ function Launch() {
       {days}d {hours}h {minutes}m {seconds}s
     </p>
   );
+}
+```
+
+---
+
+### `useBroadcastChannel`
+
+```ts
+function useBroadcastChannel<T>(
+  name: string,
+  onMessage?: (message: T) => void,
+): (message: T) => void;
+```
+
+Sends and receives messages on the [`BroadcastChannel`](https://developer.mozilla.org/docs/Web/API/BroadcastChannel)
+called `name`, which links every tab, window and iframe of the same origin. It returns a `post`
+function that keeps its identity for the component's life. The latest `onMessage` receives
+messages from everyone else on the channel, but not the hook's own, so it doesn't need to be
+memoised.
+
+- Changing `name` moves to that channel, and unmounting closes it.
+- Messages are copied with the structured clone algorithm, so send plain data (no functions or
+  class instances). They are not type-checked: `T` is what you expect other tabs to send.
+- On the server, before mount, after unmount and in browsers without `BroadcastChannel`, `post`
+  does nothing.
+
+```tsx
+import { useState } from "react";
+import { useBroadcastChannel } from "react-honey-hooks";
+
+function CartBadge() {
+  const [count, setCount] = useState(0);
+  const post = useBroadcastChannel<number>("cart", setCount); // other tabs update this one
+
+  function add() {
+    setCount(count + 1);
+    post(count + 1); // and this one updates the others
+  }
+
+  return <button onClick={add}>Cart: {count}</button>;
 }
 ```
 

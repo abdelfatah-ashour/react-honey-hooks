@@ -1,3 +1,4 @@
+export { useBroadcastChannel } from "./useBroadcastChannel";
 export {
   useClickOutside,
   type ClickOutsideEvent,
