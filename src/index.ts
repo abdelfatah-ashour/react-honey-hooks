@@ -25,6 +25,7 @@ export { useLocalStorage, type SetStoredValue } from "./useLocalStorage";
 export { useMediaQuery } from "./useMediaQuery";
 export { useOnlineStatus } from "./useOnlineStatus";
 export { usePageVisibility } from "./usePageVisibility";
+export { usePrevious } from "./usePrevious";
 export { useQuery, type Query, type QueryParams } from "./useQuery";
 export {
   useQueryState,
