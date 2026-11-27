@@ -28,6 +28,7 @@ Requires React 18 or newer.
 - [`useLocalStorage`](#uselocalstorage): state that survives reloads and syncs across tabs
 - [`useSessionStorage`](#usesessionstorage): state that survives reloads in this tab only
 - [`useMediaQuery`](#usemediaquery): match a CSS media query
+- [`useWindowSize`](#usewindowsize): the window's width and height
 - [`useOnlineStatus`](#useonlinestatus): know when the network drops
 - [`usePageVisibility`](#usepagevisibility): know when the tab is hidden
 
@@ -685,6 +686,37 @@ function Navigation() {
   const reduceMotion = useMediaQuery("(prefers-reduced-motion: reduce)");
 
   return isWide ? <Sidebar animated={!reduceMotion} /> : <BottomTabs />;
+}
+```
+
+---
+
+### `useWindowSize`
+
+```ts
+function useWindowSize(serverSize?: WindowSize): WindowSize;
+
+interface WindowSize {
+  readonly width: number;
+  readonly height: number;
+}
+```
+
+Returns the window's `innerWidth` and `innerHeight`, which include any scrollbar, and
+re-renders when the window is resized. It returns the same object while the size is unchanged.
+
+During server rendering and on the first render while hydrating it returns `serverSize`
+(`0 × 0` by default), then the real size, so hydration never mismatches. To switch layouts at
+a breakpoint, prefer [`useMediaQuery`](#usemediaquery), which only re-renders when the
+breakpoint is crossed.
+
+```tsx
+import { useWindowSize } from "react-honey-hooks";
+
+function Confetti() {
+  const { width, height } = useWindowSize();
+
+  return <canvas width={width} height={height} />;
 }
 ```
 

@@ -35,3 +35,4 @@ export {
 } from "./useQueryState";
 export { useSessionStorage } from "./useSessionStorage";
 export { useTimeout } from "./useTimeout";
+export { useWindowSize, type WindowSize } from "./useWindowSize";
