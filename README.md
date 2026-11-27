@@ -14,6 +14,7 @@ Requires React 18 or newer.
 - [`useQuery`](#usequery): read the URL's query params
 - [`useCountdown`](#usecountdown): count down to a date
 - [`useClickOutside`](#useclickoutside): detect presses outside an element
+- [`useMediaQuery`](#usemediaquery): match a CSS media query
 
 ---
 
@@ -153,6 +154,30 @@ function Dropdown() {
       {open && createPortal(<ul ref={menuRef}>{/* … */}</ul>, document.body)}
     </>
   );
+}
+```
+
+---
+
+### `useMediaQuery`
+
+```ts
+function useMediaQuery(query: string, defaultValue?: boolean): boolean;
+```
+
+Returns whether the CSS media `query` matches, and re-renders when it starts or stops
+matching (for example as the window is resized). Changing `query` between renders switches
+to the new query. An invalid query never matches. During server rendering, and on the first
+render while hydrating, it returns `defaultValue` (`false` unless given).
+
+```tsx
+import { useMediaQuery } from "react-honey-hooks";
+
+function Navigation() {
+  const isWide = useMediaQuery("(min-width: 768px)");
+  const reduceMotion = useMediaQuery("(prefers-reduced-motion: reduce)");
+
+  return isWide ? <Sidebar animated={!reduceMotion} /> : <BottomTabs />;
 }
 ```
 
