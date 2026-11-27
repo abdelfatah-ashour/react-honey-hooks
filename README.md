@@ -17,6 +17,7 @@ Requires React 18 or newer.
 - [`useCountdown`](#usecountdown): count down to a date
 - [`useClickOutside`](#useclickoutside): detect presses outside an element
 - [`useScrollLock`](#usescrolllock): stop the page scrolling behind a modal
+- [`useDocumentTitle`](#usedocumenttitle): set the browser tab's title
 - [`useCopyToClipboard`](#usecopytoclipboard): copy text and show that it worked
 - [`useDebouncedValue`](#usedebouncedvalue): a value that waits for changes to settle
 - [`useDebouncedCallback`](#usedebouncedcallback): a function that waits for calls to stop
@@ -247,6 +248,38 @@ function Drawer({ open, children }: { open: boolean; children: React.ReactNode }
   useScrollLock(open);
 
   return open ? <aside className="drawer">{children}</aside> : null;
+}
+```
+
+---
+
+### `useDocumentTitle`
+
+```ts
+function useDocumentTitle(title: string, options?: DocumentTitleOptions): void;
+
+interface DocumentTitleOptions {
+  restoreOnUnmount?: boolean; // default false
+}
+```
+
+Sets the browser tab's title, and updates it whenever `title` changes. With
+`restoreOnUnmount`, the title from before the component mounted comes back when it unmounts,
+which suits a temporary title such as an unread count or "Unsaved changes". The option is
+read when the component unmounts. It does nothing during server rendering.
+
+In React 19 you can also render `<title>` anywhere in your components. This hook also works in
+React 18, and can restore the previous title.
+
+```tsx
+import { useDocumentTitle } from "react-honey-hooks";
+
+function Inbox({ unread }: { unread: number }) {
+  useDocumentTitle(unread > 0 ? `Inbox (${String(unread)})` : "Inbox", {
+    restoreOnUnmount: true,
+  });
+
+  return <MessageList />;
 }
 ```
 

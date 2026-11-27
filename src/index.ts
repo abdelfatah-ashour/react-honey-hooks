@@ -13,6 +13,7 @@ export {
 } from "./useCountdown";
 export { useDebouncedCallback, type DebouncedFunction } from "./useDebouncedCallback";
 export { useDebouncedValue } from "./useDebouncedValue";
+export { useDocumentTitle, type DocumentTitleOptions } from "./useDocumentTitle";
 export { useElementSize, type ElementSize, type ElementSizeOptions } from "./useElementSize";
 export {
   useEventListener,
