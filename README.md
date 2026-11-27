@@ -14,6 +14,7 @@ Requires React 18 or newer.
 
 - [`useQuery`](#usequery): read the URL's query params
 - [`useQueryState`](#usequerystate): read and update the URL's query params
+- [`useUndoState`](#useundostate): state with undo and redo
 - [`useCountdown`](#usecountdown): count down to a date
 - [`useClickOutside`](#useclickoutside): detect presses outside an element
 - [`useScrollLock`](#usescrolllock): stop the page scrolling behind a modal
@@ -119,6 +120,66 @@ function Pagination() {
     >
       Next page
     </button>
+  );
+}
+```
+
+---
+
+### `useUndoState`
+
+```ts
+function useUndoState<T>(
+  initial: T | (() => T),
+  options?: UndoStateOptions,
+): readonly [value: T, set: SetUndoState<T>, controls: UndoControls];
+
+type SetUndoState<T> = (value: T | ((previous: T) => T)) => void;
+
+interface UndoStateOptions {
+  limit?: number; // how many steps can be undone, default 100
+}
+
+interface UndoControls {
+  readonly undo: () => void;
+  readonly redo: () => void;
+  readonly canUndo: boolean;
+  readonly canRedo: boolean;
+  readonly clearHistory: () => void; // forget the steps, keep the value
+}
+```
+
+Works like `useState`, and remembers earlier values so they can be undone and redone.
+
+- Each `set` that changes the value adds a step to undo. Setting the value it already has adds
+  nothing, and setting a new value after undoing clears the steps to redo.
+- Up to `limit` steps are kept, dropping the oldest first. A limit of 0 keeps no history.
+- `initial` and `set` accept functions just like `useState`, so to store a function, wrap it:
+  `set(() => myFunction)`.
+- `set`, `undo`, `redo` and `clearHistory` keep their identity, so they are safe in effect
+  dependencies and memoised children.
+
+```tsx
+import { useUndoState } from "react-honey-hooks";
+
+function TitleEditor() {
+  const [title, setTitle, { undo, redo, canUndo, canRedo }] = useUndoState("Untitled");
+
+  return (
+    <>
+      <input
+        value={title}
+        onChange={(event) => {
+          setTitle(event.target.value);
+        }}
+      />
+      <button onClick={undo} disabled={!canUndo}>
+        Undo
+      </button>
+      <button onClick={redo} disabled={!canRedo}>
+        Redo
+      </button>
+    </>
   );
 }
 ```

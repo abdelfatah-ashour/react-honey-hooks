@@ -46,4 +46,10 @@ export {
   type ThrottleOptions,
 } from "./useThrottledCallback";
 export { useTimeout } from "./useTimeout";
+export {
+  useUndoState,
+  type SetUndoState,
+  type UndoControls,
+  type UndoStateOptions,
+} from "./useUndoState";
 export { useWindowSize, type WindowSize } from "./useWindowSize";
