@@ -694,6 +694,43 @@ function Price({ amount }: { amount: number }) {
 
 ---
 
+### `useToggle`
+
+```ts
+function useToggle(initial?: boolean): readonly [boolean, ToggleActions];
+
+interface ToggleActions {
+  toggle: () => void;
+  setTrue: () => void;
+  setFalse: () => void;
+  set: (value: boolean) => void;
+}
+```
+
+A boolean state with named setters, starting at `initial` (`false` unless given). The actions
+object and its functions never change, so they are safe to pass to memoised children or list in
+effect dependencies. `toggle` ignores its arguments, so it can be passed straight to `onClick`,
+and calling it several times in one event flips the value once per call.
+
+```tsx
+import { useToggle } from "react-honey-hooks";
+
+function Faq() {
+  const [open, { toggle, setFalse }] = useToggle();
+
+  return (
+    <>
+      <button aria-expanded={open} onClick={toggle}>
+        Shipping
+      </button>
+      {open && <Answer onClose={setFalse} />}
+    </>
+  );
+}
+```
+
+---
+
 ## Migrating from v2
 
 | v2                                                   | v3                                                                                     |

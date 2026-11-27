@@ -34,3 +34,4 @@ export {
   type SetQueryOptions,
 } from "./useQueryState";
 export { useTimeout } from "./useTimeout";
+export { useToggle, type ToggleActions } from "./useToggle";
