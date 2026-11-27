@@ -17,6 +17,7 @@ Requires React 18 or newer.
 - [`useAsync`](#useasync): run async work, keeping only the newest result
 - [`useScript`](#usescript): load an external script once
 - [`useUndoState`](#useundostate): state with undo and redo
+- [`useStep`](#usestep): move through the steps of a wizard
 - [`useCountdown`](#usecountdown): count down to a date
 - [`useBroadcastChannel`](#usebroadcastchannel): message other tabs of your site
 - [`useClickOutside`](#useclickoutside): detect presses outside an element
@@ -273,6 +274,57 @@ function TitleEditor() {
       </button>
       <button onClick={redo} disabled={!canRedo}>
         Redo
+      </button>
+    </>
+  );
+}
+```
+
+---
+
+### `useStep`
+
+```ts
+function useStep(count: number, options?: StepOptions): Steps;
+
+interface StepOptions {
+  initial?: number; // the step to start at, default 0
+}
+
+interface Steps {
+  readonly step: number; // counted from 0
+  readonly next: () => void;
+  readonly prev: () => void;
+  readonly goTo: (step: number) => void;
+  readonly isFirst: boolean;
+  readonly isLast: boolean;
+}
+```
+
+Tracks which of `count` steps is shown, for wizards, onboarding tours and carousels.
+
+- The step always stays in range: `next` on the last step and `prev` on the first do nothing,
+  and `goTo` moves to the nearest valid step (`NaN` is ignored).
+- If `count` shrinks, for example when an optional step is removed, the step moves to the new
+  last step instead of pointing past the end. A `count` below 1 means a single step.
+- `next`, `prev` and `goTo` keep their identity.
+
+```tsx
+import { useStep } from "react-honey-hooks";
+
+const pages = [<Account />, <Profile />, <Confirm />];
+
+function SignUpWizard() {
+  const { step, next, prev, isFirst, isLast } = useStep(pages.length);
+
+  return (
+    <>
+      {pages[step]}
+      <button onClick={prev} disabled={isFirst}>
+        Back
+      </button>
+      <button onClick={next} disabled={isLast}>
+        Next
       </button>
     </>
   );

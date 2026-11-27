@@ -48,6 +48,7 @@ export {
 export { useScript, type ScriptStatus } from "./useScript";
 export { useScrollLock } from "./useScrollLock";
 export { useSessionStorage } from "./useSessionStorage";
+export { useStep, type StepOptions, type Steps } from "./useStep";
 export {
   useThrottledCallback,
   type ThrottledFunction,
