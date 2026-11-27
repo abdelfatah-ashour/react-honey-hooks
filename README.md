@@ -21,6 +21,7 @@ Requires React 18 or newer.
 - [`useBroadcastChannel`](#usebroadcastchannel): message other tabs of your site
 - [`useClickOutside`](#useclickoutside): detect presses outside an element
 - [`useScrollLock`](#usescrolllock): stop the page scrolling behind a modal
+- [`useBeforeUnload`](#usebeforeunload): warn before leaving with unsaved changes
 - [`useDocumentTitle`](#usedocumenttitle): set the browser tab's title
 - [`useCopyToClipboard`](#usecopytoclipboard): copy text and show that it worked
 - [`useDebouncedValue`](#usedebouncedvalue): a value that waits for changes to settle
@@ -443,6 +444,42 @@ function Drawer({ open, children }: { open: boolean; children: React.ReactNode }
   useScrollLock(open);
 
   return open ? <aside className="drawer">{children}</aside> : null;
+}
+```
+
+---
+
+### `useBeforeUnload`
+
+```ts
+function useBeforeUnload(enabled?: boolean): void; // default true
+```
+
+While `enabled` is true, the browser asks the user to confirm before the page is closed,
+reloaded or left for another site, so unsaved work isn't lost by accident.
+
+- Browsers show their own wording; a custom message is no longer supported.
+- Only enable it while there really are unsaved changes: some browsers skip the warning on
+  pages the user never interacted with, and a page that always warns is annoying.
+- It doesn't cover navigation inside a single-page app, which never unloads the page; use your
+  router's blocking feature for that.
+
+```tsx
+import { useState } from "react";
+import { useBeforeUnload } from "react-honey-hooks";
+
+function CommentBox() {
+  const [draft, setDraft] = useState("");
+  useBeforeUnload(draft.trim() !== "");
+
+  return (
+    <textarea
+      value={draft}
+      onChange={(event) => {
+        setDraft(event.target.value);
+      }}
+    />
+  );
 }
 ```
 

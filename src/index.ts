@@ -1,4 +1,5 @@
 export { useAsync, type AsyncResult, type AsyncState, type AsyncStatus } from "./useAsync";
+export { useBeforeUnload } from "./useBeforeUnload";
 export { useBroadcastChannel } from "./useBroadcastChannel";
 export {
   useClickOutside,
