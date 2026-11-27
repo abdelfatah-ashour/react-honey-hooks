@@ -17,6 +17,7 @@ Requires React 18 or newer.
 - [`useDebouncedValue`](#usedebouncedvalue): a value that waits for changes to settle
 - [`useDebouncedCallback`](#usedebouncedcallback): a function that waits for calls to stop
 - [`useEventListener`](#useeventlistener): listen to any DOM event, typed
+- [`useHotkey`](#usehotkey): keyboard shortcuts such as `mod+k`
 - [`useInterval`](#useinterval): run something every few milliseconds
 - [`useTimeout`](#usetimeout): run something once after a delay
 - [`useLocalStorage`](#uselocalstorage): state that survives reloads and syncs across tabs
@@ -300,6 +301,62 @@ function Gallery({ onClose }: { onClose: () => void }) {
       {/* … */}
     </ul>
   );
+}
+```
+
+---
+
+### `useHotkey`
+
+```ts
+function useHotkey(
+  keys: string,
+  handler: (event: KeyboardEvent) => void,
+  options?: HotkeyOptions,
+): void;
+
+interface HotkeyOptions {
+  enabled?: boolean; // defaults to true
+  ignoreInputs?: boolean; // defaults to true
+}
+```
+
+Calls `handler` when a keyboard shortcut is pressed anywhere on the page.
+
+- `keys` is a key name, optionally after modifiers joined with `+`: `"Escape"`, `"/"`,
+  `"ctrl+s"`, `"mod+shift+k"`. Key names are `KeyboardEvent.key` values, in any case.
+- Modifiers are `ctrl`, `alt`, `shift`, `meta` and `mod`, which means ⌘ on Apple platforms and
+  Ctrl elsewhere. They must match exactly: `"ctrl+s"` doesn't fire for Ctrl+Shift+S.
+- For symbols such as `"?"`, Shift isn't checked unless you list it, because keyboard layouts
+  differ in which symbols need it. Use `space` and `plus` (or `"ctrl++"`) for those keys.
+- Presses while typing in an input, textarea, select or editable content are ignored, unless
+  `ignoreInputs` is `false`.
+- An invalid shortcut such as `"ctrl+"` or `"hyper+k"` never fires.
+- The handler can call `event.preventDefault()` to stop the browser's own shortcut.
+
+```tsx
+import { useState } from "react";
+import { useHotkey } from "react-honey-hooks";
+
+function Editor({ save }: { save: () => void }) {
+  const [paletteOpen, setPaletteOpen] = useState(false);
+
+  useHotkey("mod+s", (event) => {
+    event.preventDefault(); // don't open the browser's "Save page" dialog
+    save();
+  });
+  useHotkey("mod+k", () => {
+    setPaletteOpen(true);
+  });
+  useHotkey(
+    "Escape",
+    () => {
+      setPaletteOpen(false);
+    },
+    { enabled: paletteOpen, ignoreInputs: false },
+  );
+
+  return paletteOpen ? <CommandPalette /> : <Document />;
 }
 ```
 

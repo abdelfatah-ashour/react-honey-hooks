@@ -17,6 +17,7 @@ export {
   type EventListenerHookOptions,
   type EventListenerTarget,
 } from "./useEventListener";
+export { useHotkey, type HotkeyOptions } from "./useHotkey";
 export { useInterval } from "./useInterval";
 export { useLocalStorage, type SetStoredValue } from "./useLocalStorage";
 export { useMediaQuery } from "./useMediaQuery";
