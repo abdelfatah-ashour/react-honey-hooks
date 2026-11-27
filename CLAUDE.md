@@ -31,6 +31,11 @@ A bug fix starts with a failing test that reproduces the bug.
 - Real-browser e2e tests live in `e2e/<hookName>.test.tsx`. They import from
   `"react-honey-hooks"`, which resolves to the built `dist/` bundle, and run in Chromium,
   Firefox and WebKit. Cover each hook's main flows there with real user events.
+- Server-rendering unit tests use `renderOnServer` from `src/testing/renderOnServer.ts`, which
+  removes `window` and `document` while it renders, as on a real server.
+- `bundle/treeShaking.test.ts` bundles each hook alone from `dist/` with esbuild and fails if
+  the bundle has code from any `src/` file the hook doesn't import. Keep module-level code
+  side-effect free (plain literals, or `/* @__PURE__ */` on calls) so bundlers can drop it.
 - No runtime dependencies: only `react` as a peer dependency.
 - Export each hook and its public types from `src/index.ts` as named exports.
 - Hooks must be SSR-safe and must not need memoised callbacks from callers.
@@ -43,6 +48,7 @@ A bug fix starts with a failing test that reproduces the bug.
 npm test             # unit tests: Vitest (jsdom)
 npm run test:watch
 npm run test:e2e     # build, then run e2e/ in real browsers (npx playwright install first)
-npm run check        # typecheck + lint + format check + unit + e2e; must pass before committing
+npm run test:bundle  # build, then check that each hook bundles alone (tree-shaking)
+npm run check        # typecheck + lint + format check + unit + e2e + bundle; must pass before committing
 npm run build        # tsup -> dist/
 ```

@@ -1,9 +1,11 @@
 import { useEffect, useRef, useState } from "react";
 
-const SECOND = 1000;
-const MINUTE = 60 * SECOND;
-const HOUR = 60 * MINUTE;
-const DAY = 24 * HOUR;
+// Plain literals, not products such as `60 * SECOND`: bundlers can't prove a product is free of
+// side effects, so they would keep it in apps that never import this hook.
+const SECOND = 1_000;
+const MINUTE = 60_000;
+const HOUR = 3_600_000;
+const DAY = 86_400_000;
 
 /** Anything `new Date()` accepts: a `Date`, a millisecond timestamp or a date string. */
 export type CountdownTarget = Date | number | string;

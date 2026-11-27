@@ -61,11 +61,12 @@
     "test": "vitest run --project unit",
     "test:watch": "vitest --project unit",
     "test:e2e": "tsup && vitest run --project e2e",
+    "test:bundle": "tsup && vitest run --project bundle",
     "typecheck": "tsc --noEmit",
     "lint": "eslint .",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "check": "npm run typecheck && npm run lint && npm run format:check && npm test && npm run test:e2e",
+    "check": "npm run typecheck && npm run lint && npm run format:check && npm test && npm run test:e2e && npm run test:bundle",
     "prepublishOnly": "npm run check && npm run build"
   },
   "peerDependencies": {
@@ -80,6 +81,7 @@
     "@types/react": "^19.3.3",
     "@types/react-dom": "^19.3.0",
     "@vitest/browser-playwright": "^5.1.2",
+    "esbuild": "^0.28.2",
     "eslint": "^10.16.0",
     "eslint-plugin-react-hooks": "^7.1.1",
     "jiti": "^2.7.0",

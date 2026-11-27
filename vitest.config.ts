@@ -90,6 +90,16 @@ export default defineConfig({
       },
       {
         extends: true,
+        // Bundle tests read the built package, so `npm run test:bundle` builds it first.
+        test: {
+          name: "bundle",
+          environment: "node",
+          globals: true,
+          include: ["bundle/**/*.test.ts"],
+        },
+      },
+      {
+        extends: true,
         // e2e tests import the published bundle, so `npm run test:e2e` builds it first.
         resolve: {
           alias: {
