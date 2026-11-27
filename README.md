@@ -14,6 +14,7 @@ Requires React 18 or newer.
 - [`useQuery`](#usequery): read the URL's query params
 - [`useCountdown`](#usecountdown): count down to a date
 - [`useClickOutside`](#useclickoutside): detect presses outside an element
+- [`useLocalStorage`](#uselocalstorage): state that survives reloads and syncs across tabs
 - [`useMediaQuery`](#usemediaquery): match a CSS media query
 - [`useOnlineStatus`](#useonlinestatus): know when the network drops
 - [`usePageVisibility`](#usepagevisibility): know when the tab is hidden
@@ -155,6 +156,52 @@ function Dropdown() {
       </button>
       {open && createPortal(<ul ref={menuRef}>{/* … */}</ul>, document.body)}
     </>
+  );
+}
+```
+
+---
+
+### `useLocalStorage`
+
+```ts
+function useLocalStorage<T>(
+  key: string,
+  initialValue: T,
+): readonly [value: T, set: SetStoredValue<T>, remove: () => void];
+
+type SetStoredValue<T> = (value: T | ((previous: T) => T)) => void;
+```
+
+Works like `useState`, but keeps the value in `localStorage` as JSON so it survives reloads.
+
+- `value` is `initialValue` while nothing is stored, when the stored text isn't valid JSON,
+  during server rendering and on the first render while hydrating.
+- `set` accepts a value or an updater; the updater always receives the latest stored value.
+  `remove` deletes the key, so `value` returns to `initialValue`.
+- Every hook using the same key updates together, in this page and in other tabs.
+- `value` keeps its identity until the stored value changes, and `set`/`remove` keep theirs
+  while `key` is unchanged, so all three are safe in effect dependencies.
+- If storage is blocked or full, reads fall back to `initialValue` and writes are kept in
+  memory for this page instead of throwing.
+
+Values must survive `JSON.stringify`: no functions, `Date`s come back as strings, and
+`undefined` is not stored.
+
+```tsx
+import { useLocalStorage } from "react-honey-hooks";
+
+function ThemeToggle() {
+  const [theme, setTheme] = useLocalStorage<"light" | "dark">("theme", "light");
+
+  return (
+    <button
+      onClick={() => {
+        setTheme((t) => (t === "light" ? "dark" : "light"));
+      }}
+    >
+      Switch to {theme === "light" ? "dark" : "light"} mode
+    </button>
   );
 }
 ```

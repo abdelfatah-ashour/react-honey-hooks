@@ -10,6 +10,7 @@ export {
   type CountdownOptions,
   type CountdownTarget,
 } from "./useCountdown";
+export { useLocalStorage, type SetStoredValue } from "./useLocalStorage";
 export { useMediaQuery } from "./useMediaQuery";
 export { useOnlineStatus } from "./useOnlineStatus";
 export { usePageVisibility } from "./usePageVisibility";
