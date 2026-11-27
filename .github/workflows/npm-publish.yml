@@ -1,24 +1,92 @@
-name: Publish to npm
+# Publishes to npm whenever master gets a package.json version that npm doesn't have yet.
+# To release: bump "version" in package.json (e.g. `npm version minor`), then push or merge
+# to master. Pushes that don't change the version are skipped.
+name: Release
 
 on:
-  release:
-    types: [created]
+  push:
+    branches: [master]
+  workflow_dispatch:
+
+# Never run two releases at once, and never cancel one halfway through.
+concurrency:
+  group: release
+  cancel-in-progress: false
 
 permissions:
-  contents: read
+  contents: write # create the git tag and GitHub release
   id-token: write # npm provenance
 
 jobs:
-  publish:
+  release:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
       - uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: npm
           registry-url: https://registry.npmjs.org/
-      - run: npm ci
-      - run: npm publish --provenance --access public
+
+      - name: Read version and check npm
+        id: version
+        run: |
+          name=$(node -p "require('./package.json').name")
+          version=$(node -p "require('./package.json').version")
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+
+          # Pre-release versions (e.g. 2.1.0-beta.0) go to the "next" dist-tag.
+          if [[ "$version" == *-* ]]; then
+            echo "dist-tag=next" >> "$GITHUB_OUTPUT"
+            echo "prerelease=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "dist-tag=latest" >> "$GITHUB_OUTPUT"
+            echo "prerelease=false" >> "$GITHUB_OUTPUT"
+          fi
+
+          if npm view "$name@$version" version > /dev/null 2>&1; then
+            echo "publish=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::$name@$version is already on npm, so there is nothing to publish."
+          else
+            echo "publish=true" >> "$GITHUB_OUTPUT"
+            echo "::notice::Publishing $name@$version."
+          fi
+
+      - if: steps.version.outputs.publish == 'true'
+        run: npm ci
+
+      - if: steps.version.outputs.publish == 'true'
+        run: npm run check
+
+      - if: steps.version.outputs.publish == 'true'
+        run: npm run build
+
+      - name: Validate package shape
+        if: steps.version.outputs.publish == 'true'
+        run: npx publint && npx attw --pack .
+
+      # check and build already ran above, so skip prepublishOnly.
+      - name: Publish to npm
+        if: steps.version.outputs.publish == 'true'
+        run: npm publish --ignore-scripts --provenance --access public --tag "${{ steps.version.outputs.dist-tag }}"
         env:
           NODE_AUTH_TOKEN: ${{ secrets.npm_token }}
+
+      # Runs even when npm already has the version, so a re-run fills in a release that
+      # failed to be created last time.
+      - name: Create GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: v${{ steps.version.outputs.version }}
+          PRERELEASE: ${{ steps.version.outputs.prerelease }}
+        run: |
+          if gh release view "$TAG" > /dev/null 2>&1; then
+            echo "Release $TAG already exists."
+            exit 0
+          fi
+          if [[ "$PRERELEASE" == "true" ]]; then
+            gh release create "$TAG" --target "$GITHUB_SHA" --title "$TAG" --generate-notes --prerelease
+          else
+            gh release create "$TAG" --target "$GITHUB_SHA" --title "$TAG" --generate-notes
+          fi
