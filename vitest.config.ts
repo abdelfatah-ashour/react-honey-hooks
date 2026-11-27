@@ -18,17 +18,44 @@ const goOfflineFor: BrowserCommand<[ms: number]> = async (context, ms) => {
 };
 
 /**
- * Lets the page read the clipboard back, where the browser supports granting that; resolves
- * whether it did. Playwright supports these permissions in Chromium only at the time of writing.
+ * Grants the page a permission such as `"geolocation"` or `"clipboard-read"`; resolves whether
+ * it did. At the time of writing Playwright grants geolocation in all three browsers but
+ * clipboard access in Chromium only. Only ask a browser for permissions it knows: Playwright
+ * keeps a refused one in the browser's list and sends it again, so every later grant in that
+ * browser fails too. Grants last for the rest of the run in that browser.
  */
-const grantClipboardRead: BrowserCommand = async (context) => {
+const grantPermission: BrowserCommand<[name: string]> = async (context, name) => {
   if (context.provider.name !== "playwright") return false;
   try {
-    await context.context.grantPermissions(["clipboard-read", "clipboard-write"]);
+    await context.context.grantPermissions([name]);
     return true;
   } catch {
     return false;
   }
+};
+
+/** Presses the real mouse's main button where the pointer is; move it first with `hover`. */
+const mouseDown: BrowserCommand = async (context) => {
+  if (context.provider.name !== "playwright") {
+    throw new Error(`mouseDown is not supported by the ${context.provider.name} provider`);
+  }
+  await context.page.mouse.down();
+};
+
+/** Releases the real mouse's main button. */
+const mouseUp: BrowserCommand = async (context) => {
+  if (context.provider.name !== "playwright") {
+    throw new Error(`mouseUp is not supported by the ${context.provider.name} provider`);
+  }
+  await context.page.mouse.up();
+};
+
+/** Scrolls the real mouse wheel by `deltaY` pixels where the pointer is. */
+const wheel: BrowserCommand<[deltaY: number]> = async (context, deltaY) => {
+  if (context.provider.name !== "playwright") {
+    throw new Error(`wheel is not supported by the ${context.provider.name} provider`);
+  }
+  await context.page.mouse.wheel(0, deltaY);
 };
 
 /** The user preferences `emulateMedia` can set; `null` goes back to the browser's own value. */
@@ -76,7 +103,7 @@ export default defineConfig({
             enabled: true,
             headless: true,
             provider: playwright(),
-            commands: { goOfflineFor, grantClipboardRead, emulateMedia },
+            commands: { goOfflineFor, grantPermission, mouseDown, mouseUp, wheel, emulateMedia },
             instances: [{ browser: "chromium" }, { browser: "firefox" }, { browser: "webkit" }],
           },
         },

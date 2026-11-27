@@ -1,7 +1,7 @@
 # 🍯 React Honey Hooks
 
 Small, typed React hooks. Zero dependencies, ESM + CJS, SSR-safe, and tested in real
-Chromium, Firefox and WebKit. Tree-shakeable: all 21 hooks are about 3.5 kB minified and
+Chromium, Firefox and WebKit. Tree-shakeable: all 30 hooks are about 5 kB minified and
 gzipped, and your bundle only includes the ones you import.
 
 ```bash
@@ -17,18 +17,27 @@ Requires React 18 or newer.
 - [`useCountdown`](#usecountdown): count down to a date
 - [`useBroadcastChannel`](#usebroadcastchannel): message other tabs of your site
 - [`useClickOutside`](#useclickoutside): detect presses outside an element
+- [`useScrollLock`](#usescrolllock): stop the page scrolling behind a modal
 - [`useCopyToClipboard`](#usecopytoclipboard): copy text and show that it worked
 - [`useDebouncedValue`](#usedebouncedvalue): a value that waits for changes to settle
 - [`useDebouncedCallback`](#usedebouncedcallback): a function that waits for calls to stop
+- [`useThrottledCallback`](#usethrottledcallback): a function that runs at most every few ms
 - [`useEventListener`](#useeventlistener): listen to any DOM event, typed
 - [`useHotkey`](#usehotkey): keyboard shortcuts such as `mod+k`
+- [`useLongPress`](#uselongpress): press and hold an element
+- [`useHover`](#usehover): know when the pointer is over an element
+- [`useElementSize`](#useelementsize): measure an element as it resizes
 - [`useInView`](#useinview): know when an element scrolls into view
 - [`useInterval`](#useinterval): run something every few milliseconds
 - [`useTimeout`](#usetimeout): run something once after a delay
 - [`useLocalStorage`](#uselocalstorage): state that survives reloads and syncs across tabs
+- [`useSessionStorage`](#usesessionstorage): state that survives reloads in this tab only
 - [`useMediaQuery`](#usemediaquery): match a CSS media query
+- [`useWindowSize`](#usewindowsize): the window's width and height
 - [`useOnlineStatus`](#useonlinestatus): know when the network drops
 - [`usePageVisibility`](#usepagevisibility): know when the tab is hidden
+- [`useIdle`](#useidle): know when the user stops interacting
+- [`usePermission`](#usepermission): whether a browser permission is granted
 - [`usePrefersColorScheme`](#usepreferscolorscheme): follow the system's light or dark mode
 - [`usePrefersReducedMotion`](#useprefersreducedmotion): respect the reduced-motion setting
 - [`usePrevious`](#useprevious): the value before it last changed
@@ -261,6 +270,33 @@ function Dropdown() {
 
 ---
 
+### `useScrollLock`
+
+```ts
+function useScrollLock(locked?: boolean): void; // default true
+```
+
+Stops the page from scrolling while `locked` is true, for example while a modal or drawer is
+open. Scrolling inside an element with its own overflow, such as the modal, still works.
+
+- It hides the overflow of `<html>`, and pads it by the scrollbar's width so the content
+  doesn't jump sideways when the scrollbar disappears.
+- Locks are counted: with a dialog open over another dialog, the page stays locked until both
+  release it. The page's own inline `overflow` and `padding-right` are restored after the last.
+- It does nothing during server rendering.
+
+```tsx
+import { useScrollLock } from "react-honey-hooks";
+
+function Drawer({ open, children }: { open: boolean; children: React.ReactNode }) {
+  useScrollLock(open);
+
+  return open ? <aside className="drawer">{children}</aside> : null;
+}
+```
+
+---
+
 ### `useCopyToClipboard`
 
 ```ts
@@ -367,6 +403,64 @@ function NoteEditor({ save }: { save: (text: string) => void }) {
       }}
       onBlur={saveSoon.flush}
     />
+  );
+}
+```
+
+---
+
+### `useThrottledCallback`
+
+```ts
+function useThrottledCallback<A extends unknown[]>(
+  fn: (...args: A) => void,
+  ms: number,
+  options?: ThrottleOptions,
+): ThrottledFunction<A>;
+
+interface ThrottleOptions {
+  leading?: boolean; // run the call that starts a wait at once; default true
+  trailing?: boolean; // run the last call made during a wait when it ends; default true
+}
+
+interface ThrottledFunction<A extends unknown[]> {
+  (...args: A): void;
+  readonly cancel: () => void; // drop the pending call and end the wait
+  readonly flush: () => void; // run the pending call now and end the wait
+}
+```
+
+Returns a function that runs `fn` at most once every `ms`, however often it is called. Where
+[`useDebouncedCallback`](#usedebouncedcallback) waits for calls to stop, this keeps running
+at a steady rate while they continue: good for scroll, resize and pointer handlers, or saving
+while someone types.
+
+- The first call runs at once and starts a wait. Calls during the wait collapse into one call
+  with the last arguments when it ends, which starts a new wait, so `fn` never runs closer
+  than `ms` apart.
+- `leading: false` makes the first call wait too; `trailing: false` drops calls made during
+  the wait. With both off, `fn` never runs.
+- A delay of 0 or less (or `NaN`) doesn't throttle. With `Infinity`, later calls wait for
+  `flush` or `cancel`.
+- The latest `fn` and options are always used, so inline functions are fine. The returned
+  function keeps its identity, and a pending call is dropped when the component unmounts.
+
+```tsx
+import { useThrottledCallback } from "react-honey-hooks";
+
+function ScrollSpy({ onProgress }: { onProgress: (percent: number) => void }) {
+  const report = useThrottledCallback(onProgress, 100);
+
+  return (
+    <div
+      style={{ overflow: "auto", height: 400 }}
+      onScroll={(event) => {
+        const { scrollTop, scrollHeight, clientHeight } = event.currentTarget;
+        report((scrollTop / (scrollHeight - clientHeight)) * 100);
+      }}
+    >
+      {/* long content */}
+    </div>
   );
 }
 ```
@@ -487,6 +581,129 @@ function Editor({ save }: { save: () => void }) {
   );
 
   return paletteOpen ? <CommandPalette /> : <Document />;
+}
+```
+
+---
+
+### `useElementSize`
+
+```ts
+function useElementSize(ref: RefObject<Element | null>, options?: ElementSizeOptions): ElementSize;
+
+interface ElementSize {
+  readonly width: number;
+  readonly height: number;
+}
+
+interface ElementSizeOptions {
+  box?: "content-box" | "border-box"; // default "content-box"
+}
+```
+
+Measures the element held by `ref` with a `ResizeObserver` and re-renders when its size
+changes, whether from the window resizing, its content changing or its styles changing.
+
+- Sizes are in CSS pixels and can be fractional. `"content-box"` excludes padding and border;
+  `"border-box"` includes them.
+- It is `0 × 0` during server rendering, before the first measurement and in browsers without
+  `ResizeObserver`.
+- It keeps the last size while the ref holds no element, and returns the same object while the
+  size is unchanged, so it is safe in effect dependencies.
+- If the ref moves to another element, the next render measures that one instead.
+
+```tsx
+import { useRef } from "react";
+import { useElementSize } from "react-honey-hooks";
+
+function ResponsiveCard() {
+  const ref = useRef<HTMLDivElement>(null);
+  const { width } = useElementSize(ref);
+
+  return <div ref={ref}>{width < 400 ? <CompactLayout /> : <WideLayout />}</div>;
+}
+```
+
+---
+
+### `useLongPress`
+
+```ts
+function useLongPress(
+  ref: RefObject<HTMLElement | null>,
+  handler: (event: PointerEvent) => void,
+  options?: LongPressOptions,
+): void;
+
+interface LongPressOptions {
+  delayMs?: number; // how long to hold, default 500
+  enabled?: boolean; // default true
+}
+```
+
+Calls `handler` with the `pointerdown` event when the element is pressed and held for
+`delayMs`, with the main mouse button, a pen or one finger.
+
+- Releasing, leaving the element or moving more than 10 px before `delayMs` cancels the press,
+  so scrolling and dragging don't trigger it. Other mouse buttons and second fingers are
+  ignored.
+- The click that follows a long press is cancelled, so one element can have a click action
+  and a long-press action.
+- Setting `enabled` to `false` cancels a press in progress. A delay that isn't a finite number
+  of 0 or more never fires.
+- The latest `handler` is always called, so inline functions are fine.
+
+Only pointer presses count, so give keyboard users another way to reach the same action, for
+example a menu button.
+
+```tsx
+import { useRef } from "react";
+import { useLongPress } from "react-honey-hooks";
+
+function MessageBubble({ onOpen, onShowActions }: MessageBubbleProps) {
+  const ref = useRef<HTMLButtonElement>(null);
+  useLongPress(ref, onShowActions);
+
+  return (
+    <button ref={ref} onClick={onOpen}>
+      …
+    </button>
+  );
+}
+```
+
+---
+
+### `useHover`
+
+```ts
+function useHover(ref: RefObject<Element | null>): boolean;
+```
+
+Returns whether a mouse or pen pointer is over the element, including over its children.
+
+- Touch is ignored: touch screens have no hover, and a tap would otherwise leave it `true`.
+- It is `false` during server rendering and when the pointer leaves the window.
+- It checks the ref's current element as the pointer moves, so it follows the ref to a new
+  element.
+
+For purely visual effects, CSS `:hover` is simpler. Use this when hovering changes what
+renders, for example to load a preview.
+
+```tsx
+import { useRef } from "react";
+import { useHover } from "react-honey-hooks";
+
+function UserLink({ user }: { user: User }) {
+  const ref = useRef<HTMLAnchorElement>(null);
+  const hovered = useHover(ref);
+
+  return (
+    <a ref={ref} href={user.url}>
+      {user.name}
+      {hovered && <ProfilePreview userId={user.id} />}
+    </a>
+  );
 }
 ```
 
@@ -635,6 +852,40 @@ function ThemeToggle() {
 
 ---
 
+### `useSessionStorage`
+
+```ts
+function useSessionStorage<T>(
+  key: string,
+  initialValue: T,
+): readonly [value: T, set: SetStoredValue<T>, remove: () => void];
+```
+
+Works exactly like [`useLocalStorage`](#uselocalstorage), but keeps the value in
+`sessionStorage`: it survives reloads, but belongs to this tab and is gone when the tab closes.
+Hooks using the same key in this tab stay in sync, and the same key in `localStorage` is a
+separate value.
+
+```tsx
+import { useSessionStorage } from "react-honey-hooks";
+
+function CheckoutSteps() {
+  const [step, setStep] = useSessionStorage("checkout-step", 1);
+
+  return (
+    <button
+      onClick={() => {
+        setStep((s) => s + 1);
+      }}
+    >
+      Step {step}: continue
+    </button>
+  );
+}
+```
+
+---
+
 ### `useMediaQuery`
 
 ```ts
@@ -654,6 +905,37 @@ function Navigation() {
   const reduceMotion = useMediaQuery("(prefers-reduced-motion: reduce)");
 
   return isWide ? <Sidebar animated={!reduceMotion} /> : <BottomTabs />;
+}
+```
+
+---
+
+### `useWindowSize`
+
+```ts
+function useWindowSize(serverSize?: WindowSize): WindowSize;
+
+interface WindowSize {
+  readonly width: number;
+  readonly height: number;
+}
+```
+
+Returns the window's `innerWidth` and `innerHeight`, which include any scrollbar, and
+re-renders when the window is resized. It returns the same object while the size is unchanged.
+
+During server rendering and on the first render while hydrating it returns `serverSize`
+(`0 × 0` by default), then the real size, so hydration never mismatches. To switch layouts at
+a breakpoint, prefer [`useMediaQuery`](#usemediaquery), which only re-renders when the
+breakpoint is crossed.
+
+```tsx
+import { useWindowSize } from "react-honey-hooks";
+
+function Confetti() {
+  const { width, height } = useWindowSize();
+
+  return <canvas width={width} height={height} />;
 }
 ```
 
@@ -869,3 +1151,70 @@ npm run build     # tsup → dist/ (ESM, CJS, .d.ts)
 ## License
 
 MIT
+
+---
+
+### `useIdle`
+
+```ts
+function useIdle(ms: number): boolean;
+```
+
+Returns `true` once `ms` milliseconds pass with no activity on the page, and `false` again as
+soon as the user is back.
+
+- Activity is any pointer movement or press, key press, wheel, touch or scroll (of the page or
+  any element). The tab becoming visible again also counts; the tab being hidden does not, so
+  a user who switched tabs goes idle as usual.
+- It starts `false`, and is `false` during server rendering.
+- Changing `ms` restarts the wait from `false`. A delay that isn't a positive, finite number
+  never goes idle.
+
+Frequent events such as `pointermove` only record the time, so listening is cheap.
+
+```tsx
+import { useIdle } from "react-honey-hooks";
+
+function Presence() {
+  const idle = useIdle(5 * 60_000);
+
+  return <span>{idle ? "Away" : "Online"}</span>;
+}
+```
+
+---
+
+### `usePermission`
+
+```ts
+function usePermission(name: PermissionName | string): PermissionValue;
+
+type PermissionValue = "granted" | "denied" | "prompt" | "pending" | "unsupported";
+```
+
+Asks the Permissions API for the state of a browser permission, such as `"geolocation"`,
+`"notifications"`, `"camera"` or `"microphone"`, and re-renders when the user changes it in
+the browser's settings.
+
+- `"prompt"` means the browser will ask the user the next time the feature is used.
+- It is `"pending"` while the browser answers, during server rendering and on the first render
+  while hydrating.
+- It is `"unsupported"` when the browser has no Permissions API or doesn't know `name`, as
+  browsers support different permissions. Treat it like `"prompt"`: try the feature.
+- When `name` changes it is `"pending"` again, and answers for the old name are ignored.
+
+This hook only reads the state. To ask for a permission, use the feature itself, for example
+`navigator.geolocation.getCurrentPosition`.
+
+```tsx
+import { usePermission } from "react-honey-hooks";
+
+function LocationButton({ onLocate }: { onLocate: () => void }) {
+  const permission = usePermission("geolocation");
+
+  if (permission === "denied") {
+    return <p>Location is blocked. Allow it in your browser's site settings.</p>;
+  }
+  return <button onClick={onLocate}>Use my location</button>;
+}
+```

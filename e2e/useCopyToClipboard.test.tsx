@@ -1,6 +1,6 @@
 import { useCopyToClipboard } from "react-honey-hooks";
 import { beforeAll, describe, expect, it } from "vitest";
-import { commands, userEvent } from "vitest/browser";
+import { commands, server, userEvent } from "vitest/browser";
 import { render } from "vitest-browser-react";
 
 function CopyButton({ text }: { text: string }) {
@@ -19,7 +19,11 @@ function CopyButton({ text }: { text: string }) {
 // click. Refused writes are covered by the unit tests.
 let canRead = false;
 beforeAll(async () => {
-  canRead = await commands.grantClipboardRead();
+  // Only Chromium knows these permissions; asking another browser breaks its later grants.
+  if (server.browser !== "chromium") return;
+  canRead =
+    (await commands.grantPermission("clipboard-read")) &&
+    (await commands.grantPermission("clipboard-write"));
 });
 
 describe("useCopyToClipboard in a real browser", () => {

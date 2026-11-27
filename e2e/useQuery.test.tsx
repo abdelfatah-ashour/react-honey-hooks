@@ -50,8 +50,8 @@ describe("useQuery in a real browser", () => {
   });
 
   it("follows real back and forward navigation", async () => {
-    // Both entries are pushed: under load, WebKit's Back in a test iframe can return to an
-    // entry as it was before a replaceState, so Back must land on an entry this test pushed.
+    // Push both entries rather than replacing the first: in WebKit, Back from a push sometimes
+    // landed on the URL from before a replaceState made in this frame just before it.
     window.history.pushState(null, "", "?page=1");
     window.history.pushState(null, "", "?page=2");
     const screen = await render(<Filters />);
