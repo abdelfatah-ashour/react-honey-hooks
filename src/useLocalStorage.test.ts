@@ -1,6 +1,6 @@
 import { act, renderHook } from "@testing-library/react";
 import { createElement } from "react";
-import { renderToString } from "react-dom/server";
+import { renderOnServer } from "./testing/renderOnServer";
 import { useLocalStorage } from "./useLocalStorage";
 
 afterEach(() => {
@@ -170,6 +170,6 @@ describe("useLocalStorage", () => {
       return useLocalStorage("theme", "light")[0];
     }
 
-    expect(renderToString(createElement(Probe))).toBe("light");
+    expect(renderOnServer(createElement(Probe))).toBe("light");
   });
 });

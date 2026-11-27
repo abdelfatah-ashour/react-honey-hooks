@@ -1,6 +1,6 @@
 import { act, renderHook } from "@testing-library/react";
 import { createElement } from "react";
-import { renderToString } from "react-dom/server";
+import { renderOnServer } from "./testing/renderOnServer";
 import { useQuery } from "./useQuery";
 import { useQueryState } from "./useQueryState";
 
@@ -90,6 +90,6 @@ describe("useQuery", () => {
       return JSON.stringify(useQuery().params);
     }
 
-    expect(renderToString(createElement(Probe))).toBe("{}");
+    expect(renderOnServer(createElement(Probe))).toBe("{}");
   });
 });

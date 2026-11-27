@@ -1,6 +1,6 @@
 import { renderHook } from "@testing-library/react";
 import { createElement, useRef, type RefObject } from "react";
-import { renderToString } from "react-dom/server";
+import { renderOnServer } from "./testing/renderOnServer";
 import { useEventListener } from "./useEventListener";
 
 describe("useEventListener", () => {
@@ -169,7 +169,7 @@ describe("useEventListener", () => {
       return "ok";
     }
 
-    expect(renderToString(createElement(Probe))).toBe("ok");
+    expect(renderOnServer(createElement(Probe))).toBe("ok");
   });
 
   it("types the event by target and rejects events the target doesn't have", () => {

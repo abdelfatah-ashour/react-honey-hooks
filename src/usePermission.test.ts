@@ -1,6 +1,6 @@
 import { act, renderHook } from "@testing-library/react";
 import { createElement } from "react";
-import { renderToString } from "react-dom/server";
+import { renderOnServer } from "./testing/renderOnServer";
 import { usePermission } from "./usePermission";
 
 /** Stands in for a browser's PermissionStatus: `change` fires when the user changes it. */
@@ -186,6 +186,6 @@ describe("usePermission", () => {
       return usePermission("geolocation");
     }
 
-    expect(renderToString(createElement(Probe))).toBe("pending");
+    expect(renderOnServer(createElement(Probe))).toBe("pending");
   });
 });

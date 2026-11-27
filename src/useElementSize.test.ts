@@ -1,6 +1,6 @@
 import { act, renderHook } from "@testing-library/react";
 import { createElement, type RefObject } from "react";
-import { renderToString } from "react-dom/server";
+import { renderOnServer } from "./testing/renderOnServer";
 import { useElementSize } from "./useElementSize";
 
 /**
@@ -166,7 +166,7 @@ describe("useElementSize", () => {
       return `${String(width)}x${String(height)}`;
     }
 
-    expect(renderToString(createElement(Probe))).toBe("0x0");
+    expect(renderOnServer(createElement(Probe))).toBe("0x0");
   });
 
   it("stays 0 × 0 without throwing where ResizeObserver is missing", () => {

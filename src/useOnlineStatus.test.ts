@@ -1,6 +1,6 @@
 import { act, renderHook } from "@testing-library/react";
 import { createElement } from "react";
-import { renderToString } from "react-dom/server";
+import { renderOnServer } from "./testing/renderOnServer";
 import { useOnlineStatus } from "./useOnlineStatus";
 
 function setOnline(online: boolean) {
@@ -49,6 +49,6 @@ describe("useOnlineStatus", () => {
       return String(useOnlineStatus());
     }
 
-    expect(renderToString(createElement(Probe))).toBe("true");
+    expect(renderOnServer(createElement(Probe))).toBe("true");
   });
 });

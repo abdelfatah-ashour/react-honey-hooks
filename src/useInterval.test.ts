@@ -1,4 +1,6 @@
 import { renderHook } from "@testing-library/react";
+import { createElement } from "react";
+import { renderOnServer } from "./testing/renderOnServer";
 import { useInterval } from "./useInterval";
 
 interface DelayProps {
@@ -112,4 +114,15 @@ describe("useInterval", () => {
       expect(tick).not.toHaveBeenCalled();
     },
   );
+
+  it("renders on the server, where window and document don't exist, without starting", () => {
+    const tick = vi.fn();
+    function Probe() {
+      useInterval(tick, 100);
+      return "ok";
+    }
+
+    expect(renderOnServer(createElement(Probe))).toBe("ok");
+    expect(vi.getTimerCount()).toBe(0);
+  });
 });

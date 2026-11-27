@@ -1,4 +1,6 @@
 import { renderHook } from "@testing-library/react";
+import { createElement } from "react";
+import { renderOnServer } from "./testing/renderOnServer";
 import { usePrevious } from "./usePrevious";
 
 describe("usePrevious", () => {
@@ -58,5 +60,13 @@ describe("usePrevious", () => {
 
     rerender({ value: 2 });
     expect(result.current).toBe(1);
+  });
+
+  it("renders on the server, where window and document don't exist, as undefined", () => {
+    function Probe() {
+      return String(usePrevious("value"));
+    }
+
+    expect(renderOnServer(createElement(Probe))).toBe("undefined");
   });
 });

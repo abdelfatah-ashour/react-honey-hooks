@@ -1,6 +1,6 @@
 import { act, renderHook } from "@testing-library/react";
 import { createElement } from "react";
-import { renderToString } from "react-dom/server";
+import { renderOnServer } from "./testing/renderOnServer";
 import { useLocalStorage } from "./useLocalStorage";
 import { useSessionStorage } from "./useSessionStorage";
 
@@ -108,6 +108,6 @@ describe("useSessionStorage", () => {
       return String(useSessionStorage("step", 1)[0]);
     }
 
-    expect(renderToString(createElement(Probe))).toBe("1");
+    expect(renderOnServer(createElement(Probe))).toBe("1");
   });
 });

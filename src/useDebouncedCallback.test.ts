@@ -1,4 +1,6 @@
 import { renderHook } from "@testing-library/react";
+import { createElement } from "react";
+import { renderOnServer } from "./testing/renderOnServer";
 import { useDebouncedCallback } from "./useDebouncedCallback";
 
 beforeEach(() => {
@@ -112,5 +114,17 @@ describe("useDebouncedCallback", () => {
     expect(save).toHaveBeenCalledTimes(1);
     vi.advanceTimersByTime(1);
     expect(save).toHaveBeenCalledTimes(2);
+  });
+
+  it("renders on the server, where window and document don't exist, without calling back", () => {
+    const save = vi.fn();
+    function Probe() {
+      const debounced = useDebouncedCallback(save, 100);
+      debounced();
+      return "ok";
+    }
+
+    expect(renderOnServer(createElement(Probe))).toBe("ok");
+    expect(save).not.toHaveBeenCalled();
   });
 });

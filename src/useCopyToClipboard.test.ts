@@ -1,6 +1,6 @@
 import { act, renderHook } from "@testing-library/react";
 import { createElement } from "react";
-import { renderToString } from "react-dom/server";
+import { renderOnServer } from "./testing/renderOnServer";
 import { useCopyToClipboard } from "./useCopyToClipboard";
 
 /** jsdom has no Clipboard API, so this stands in for `navigator.clipboard`. */
@@ -123,7 +123,7 @@ describe("useCopyToClipboard", () => {
       return `copied: ${String(copied)}, error: ${String(error)}`;
     }
 
-    expect(renderToString(createElement(Probe))).toBe("copied: false, error: null");
+    expect(renderOnServer(createElement(Probe))).toBe("copied: false, error: null");
   });
 
   it("keeps copied until the next copy when resetMs is Infinity, and resets at once for 0", async () => {

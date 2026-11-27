@@ -1,6 +1,6 @@
 import { act, renderHook } from "@testing-library/react";
 import { createElement } from "react";
-import { renderToString } from "react-dom/server";
+import { renderOnServer } from "./testing/renderOnServer";
 import { installMatchMedia } from "./testing/installMatchMedia";
 import { useMediaQuery } from "./useMediaQuery";
 
@@ -66,7 +66,7 @@ describe("useMediaQuery", () => {
     }
     media.setMatches("(min-width: 768px)", true);
 
-    expect(renderToString(createElement(Probe))).toBe("false");
-    expect(renderToString(createElement(Probe, { defaultValue: true }))).toBe("true");
+    expect(renderOnServer(createElement(Probe))).toBe("false");
+    expect(renderOnServer(createElement(Probe, { defaultValue: true }))).toBe("true");
   });
 });

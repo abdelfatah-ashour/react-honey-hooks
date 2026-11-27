@@ -1,6 +1,6 @@
 import { act, renderHook } from "@testing-library/react";
 import { createElement, type RefObject } from "react";
-import { renderToString } from "react-dom/server";
+import { renderOnServer } from "./testing/renderOnServer";
 import { useInView } from "./useInView";
 
 /**
@@ -136,7 +136,7 @@ describe("useInView", () => {
       return String(useInView(refTo(null)));
     }
 
-    expect(renderToString(createElement(Probe))).toBe("false");
+    expect(renderOnServer(createElement(Probe))).toBe("false");
   });
 
   it("reports the element as in view where IntersectionObserver is unavailable", () => {

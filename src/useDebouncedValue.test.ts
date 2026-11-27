@@ -1,4 +1,6 @@
 import { act, renderHook } from "@testing-library/react";
+import { createElement } from "react";
+import { renderOnServer } from "./testing/renderOnServer";
 import { useDebouncedValue } from "./useDebouncedValue";
 
 beforeEach(() => {
@@ -82,5 +84,13 @@ describe("useDebouncedValue", () => {
     unmount();
 
     expect(vi.getTimerCount()).toBe(0);
+  });
+
+  it("renders on the server, where window and document don't exist, with the value", () => {
+    function Probe() {
+      return useDebouncedValue("query", 300);
+    }
+
+    expect(renderOnServer(createElement(Probe))).toBe("query");
   });
 });

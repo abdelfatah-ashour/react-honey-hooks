@@ -1,7 +1,7 @@
 import { act, renderHook } from "@testing-library/react";
 import { createElement } from "react";
 import { hydrateRoot } from "react-dom/client";
-import { renderToString } from "react-dom/server";
+import { renderOnServer } from "./testing/renderOnServer";
 import { useWindowSize, type WindowSize } from "./useWindowSize";
 
 function Probe({ serverSize }: { serverSize?: WindowSize }) {
@@ -56,8 +56,8 @@ describe("useWindowSize", () => {
   });
 
   it("renders on the server as serverSize, or 0 × 0 by default", () => {
-    expect(renderToString(createElement(Probe))).toBe("0x0");
-    expect(renderToString(createElement(Probe, { serverSize: { width: 1280, height: 720 } }))).toBe(
+    expect(renderOnServer(createElement(Probe))).toBe("0x0");
+    expect(renderOnServer(createElement(Probe, { serverSize: { width: 1280, height: 720 } }))).toBe(
       "1280x720",
     );
   });
@@ -66,7 +66,7 @@ describe("useWindowSize", () => {
     resizeWindow(375, 812);
     const serverSize = { width: 1280, height: 720 };
     const container = document.createElement("div");
-    container.innerHTML = renderToString(createElement(Probe, { serverSize }));
+    container.innerHTML = renderOnServer(createElement(Probe, { serverSize }));
     const errors = vi.spyOn(console, "error");
     const rendered: string[] = [];
     function Recorder() {

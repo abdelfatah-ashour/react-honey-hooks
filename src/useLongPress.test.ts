@@ -1,6 +1,6 @@
 import { renderHook } from "@testing-library/react";
 import { createElement, type RefObject } from "react";
-import { renderToString } from "react-dom/server";
+import { renderOnServer } from "./testing/renderOnServer";
 import { useLongPress } from "./useLongPress";
 
 let element: HTMLButtonElement;
@@ -254,6 +254,6 @@ describe("useLongPress", () => {
       return "ok";
     }
 
-    expect(renderToString(createElement(Probe))).toBe("ok");
+    expect(renderOnServer(createElement(Probe))).toBe("ok");
   });
 });

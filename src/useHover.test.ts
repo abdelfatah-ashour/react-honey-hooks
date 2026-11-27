@@ -1,6 +1,6 @@
 import { act, renderHook } from "@testing-library/react";
 import { createElement, type RefObject } from "react";
-import { renderToString } from "react-dom/server";
+import { renderOnServer } from "./testing/renderOnServer";
 import { useHover } from "./useHover";
 
 let element: HTMLDivElement;
@@ -93,18 +93,11 @@ describe("useHover", () => {
     expect(removed).toEqual(expect.arrayContaining(["pointerover", "pointerout"]));
   });
 
-  it("renders on the server, where document doesn't exist, as false", () => {
-    const descriptor = Object.getOwnPropertyDescriptor(globalThis, "document");
-    Reflect.deleteProperty(globalThis, "document");
+  it("renders on the server, where window and document don't exist, as false", () => {
     function Probe() {
       return String(useHover(refTo(null)));
     }
 
-    try {
-      expect(typeof document).toBe("undefined");
-      expect(renderToString(createElement(Probe))).toBe("false");
-    } finally {
-      if (descriptor) Object.defineProperty(globalThis, "document", descriptor);
-    }
+    expect(renderOnServer(createElement(Probe))).toBe("false");
   });
 });

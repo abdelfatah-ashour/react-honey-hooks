@@ -1,4 +1,6 @@
 import { act, renderHook } from "@testing-library/react";
+import { createElement } from "react";
+import { renderOnServer } from "./testing/renderOnServer";
 import { useUndoState } from "./useUndoState";
 
 describe("useUndoState", () => {
@@ -179,5 +181,14 @@ describe("useUndoState", () => {
     expect(result.current[2].undo).toBe(undo);
     expect(result.current[2].redo).toBe(redo);
     expect(result.current[2].clearHistory).toBe(clearHistory);
+  });
+
+  it("renders on the server, where window and document don't exist, with the initial value", () => {
+    function Probe() {
+      const [value, , { canUndo, canRedo }] = useUndoState(() => "draft");
+      return `${value} ${String(canUndo)} ${String(canRedo)}`;
+    }
+
+    expect(renderOnServer(createElement(Probe))).toBe("draft false false");
   });
 });

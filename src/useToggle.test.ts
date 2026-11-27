@@ -1,4 +1,6 @@
 import { act, renderHook } from "@testing-library/react";
+import { createElement } from "react";
+import { renderOnServer } from "./testing/renderOnServer";
 import { useToggle } from "./useToggle";
 
 describe("useToggle", () => {
@@ -80,5 +82,14 @@ describe("useToggle", () => {
     });
     rerender();
     expect(result.current[1]).toBe(first);
+  });
+
+  it("renders on the server, where window and document don't exist, with the initial value", () => {
+    function Probe() {
+      const [on] = useToggle(true);
+      return String(on);
+    }
+
+    expect(renderOnServer(createElement(Probe))).toBe("true");
   });
 });

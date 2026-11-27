@@ -1,6 +1,6 @@
 import { renderHook } from "@testing-library/react";
 import { createElement } from "react";
-import { renderToString } from "react-dom/server";
+import { renderOnServer } from "./testing/renderOnServer";
 import { useScrollLock } from "./useScrollLock";
 
 const root = document.documentElement;
@@ -89,18 +89,12 @@ describe("useScrollLock", () => {
     expect(root.style.overflow).toBe("");
   });
 
-  it("renders on the server, where document doesn't exist", () => {
-    const descriptor = Object.getOwnPropertyDescriptor(globalThis, "document");
-    Reflect.deleteProperty(globalThis, "document");
+  it("renders on the server, where window and document don't exist", () => {
     function Probe() {
       useScrollLock();
       return "ok";
     }
 
-    try {
-      expect(renderToString(createElement(Probe))).toBe("ok");
-    } finally {
-      if (descriptor) Object.defineProperty(globalThis, "document", descriptor);
-    }
+    expect(renderOnServer(createElement(Probe))).toBe("ok");
   });
 });

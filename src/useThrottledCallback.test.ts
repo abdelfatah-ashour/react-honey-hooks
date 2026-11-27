@@ -1,4 +1,6 @@
 import { renderHook } from "@testing-library/react";
+import { createElement } from "react";
+import { renderOnServer } from "./testing/renderOnServer";
 import { useThrottledCallback } from "./useThrottledCallback";
 
 beforeEach(() => {
@@ -185,5 +187,16 @@ describe("useThrottledCallback", () => {
 
     expect(save.mock.calls).toEqual([["a"]]);
     expect(vi.getTimerCount()).toBe(0);
+  });
+
+  it("renders on the server, where window and document don't exist", () => {
+    const save = vi.fn();
+    function Probe() {
+      useThrottledCallback(save, 100);
+      return "ok";
+    }
+
+    expect(renderOnServer(createElement(Probe))).toBe("ok");
+    expect(save).not.toHaveBeenCalled();
   });
 });

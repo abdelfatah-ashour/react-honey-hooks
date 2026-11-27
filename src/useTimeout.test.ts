@@ -1,4 +1,6 @@
 import { renderHook } from "@testing-library/react";
+import { createElement } from "react";
+import { renderOnServer } from "./testing/renderOnServer";
 import { useTimeout } from "./useTimeout";
 
 interface DelayProps {
@@ -134,6 +136,17 @@ describe("useTimeout", () => {
 
     unmount();
 
+    expect(vi.getTimerCount()).toBe(0);
+  });
+
+  it("renders on the server, where window and document don't exist, without starting", () => {
+    const done = vi.fn();
+    function Probe() {
+      useTimeout(done, 100);
+      return "ok";
+    }
+
+    expect(renderOnServer(createElement(Probe))).toBe("ok");
     expect(vi.getTimerCount()).toBe(0);
   });
 });

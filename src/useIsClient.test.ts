@@ -1,7 +1,7 @@
 import { act, renderHook } from "@testing-library/react";
 import { createElement } from "react";
 import { hydrateRoot } from "react-dom/client";
-import { renderToString } from "react-dom/server";
+import { renderOnServer } from "./testing/renderOnServer";
 import { useIsClient } from "./useIsClient";
 
 function Probe() {
@@ -20,12 +20,12 @@ describe("useIsClient", () => {
   });
 
   it("renders on the server as false", () => {
-    expect(renderToString(createElement(Probe))).toBe("server");
+    expect(renderOnServer(createElement(Probe))).toBe("server");
   });
 
   it("is false while hydrating, so it matches the server, then true", async () => {
     const container = document.createElement("div");
-    container.innerHTML = renderToString(createElement(Probe));
+    container.innerHTML = renderOnServer(createElement(Probe));
     const errors = vi.spyOn(console, "error");
     const rendered: string[] = [];
     function Recorder() {

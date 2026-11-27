@@ -1,6 +1,6 @@
 import { fireEvent, renderHook } from "@testing-library/react";
 import { createElement } from "react";
-import { renderToString } from "react-dom/server";
+import { renderOnServer } from "./testing/renderOnServer";
 import { useClickOutside, type ClickOutsideRefs } from "./useClickOutside";
 
 function setupDom() {
@@ -152,7 +152,7 @@ describe("useClickOutside", () => {
       return "ok";
     }
 
-    expect(renderToString(createElement(Probe))).toBe("ok");
+    expect(renderOnServer(createElement(Probe))).toBe("ok");
   });
 
   it("only accepts element refs", () => {

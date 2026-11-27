@@ -1,6 +1,6 @@
 import { act, renderHook } from "@testing-library/react";
 import { createElement } from "react";
-import { renderToString } from "react-dom/server";
+import { renderOnServer } from "./testing/renderOnServer";
 import { useIdle } from "./useIdle";
 
 beforeEach(() => {
@@ -169,6 +169,6 @@ describe("useIdle", () => {
       return String(useIdle(1000));
     }
 
-    expect(renderToString(createElement(Probe))).toBe("false");
+    expect(renderOnServer(createElement(Probe))).toBe("false");
   });
 });

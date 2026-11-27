@@ -1,6 +1,6 @@
 import { act, renderHook } from "@testing-library/react";
 import { createElement } from "react";
-import { renderToString } from "react-dom/server";
+import { renderOnServer } from "./testing/renderOnServer";
 import { usePageVisibility } from "./usePageVisibility";
 
 function setVisibility(state: DocumentVisibilityState) {
@@ -49,6 +49,6 @@ describe("usePageVisibility", () => {
       return String(usePageVisibility());
     }
 
-    expect(renderToString(createElement(Probe))).toBe("true");
+    expect(renderOnServer(createElement(Probe))).toBe("true");
   });
 });

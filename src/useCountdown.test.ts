@@ -1,4 +1,6 @@
 import { act, renderHook } from "@testing-library/react";
+import { createElement } from "react";
+import { renderOnServer } from "./testing/renderOnServer";
 import { useCountdown, type Countdown } from "./useCountdown";
 
 const NOW = new Date("2026-01-01T00:00:00.000Z");
@@ -193,5 +195,14 @@ describe("useCountdown", () => {
     // @ts-expect-error -- the result is read-only
     result.current.seconds = 5;
     expectTypeOf(result.current).toEqualTypeOf<Countdown>();
+  });
+
+  it("renders on the server, where window and document don't exist, with the time left", () => {
+    function Probe() {
+      const { minutes, seconds, isExpired } = useCountdown(new Date("2026-01-01T00:01:30.000Z"));
+      return `${String(minutes)}:${String(seconds)} ${String(isExpired)}`;
+    }
+
+    expect(renderOnServer(createElement(Probe))).toBe("1:30 false");
   });
 });
