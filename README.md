@@ -14,6 +14,8 @@ Requires React 18 or newer.
 - [`useQuery`](#usequery): read the URL's query params
 - [`useCountdown`](#usecountdown): count down to a date
 - [`useClickOutside`](#useclickoutside): detect presses outside an element
+- [`useDebouncedValue`](#usedebouncedvalue): a value that waits for changes to settle
+- [`useDebouncedCallback`](#usedebouncedcallback): a function that waits for calls to stop
 - [`useLocalStorage`](#uselocalstorage): state that survives reloads and syncs across tabs
 - [`useMediaQuery`](#usemediaquery): match a CSS media query
 - [`useOnlineStatus`](#useonlinestatus): know when the network drops
@@ -156,6 +158,81 @@ function Dropdown() {
       </button>
       {open && createPortal(<ul ref={menuRef}>{/* … */}</ul>, document.body)}
     </>
+  );
+}
+```
+
+---
+
+### `useDebouncedValue`
+
+```ts
+function useDebouncedValue<T>(value: T, delayMs: number): T;
+```
+
+Returns `value`, but only updates once `value` has stopped changing for `delayMs`. The first
+render returns `value` straight away, and changing `delayMs` restarts the wait. Use it to
+derive expensive work (a fetch, a filter over a big list) from fast-changing input.
+
+```tsx
+import { useState } from "react";
+import { useDebouncedValue } from "react-honey-hooks";
+
+function ProductSearch() {
+  const [query, setQuery] = useState("");
+  const debouncedQuery = useDebouncedValue(query, 300);
+  const results = useProducts(debouncedQuery); // only refetches after typing pauses
+
+  return (
+    <>
+      <input
+        value={query}
+        onChange={(event) => {
+          setQuery(event.target.value);
+        }}
+      />
+      <ProductList products={results} />
+    </>
+  );
+}
+```
+
+---
+
+### `useDebouncedCallback`
+
+```ts
+function useDebouncedCallback<A extends unknown[]>(
+  fn: (...args: A) => void,
+  delayMs: number,
+): DebouncedFunction<A>;
+
+interface DebouncedFunction<A extends unknown[]> {
+  (...args: A): void;
+  readonly cancel: () => void; // drop the pending call
+  readonly flush: () => void; // run the pending call now
+}
+```
+
+Returns a function that, however often it is called, runs `fn` once with the last arguments
+after `delayMs` without further calls. A delay of 0 still collapses calls made in the same
+task. The latest `fn` is always used, so inline functions are fine, and the returned function
+keeps its identity for the component's lifetime. A pending call keeps the delay it was
+scheduled with, and is dropped when the component unmounts.
+
+```tsx
+import { useDebouncedCallback } from "react-honey-hooks";
+
+function NoteEditor({ save }: { save: (text: string) => void }) {
+  const saveSoon = useDebouncedCallback(save, 1000);
+
+  return (
+    <textarea
+      onChange={(event) => {
+        saveSoon(event.target.value);
+      }}
+      onBlur={saveSoon.flush}
+    />
   );
 }
 ```

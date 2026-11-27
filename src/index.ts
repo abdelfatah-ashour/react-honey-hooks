@@ -10,6 +10,8 @@ export {
   type CountdownOptions,
   type CountdownTarget,
 } from "./useCountdown";
+export { useDebouncedCallback, type DebouncedFunction } from "./useDebouncedCallback";
+export { useDebouncedValue } from "./useDebouncedValue";
 export { useLocalStorage, type SetStoredValue } from "./useLocalStorage";
 export { useMediaQuery } from "./useMediaQuery";
 export { useOnlineStatus } from "./useOnlineStatus";
