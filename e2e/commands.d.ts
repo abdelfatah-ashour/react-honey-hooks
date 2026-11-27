@@ -5,6 +5,7 @@ declare module "vitest/browser" {
     grantPermission: (name: string) => Promise<boolean>;
     mouseDown: () => Promise<void>;
     mouseUp: () => Promise<void>;
+    wheel: (deltaY: number) => Promise<void>;
   }
 }
 

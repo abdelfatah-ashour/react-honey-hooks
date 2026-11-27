@@ -50,6 +50,14 @@ const mouseUp: BrowserCommand = async (context) => {
   await context.page.mouse.up();
 };
 
+/** Scrolls the real mouse wheel by `deltaY` pixels where the pointer is. */
+const wheel: BrowserCommand<[deltaY: number]> = async (context, deltaY) => {
+  if (context.provider.name !== "playwright") {
+    throw new Error(`wheel is not supported by the ${context.provider.name} provider`);
+  }
+  await context.page.mouse.wheel(0, deltaY);
+};
+
 export default defineConfig({
   test: {
     restoreMocks: true,
@@ -78,7 +86,7 @@ export default defineConfig({
             enabled: true,
             headless: true,
             provider: playwright(),
-            commands: { goOfflineFor, grantPermission, mouseDown, mouseUp },
+            commands: { goOfflineFor, grantPermission, mouseDown, mouseUp, wheel },
             instances: [{ browser: "chromium" }, { browser: "firefox" }, { browser: "webkit" }],
           },
         },

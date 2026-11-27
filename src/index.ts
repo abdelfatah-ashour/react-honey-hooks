@@ -37,6 +37,7 @@ export {
   type SetQuery,
   type SetQueryOptions,
 } from "./useQueryState";
+export { useScrollLock } from "./useScrollLock";
 export { useSessionStorage } from "./useSessionStorage";
 export {
   useThrottledCallback,

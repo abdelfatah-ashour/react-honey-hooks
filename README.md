@@ -16,6 +16,7 @@ Requires React 18 or newer.
 - [`useQueryState`](#usequerystate): read and update the URL's query params
 - [`useCountdown`](#usecountdown): count down to a date
 - [`useClickOutside`](#useclickoutside): detect presses outside an element
+- [`useScrollLock`](#usescrolllock): stop the page scrolling behind a modal
 - [`useCopyToClipboard`](#usecopytoclipboard): copy text and show that it worked
 - [`useDebouncedValue`](#usedebouncedvalue): a value that waits for changes to settle
 - [`useDebouncedCallback`](#usedebouncedcallback): a function that waits for calls to stop
@@ -219,6 +220,33 @@ function Dropdown() {
       {open && createPortal(<ul ref={menuRef}>{/* … */}</ul>, document.body)}
     </>
   );
+}
+```
+
+---
+
+### `useScrollLock`
+
+```ts
+function useScrollLock(locked?: boolean): void; // default true
+```
+
+Stops the page from scrolling while `locked` is true, for example while a modal or drawer is
+open. Scrolling inside an element with its own overflow, such as the modal, still works.
+
+- It hides the overflow of `<html>`, and pads it by the scrollbar's width so the content
+  doesn't jump sideways when the scrollbar disappears.
+- Locks are counted: with a dialog open over another dialog, the page stays locked until both
+  release it. The page's own inline `overflow` and `padding-right` are restored after the last.
+- It does nothing during server rendering.
+
+```tsx
+import { useScrollLock } from "react-honey-hooks";
+
+function Drawer({ open, children }: { open: boolean; children: React.ReactNode }) {
+  useScrollLock(open);
+
+  return open ? <aside className="drawer">{children}</aside> : null;
 }
 ```
 
