@@ -89,6 +89,7 @@ export {
   type SetQuery,
   type SetQueryOptions,
 } from "./useQueryState";
+export { useRafInterval } from "./useRafInterval";
 export { useRafTimeout } from "./useRafTimeout";
 export { useResetState } from "./useResetState";
 export { useScript, type ScriptStatus } from "./useScript";

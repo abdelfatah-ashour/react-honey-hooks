@@ -44,6 +44,7 @@ Requires React 18 or newer.
 - [`useMutationObserver`](#usemutationobserver): react to changes in an element's content
 - [`useInView`](#useinview): know when an element scrolls into view
 - [`useInterval`](#useinterval): run something every few milliseconds
+- [`useRafInterval`](#userafinterval): run something every few milliseconds, on animation frames
 - [`useTimeout`](#usetimeout): run something once after a delay
 - [`useRafTimeout`](#useraftimeout): run something once after a delay, on an animation frame
 - [`useLocalStorage`](#uselocalstorage): state that survives reloads and syncs across tabs
@@ -1433,6 +1434,35 @@ function Stopwatch() {
       {seconds}s, {running ? "pause" : "start"}
     </button>
   );
+}
+```
+
+---
+
+### `useRafInterval`
+
+```ts
+function useRafInterval(callback: () => void, ms: number | null): void;
+```
+
+[`useInterval`](#useinterval) timed with animation frames: calls `callback` on the first frame
+each time `ms` has passed since the last call, or since it started. Browsers pause frames while
+the tab is hidden, so it stops in the background, and when the tab is shown again it calls once
+instead of catching up on every missed call. That suits animation and other visual work. Pass
+`null` to pause; 0, a negative, `NaN` or an infinite `ms` also pauses. Resuming or changing
+`ms` counts from zero again. The latest `callback` is always called without restarting, so it
+need not be memoised. Nothing runs on the server.
+
+```tsx
+import { useState } from "react";
+import { useRafInterval } from "react-honey-hooks";
+
+function Slideshow({ slides }: { slides: string[] }) {
+  const [index, setIndex] = useState(0);
+  useRafInterval(() => {
+    setIndex((current) => (current + 1) % slides.length);
+  }, 5000);
+  return <img src={slides[index]} alt="" />;
 }
 ```
 
