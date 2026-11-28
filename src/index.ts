@@ -58,6 +58,7 @@ export { useIdle } from "./useIdle";
 export { useInterval } from "./useInterval";
 export { useInView, type InViewOptions } from "./useInView";
 export { useIsClient } from "./useIsClient";
+export { useLatest } from "./useLatest";
 export { useLocalStorage, type SetStoredValue } from "./useLocalStorage";
 export { useLongPress, type LongPressOptions } from "./useLongPress";
 export { useMap, type MapActions } from "./useMap";

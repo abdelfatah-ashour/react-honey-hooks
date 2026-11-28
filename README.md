@@ -67,6 +67,7 @@ Requires React 18 or newer.
 - [`useCookieState`](#usecookiestate): state kept in a cookie
 - [`useSelections`](#useselections): checkboxes for a list, with select all
 - [`useDynamicList`](#usedynamiclist): a list of form rows with stable keys
+- [`useLatest`](#uselatest): a ref that always holds the latest value
 
 ---
 
@@ -2075,6 +2076,39 @@ function Guests() {
       </button>
     </>
   );
+}
+```
+
+---
+
+### `useLatest`
+
+```ts
+function useLatest<T>(value: T): RefObject<T>;
+```
+
+Returns a ref holding the latest `value`, for reading in effects, timers and event handlers
+without listing `value` as a dependency. The ref is the same object on every render. It is
+updated once a render commits, before any effects run (children's included), so read it there
+rather than while rendering.
+
+```tsx
+import { useEffect } from "react";
+import { useLatest } from "react-honey-hooks";
+
+function Autosave({ draft }: { draft: string }) {
+  const latestDraft = useLatest(draft);
+
+  useEffect(() => {
+    const id = setInterval(() => {
+      save(latestDraft.current);
+    }, 10_000);
+    return () => {
+      clearInterval(id);
+    };
+  }, [latestDraft]);
+
+  return null;
 }
 ```
 
