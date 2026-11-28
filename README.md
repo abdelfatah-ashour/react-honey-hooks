@@ -50,6 +50,7 @@ Requires React 18 or newer.
 - [`usePermission`](#usepermission): whether a browser permission is granted
 - [`useGeolocation`](#usegeolocation): the user's position
 - [`useWakeLock`](#usewakelock): keep the screen on
+- [`useFullscreen`](#usefullscreen): show an element fullscreen
 - [`useIsClient`](#useisclient): render browser-only content without a hydration mismatch
 - [`usePrefersColorScheme`](#usepreferscolorscheme): follow the system's light or dark mode
 - [`usePrefersReducedMotion`](#useprefersreducedmotion): respect the reduced-motion setting
@@ -1768,6 +1769,52 @@ function RecipeSteps() {
       />
       Keep the screen on while cooking
     </label>
+  );
+}
+```
+
+---
+
+### `useFullscreen`
+
+```ts
+function useFullscreen(ref: RefObject<Element | null>): Fullscreen;
+
+interface Fullscreen {
+  readonly isFullscreen: boolean; // whether this element is the one shown fullscreen
+  readonly supported: boolean;
+  readonly enter: () => Promise<boolean>; // resolves whether it worked
+  readonly exit: () => Promise<boolean>;
+  readonly toggle: () => Promise<boolean>;
+}
+```
+
+Shows an element, such as a video player, slideshow or chart, fullscreen.
+
+- Browsers only allow `enter` from a click or key press. It resolves whether it worked, and
+  never rejects.
+- `isFullscreen` is true only while this element is the one shown, and turns false when the
+  user leaves with Escape. `exit` doesn't touch another element's fullscreen.
+- `supported` is `false` without the Fullscreen API and where only videos can go fullscreen,
+  as on iPhone. Hide the button then.
+
+```tsx
+import { useRef } from "react";
+import { useFullscreen } from "react-honey-hooks";
+
+function Slideshow({ slides }: { slides: Slide[] }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const { isFullscreen, supported, toggle } = useFullscreen(ref);
+
+  return (
+    <div ref={ref}>
+      <Slides slides={slides} />
+      {supported && (
+        <button onClick={() => void toggle()}>
+          {isFullscreen ? "Exit fullscreen" : "Fullscreen"}
+        </button>
+      )}
+    </div>
   );
 }
 ```

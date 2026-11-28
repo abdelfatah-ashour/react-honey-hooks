@@ -25,6 +25,7 @@ export {
 } from "./useEventListener";
 export { useFocusTrap, type FocusTrapOptions } from "./useFocusTrap";
 export { useFocusWithin } from "./useFocusWithin";
+export { useFullscreen, type Fullscreen } from "./useFullscreen";
 export {
   useGeolocation,
   type GeolocationOptions,
