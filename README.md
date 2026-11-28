@@ -69,6 +69,7 @@ Requires React 18 or newer.
 - [`useDynamicList`](#usedynamiclist): a list of form rows with stable keys
 - [`useLatest`](#uselatest): a ref that always holds the latest value
 - [`useStableCallback`](#usestablecallback): a callback that never changes but calls the latest code
+- [`useMount`](#usemount): run something once when a component mounts
 
 ---
 
@@ -2144,6 +2145,30 @@ function Picker() {
     setCount(count + 1);
   });
   return <Row onPick={onPick} />;
+}
+```
+
+---
+
+### `useMount`
+
+```ts
+function useMount(fn: () => unknown): void;
+```
+
+Calls `fn` once, after the component first mounts. Later renders don't call it again, even
+with a different `fn`. `fn` can be async: what it returns is ignored rather than treated as a
+cleanup (use [`useUnmount`](#useunmount) for that). Like any effect, it doesn't run on the
+server, and React's development Strict Mode runs it twice.
+
+```tsx
+import { useMount } from "react-honey-hooks";
+
+function Dashboard() {
+  useMount(() => {
+    analytics.track("dashboard_viewed");
+  });
+  return <Charts />;
 }
 ```
 
