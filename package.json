@@ -1,7 +1,7 @@
 {
   "name": "react-honey-hooks",
   "version": "3.1.0",
-  "description": "Small, typed, dependency-free React hooks: async work, URL query state, local and session storage, media queries, element and window size, debouncing, throttling, timers, hotkeys, focus traps, file drops, geolocation, fullscreen, wake lock, scroll lock, undo and more.",
+  "description": "Small, typed, dependency-free React hooks: async work, URL query state, local and session storage, media queries, element and window size, debouncing, throttling, timers, hotkeys, focus traps, file drops, geolocation, fullscreen, wake lock, scroll lock, cookies, counters, Map and Set state, selections, dynamic lists, undo and more.",
   "license": "MIT",
   "author": "Abdelfatah Ashour",
   "repository": {
@@ -35,7 +35,12 @@
     "geolocation",
     "fullscreen",
     "wake-lock",
-    "drag-and-drop"
+    "drag-and-drop",
+    "cookies",
+    "counter",
+    "controlled-component",
+    "selection",
+    "dynamic-list"
   ],
   "type": "module",
   "sideEffects": false,
