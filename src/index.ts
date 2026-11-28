@@ -77,6 +77,7 @@ export { useMediaQuery } from "./useMediaQuery";
 export { useMount } from "./useMount";
 export { useMouse, type MouseElementPosition, type MouseState } from "./useMouse";
 export { useMutationObserver } from "./useMutationObserver";
+export { useNetwork, type NetworkState } from "./useNetwork";
 export { useOnlineStatus } from "./useOnlineStatus";
 export { usePageVisibility } from "./usePageVisibility";
 export { usePermission, type PermissionValue } from "./usePermission";

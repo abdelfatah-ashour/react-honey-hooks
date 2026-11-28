@@ -185,6 +185,7 @@ and don't see navigations made with `next/link` or `useRouter`. In a Next.js app
 - [`useCopyToClipboard`](#usecopytoclipboard): copy text and show that it worked
 - [`useBroadcastChannel`](#usebroadcastchannel): message other tabs of your site
 - [`useOnlineStatus`](#useonlinestatus): know when the network drops
+- [`useNetwork`](#usenetwork): the network connection, with its speed where the browser reports it
 - [`usePageVisibility`](#usepagevisibility): know when the tab is hidden
 - [`useIdle`](#useidle): know when the user stops interacting
 - [`usePermission`](#usepermission): whether a browser permission is granted
@@ -2669,6 +2670,42 @@ function SaveButton({ onSave }: { onSave: () => void }) {
       {online ? "Save" : "Offline: changes will sync later"}
     </button>
   );
+}
+```
+
+---
+
+### `useNetwork`
+
+```ts
+function useNetwork(): NetworkState;
+
+interface NetworkState {
+  readonly online: boolean;
+  readonly since: Date | null;
+  readonly effectiveType: string | undefined; // "slow-2g" | "2g" | "3g" | "4g"
+  readonly downlink: number | undefined; // megabits per second
+  readonly rtt: number | undefined; // milliseconds
+  readonly saveData: boolean | undefined;
+  readonly type: string | undefined; // such as "wifi" or "cellular"
+}
+```
+
+Describes the browser's network connection: whether it is online, and when that last changed
+while the component was mounted (`null` if it hasn't). In browsers that report them, which are
+Chromium-based ones, it also gives how fast the connection is and whether the user asked to
+save data; elsewhere those are `undefined`. It re-renders on the `online` and `offline` events
+and when the connection changes, and returns the same object while nothing has. On the server
+and while hydrating it reports online, with no details. If you only need `online`, use
+[`useOnlineStatus`](#useonlinestatus).
+
+```tsx
+import { useNetwork } from "react-honey-hooks";
+
+function VideoPlayer({ src }: { src: string }) {
+  const { effectiveType, saveData } = useNetwork();
+  const quality = saveData || effectiveType === "2g" ? "low" : "high";
+  return <video src={`${src}?quality=${quality}`} controls />;
 }
 ```
 
