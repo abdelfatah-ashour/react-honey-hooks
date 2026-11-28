@@ -34,6 +34,7 @@ export { useIsClient } from "./useIsClient";
 export { useLocalStorage, type SetStoredValue } from "./useLocalStorage";
 export { useLongPress, type LongPressOptions } from "./useLongPress";
 export { useMediaQuery } from "./useMediaQuery";
+export { useMutationObserver } from "./useMutationObserver";
 export { useOnlineStatus } from "./useOnlineStatus";
 export { usePageVisibility } from "./usePageVisibility";
 export { usePermission, type PermissionValue } from "./usePermission";
