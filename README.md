@@ -42,6 +42,7 @@ Requires React 18 or newer.
 - [`useSessionStorage`](#usesessionstorage): state that survives reloads in this tab only
 - [`useMediaQuery`](#usemediaquery): match a CSS media query
 - [`useWindowSize`](#usewindowsize): the window's width and height
+- [`useWindowScroll`](#usewindowscroll): the page's scroll position
 - [`useOnlineStatus`](#useonlinestatus): know when the network drops
 - [`usePageVisibility`](#usepagevisibility): know when the tab is hidden
 - [`useIdle`](#useidle): know when the user stops interacting
@@ -1297,6 +1298,49 @@ function Confetti() {
   const { width, height } = useWindowSize();
 
   return <canvas width={width} height={height} />;
+}
+```
+
+---
+
+### `useWindowScroll`
+
+```ts
+function useWindowScroll(): WindowScroll;
+
+interface WindowScroll {
+  readonly x: number;
+  readonly y: number;
+}
+```
+
+Returns how far the page is scrolled, in CSS pixels, and re-renders as it scrolls.
+
+- It updates at most once per animation frame, however many scroll events the browser sends,
+  so it stays cheap during fast scrolling.
+- During server rendering and on the first render while hydrating it is `{ x: 0, y: 0 }`, so
+  hydration never mismatches.
+- It returns the same object while the position is unchanged.
+
+To show something when an element scrolls into view, [`useInView`](#useinview) is cheaper: it
+only re-renders when the element enters or leaves.
+
+```tsx
+import { useWindowScroll } from "react-honey-hooks";
+
+function BackToTop() {
+  const { y } = useWindowScroll();
+
+  if (y < 800) return null;
+  return (
+    <button
+      onClick={() => {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }}
+    >
+      Back to top
+    </button>
+  );
 }
 ```
 
