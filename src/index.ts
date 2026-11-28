@@ -7,6 +7,11 @@ export {
   type ClickOutsideOptions,
   type ClickOutsideRefs,
 } from "./useClickOutside";
+export {
+  useControllableValue,
+  type ControllableValueProps,
+  type SetControllableValue,
+} from "./useControllableValue";
 export { useCopyToClipboard, type CopyToClipboard } from "./useCopyToClipboard";
 export {
   useCountdown,

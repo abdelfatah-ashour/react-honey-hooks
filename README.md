@@ -63,6 +63,7 @@ Requires React 18 or newer.
 - [`useSetState`](#usesetstate): object state that merges updates
 - [`useResetState`](#useresetstate): `useState` with a `reset` back to the initial value
 - [`useGetState`](#usegetstate): `useState` with a `getState` that never reads a stale value
+- [`useControllableValue`](#usecontrollablevalue): a value a component's parent can control, or not
 
 ---
 
@@ -1817,6 +1818,56 @@ function Clicks() {
     </button>
   );
 }
+```
+
+---
+
+### `useControllableValue`
+
+```ts
+function useControllableValue<T>(
+  props: ControllableValueProps<T>,
+): readonly [T, SetControllableValue<T>]; // T | undefined when there's no value or defaultValue
+
+interface ControllableValueProps<T> {
+  value?: T | undefined;
+  defaultValue?: T | undefined;
+  onChange?: ((value: T) => void) | undefined;
+}
+
+type SetControllableValue<T> = (next: T | ((current: T) => T)) => void;
+```
+
+For components that can be controlled, like `<input value onChange>`, or uncontrolled, like
+`<input defaultValue>`. When `value` is not `undefined`, the component is controlled: it shows
+`value`, and `setValue` only calls `onChange` for the parent to apply. Otherwise it keeps its
+own value, starting at `defaultValue`, and `setValue` updates it and calls `onChange`.
+`setValue` takes a value or a function of the current value. `onChange` is called on every
+`setValue`, even with the same value. If the parent stops passing `value`, the component keeps
+the last value it was given. The latest `onChange` is always used, so it need not be memoised,
+and `setValue` never changes.
+
+```tsx
+import { type ControllableValueProps, useControllableValue } from "react-honey-hooks";
+
+function Rating(props: ControllableValueProps<number>) {
+  const [stars = 0, setStars] = useControllableValue(props);
+
+  return [1, 2, 3, 4, 5].map((value) => (
+    <button
+      key={value}
+      aria-pressed={value <= stars}
+      onClick={() => {
+        setStars(value);
+      }}
+    >
+      ★
+    </button>
+  ));
+}
+
+// <Rating defaultValue={3} /> keeps its own value;
+// <Rating value={stars} onChange={setStars} /> is controlled.
 ```
 
 ---
