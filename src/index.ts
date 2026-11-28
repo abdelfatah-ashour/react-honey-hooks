@@ -14,6 +14,12 @@ export {
   type CountdownOptions,
   type CountdownTarget,
 } from "./useCountdown";
+export {
+  useCounter,
+  type CounterActions,
+  type CounterOptions,
+  type CounterStep,
+} from "./useCounter";
 export { useDebouncedCallback, type DebouncedFunction } from "./useDebouncedCallback";
 export { useDebouncedValue } from "./useDebouncedValue";
 export { useDocumentTitle, type DocumentTitleOptions } from "./useDocumentTitle";

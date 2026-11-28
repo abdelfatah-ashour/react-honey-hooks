@@ -57,6 +57,7 @@ Requires React 18 or newer.
 - [`usePrefersReducedMotion`](#useprefersreducedmotion): respect the reduced-motion setting
 - [`usePrevious`](#useprevious): the value before it last changed
 - [`useToggle`](#usetoggle): a boolean with `toggle`, `setTrue` and `setFalse`
+- [`useCounter`](#usecounter): a number with `inc`, `dec` and optional limits
 
 ---
 
@@ -1558,6 +1559,53 @@ function Faq() {
         Shipping
       </button>
       {open && <Answer onClose={setFalse} />}
+    </>
+  );
+}
+```
+
+---
+
+### `useCounter`
+
+```ts
+function useCounter(initial?: number, options?: CounterOptions): readonly [number, CounterActions];
+
+interface CounterOptions {
+  min?: number;
+  max?: number;
+}
+
+interface CounterActions {
+  inc: (delta?: number) => void;
+  dec: (delta?: number) => void;
+  set: (value: number | ((current: number) => number)) => void;
+  reset: () => void;
+}
+```
+
+A number starting at `initial` (0 unless given) that always stays within `min` and `max`:
+`inc` and `dec` stop at the limits, `set` keeps its value in range, an initial value outside
+the limits starts at the nearest one, and if the limits change the count moves into the new
+range. `reset` goes back to the initial value from the first render. `NaN` is ignored. `inc`
+and `dec` step by 1 unless given a number, so they can be passed straight to `onClick`. The
+actions object and its functions never change and always use the latest limits.
+
+```tsx
+import { useCounter } from "react-honey-hooks";
+
+function Quantity() {
+  const [quantity, { inc, dec }] = useCounter(1, { min: 1, max: 10 });
+
+  return (
+    <>
+      <button onClick={dec} disabled={quantity === 1}>
+        −
+      </button>
+      {quantity}
+      <button onClick={inc} disabled={quantity === 10}>
+        +
+      </button>
     </>
   );
 }
