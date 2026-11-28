@@ -44,6 +44,12 @@ export {
   type EventListenerHookOptions,
   type EventListenerTarget,
 } from "./useEventListener";
+export {
+  useEventTarget,
+  type EventTargetActions,
+  type EventTargetOptions,
+  type FieldValue,
+} from "./useEventTarget";
 export { useFileDrop, type FileDrop, type FileDropOptions } from "./useFileDrop";
 export { useFocusTrap, type FocusTrapOptions } from "./useFocusTrap";
 export { useFocusWithin } from "./useFocusWithin";

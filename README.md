@@ -33,6 +33,7 @@ Requires React 18 or newer.
 - [`useThrottledValue`](#usethrottledvalue): a value that updates at most every few ms
 - [`useThrottledEffect`](#usethrottledeffect): an effect that runs at most every few ms
 - [`useEventListener`](#useeventlistener): listen to any DOM event, typed
+- [`useEventTarget`](#useeventtarget): bind a form field's value to state
 - [`useHotkey`](#usehotkey): keyboard shortcuts such as `mod+k`
 - [`useLongPress`](#uselongpress): press and hold an element
 - [`useFileDrop`](#usefiledrop): accept files dropped onto an element
@@ -975,6 +976,51 @@ function Gallery({ onClose }: { onClose: () => void }) {
     <ul ref={listRef} className={scrolled ? "with-shadow" : undefined}>
       {/* … */}
     </ul>
+  );
+}
+```
+
+---
+
+### `useEventTarget`
+
+```ts
+function useEventTarget(options: { initialValue: string }): readonly [string, EventTargetActions];
+function useEventTarget(options: { initialValue: boolean }): readonly [boolean, EventTargetActions];
+function useEventTarget<T>(options: {
+  initialValue: T;
+  transform: (value: FieldValue) => T;
+}): readonly [T, EventTargetActions];
+
+type FieldValue = string | boolean;
+
+interface EventTargetActions {
+  onChange: (event: { target: EventTarget | null }) => void;
+  reset: () => void;
+}
+```
+
+State bound to a form field: pass `value` and `onChange` to an `<input>`, `<textarea>` or
+`<select>`. `onChange` reads the field's `value`, or a checkbox's `checked` state, and
+`transform` maps it to the value to keep, such as text to a number. `reset` goes back to
+`initialValue`. Events from elements with no value are ignored. `onChange` and `reset` never
+change, and the latest `transform` is always used.
+
+```tsx
+import { useEventTarget } from "react-honey-hooks";
+
+function Order() {
+  const [name, nameField] = useEventTarget({ initialValue: "" });
+  const [quantity, quantityField] = useEventTarget({
+    initialValue: 1,
+    transform: (value) => Math.max(1, Number(value) || 1),
+  });
+
+  return (
+    <>
+      <input value={name} onChange={nameField.onChange} />
+      <input type="number" value={quantity} onChange={quantityField.onChange} />
+    </>
   );
 }
 ```
