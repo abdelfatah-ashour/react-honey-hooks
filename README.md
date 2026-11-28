@@ -39,6 +39,7 @@ Requires React 18 or newer.
 - [`useLongPress`](#uselongpress): press and hold an element
 - [`useFileDrop`](#usefiledrop): accept files dropped onto an element
 - [`useHover`](#usehover): know when the pointer is over an element
+- [`useMouse`](#usemouse): where the mouse is, on the page or in an element
 - [`useFocusWithin`](#usefocuswithin): know when focus is inside an element
 - [`useElementSize`](#useelementsize): measure an element as it resizes
 - [`useMutationObserver`](#usemutationobserver): react to changes in an element's content
@@ -1286,6 +1287,58 @@ function UserLink({ user }: { user: User }) {
       {user.name}
       {hovered && <ProfilePreview userId={user.id} />}
     </a>
+  );
+}
+```
+
+---
+
+### `useMouse`
+
+```ts
+function useMouse(ref?: RefObject<Element | null>): MouseState | null;
+
+interface MouseState {
+  readonly clientX: number;
+  readonly clientY: number;
+  readonly pageX: number;
+  readonly pageY: number;
+  readonly screenX: number;
+  readonly screenY: number;
+  readonly element: MouseElementPosition | null;
+}
+
+interface MouseElementPosition {
+  readonly x: number;
+  readonly y: number;
+  readonly width: number;
+  readonly height: number;
+}
+```
+
+Tracks the mouse: where it is in the viewport, the page (including scrolling) and the screen,
+in CSS pixels. It re-renders as the mouse moves, at most once per animation frame. Given a
+`ref`, `element` also holds the position within that element, which is negative or beyond its
+size outside it, and the element's size, measured on each update. It is `null` on the server
+and until the mouse first moves over the page, and stops listening on unmount.
+
+```tsx
+import { useRef } from "react";
+import { useMouse } from "react-honey-hooks";
+
+function Spotlight() {
+  const card = useRef<HTMLDivElement>(null);
+  const mouse = useMouse(card);
+
+  return (
+    <div
+      ref={card}
+      style={{
+        background: mouse?.element
+          ? `radial-gradient(circle at ${String(mouse.element.x)}px ${String(mouse.element.y)}px, #fff3, transparent 40%)`
+          : undefined,
+      }}
+    />
   );
 }
 ```

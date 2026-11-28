@@ -75,6 +75,7 @@ export { useLongPress, type LongPressOptions } from "./useLongPress";
 export { useMap, type MapActions } from "./useMap";
 export { useMediaQuery } from "./useMediaQuery";
 export { useMount } from "./useMount";
+export { useMouse, type MouseElementPosition, type MouseState } from "./useMouse";
 export { useMutationObserver } from "./useMutationObserver";
 export { useOnlineStatus } from "./useOnlineStatus";
 export { usePageVisibility } from "./usePageVisibility";
