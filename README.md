@@ -28,6 +28,7 @@ Requires React 18 or newer.
 - [`useCopyToClipboard`](#usecopytoclipboard): copy text and show that it worked
 - [`useDebouncedValue`](#usedebouncedvalue): a value that waits for changes to settle
 - [`useDebouncedCallback`](#usedebouncedcallback): a function that waits for calls to stop
+- [`useDebouncedEffect`](#usedebouncedeffect): an effect that waits for its dependencies to settle
 - [`useThrottledCallback`](#usethrottledcallback): a function that runs at most every few ms
 - [`useThrottledValue`](#usethrottledvalue): a value that updates at most every few ms
 - [`useEventListener`](#useeventlistener): listen to any DOM event, typed
@@ -752,6 +753,47 @@ function NoteEditor({ save }: { save: (text: string) => void }) {
         saveSoon(event.target.value);
       }}
       onBlur={saveSoon.flush}
+    />
+  );
+}
+```
+
+---
+
+### `useDebouncedEffect`
+
+```ts
+function useDebouncedEffect(effect: EffectCallback, deps: DependencyList, ms: number): void;
+```
+
+An effect that waits for its dependencies to settle: `effect` runs once `deps` have stopped
+changing for `ms`, such as a search request after the user stops typing. It doesn't run on
+mount, only after `deps` change. Each change restarts the wait, and so does changing `ms`.
+When it runs, it uses the latest `effect`. The cleanup `effect` returns runs before the next
+run and on unmount, and a pending run is dropped on unmount. With `ms` of 0 or less (or `NaN`)
+it runs on every change with no delay.
+
+```tsx
+import { useState } from "react";
+import { useDebouncedEffect } from "react-honey-hooks";
+
+function Search() {
+  const [query, setQuery] = useState("");
+
+  useDebouncedEffect(
+    () => {
+      void search(query);
+    },
+    [query],
+    300,
+  );
+
+  return (
+    <input
+      value={query}
+      onChange={(event) => {
+        setQuery(event.target.value);
+      }}
     />
   );
 }

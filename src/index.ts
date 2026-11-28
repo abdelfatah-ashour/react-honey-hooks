@@ -33,6 +33,7 @@ export {
   type CounterStep,
 } from "./useCounter";
 export { useDebouncedCallback, type DebouncedFunction } from "./useDebouncedCallback";
+export { useDebouncedEffect } from "./useDebouncedEffect";
 export { useDebouncedValue } from "./useDebouncedValue";
 export { useDeepCompareEffect } from "./useDeepCompareEffect";
 export { useDocumentTitle, type DocumentTitleOptions } from "./useDocumentTitle";
