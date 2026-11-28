@@ -60,6 +60,7 @@ Requires React 18 or newer.
 - [`useCounter`](#usecounter): a number with `inc`, `dec` and optional limits
 - [`useMap`](#usemap): a `Map` in state, with `set` and `remove`
 - [`useSet`](#useset): a `Set` in state, with `add`, `remove` and `toggle`
+- [`useSetState`](#usesetstate): object state that merges updates
 
 ---
 
@@ -1693,6 +1694,49 @@ function Toppings({ toppings }: { toppings: string[] }) {
       {topping}
     </label>
   ));
+}
+```
+
+---
+
+### `useSetState`
+
+```ts
+function useSetState<T extends object>(initial: T | (() => T)): readonly [T, SetMergedState<T>];
+
+type SetMergedState<T> = (patch: StatePatch<T>) => void;
+type StatePatch<T> = Partial<T> | ((current: T) => Partial<T>);
+```
+
+Object state that merges updates, like a class component's `setState`. `setState(patch)`
+shallowly merges `patch` into the state, keeping the other keys, and `setState(current =>
+patch)` computes the patch from the current state, so several updates in one event all apply.
+A patch that changes nothing, such as an empty object or values the state already has (compared
+with `Object.is`), keeps the same state object and doesn't re-render. `initial` can be a
+function, called once. `setState` never changes.
+
+```tsx
+import { useSetState } from "react-honey-hooks";
+
+function SignUp() {
+  const [form, setForm] = useSetState({ name: "", email: "" });
+
+  return (
+    <>
+      <input
+        value={form.name}
+        onChange={(event) => {
+          setForm({ name: event.target.value });
+        }}
+      />
+      <input
+        value={form.email}
+        onChange={(event) => {
+          setForm({ email: event.target.value });
+        }}
+      />
+    </>
+  );
 }
 ```
 
