@@ -60,7 +60,7 @@
     "dev": "tsup --watch",
     "test": "vitest run --project unit",
     "test:watch": "vitest --project unit",
-    "test:e2e": "tsup && vitest run --project e2e",
+    "test:e2e": "tsup && vitest run --project e2e --project e2e-exclusive",
     "test:bundle": "tsup && vitest run --project bundle",
     "typecheck": "tsc --noEmit",
     "lint": "eslint .",

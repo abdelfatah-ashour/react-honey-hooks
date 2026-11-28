@@ -90,6 +90,55 @@ const emulateMedia: BrowserCommand<[preferences: MediaPreferences]> = async (
   await context.page.emulateMedia(preferences);
 };
 
+/**
+ * Browser tests that need the browser to themselves, so they run one file at a time, after the
+ * others, in browsers of their own. Test files otherwise share one tab and one set of
+ * permissions: Firefox only grants fullscreen to a focused document, and parallel files keep
+ * moving focus, and permission tests would see grants made by other files.
+ */
+const EXCLUSIVE_E2E = ["e2e/useFullscreen.test.tsx", "e2e/usePermission.test.tsx"];
+
+/** A project running files from `e2e/` in real browsers against the built bundle. */
+function e2eProject(test: {
+  name: string;
+  include: string[];
+  exclude?: string[];
+  fileParallelism?: boolean;
+  sequence: { groupOrder: number };
+}) {
+  return {
+    extends: true,
+    // e2e tests import the published bundle, so `npm run test:e2e` builds it first.
+    resolve: {
+      alias: {
+        "react-honey-hooks": fileURLToPath(new URL("dist/index.js", import.meta.url)),
+      },
+    },
+    test: {
+      ...test,
+      browser: {
+        enabled: true,
+        headless: true,
+        provider: playwright(),
+        commands: {
+          goOfflineFor,
+          grantPermission,
+          mouseDown,
+          mouseUp,
+          wheel,
+          emulateMedia,
+          setGeolocation,
+        },
+        instances: [
+          { browser: "chromium" as const },
+          { browser: "firefox" as const },
+          { browser: "webkit" as const },
+        ],
+      },
+    },
+  };
+}
+
 export default defineConfig({
   test: {
     restoreMocks: true,
@@ -113,34 +162,18 @@ export default defineConfig({
           include: ["bundle/**/*.test.ts"],
         },
       },
-      {
-        extends: true,
-        // e2e tests import the published bundle, so `npm run test:e2e` builds it first.
-        resolve: {
-          alias: {
-            "react-honey-hooks": fileURLToPath(new URL("dist/index.js", import.meta.url)),
-          },
-        },
-        test: {
-          name: "e2e",
-          include: ["e2e/**/*.test.{ts,tsx}"],
-          browser: {
-            enabled: true,
-            headless: true,
-            provider: playwright(),
-            commands: {
-              goOfflineFor,
-              grantPermission,
-              mouseDown,
-              mouseUp,
-              wheel,
-              emulateMedia,
-              setGeolocation,
-            },
-            instances: [{ browser: "chromium" }, { browser: "firefox" }, { browser: "webkit" }],
-          },
-        },
-      },
+      e2eProject({
+        name: "e2e",
+        include: ["e2e/**/*.test.{ts,tsx}"],
+        exclude: EXCLUSIVE_E2E,
+        sequence: { groupOrder: 0 },
+      }),
+      e2eProject({
+        name: "e2e-exclusive",
+        include: EXCLUSIVE_E2E,
+        fileParallelism: false,
+        sequence: { groupOrder: 1 },
+      }),
     ],
   },
 });
