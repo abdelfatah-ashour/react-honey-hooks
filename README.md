@@ -59,6 +59,7 @@ Requires React 18 or newer.
 - [`useToggle`](#usetoggle): a boolean with `toggle`, `setTrue` and `setFalse`
 - [`useCounter`](#usecounter): a number with `inc`, `dec` and optional limits
 - [`useMap`](#usemap): a `Map` in state, with `set` and `remove`
+- [`useSet`](#useset): a `Set` in state, with `add`, `remove` and `toggle`
 
 ---
 
@@ -1648,6 +1649,49 @@ function Basket({ fruits }: { fruits: string[] }) {
       <button onClick={() => set(fruit, (basket.get(fruit) ?? 0) + 1)}>Add</button>
       <button onClick={() => remove(fruit)}>Remove</button>
     </p>
+  ));
+}
+```
+
+---
+
+### `useSet`
+
+```ts
+function useSet<T>(values?: Iterable<T>): readonly [ReadonlySet<T>, SetActions<T>];
+
+interface SetActions<T> {
+  add: (value: T) => void;
+  remove: (value: T) => void;
+  toggle: (value: T) => void;
+  clear: () => void;
+  reset: () => void;
+}
+```
+
+A `Set` held in state, starting with `values`. It is never changed in place: each change gives
+a new set, so it works as an effect dependency or a memoised prop. An action that changes
+nothing, such as adding a value that is already there or removing a missing one, keeps the same
+set and doesn't re-render. `reset` goes back to the values from the first render. The actions
+object and its functions never change.
+
+```tsx
+import { useSet } from "react-honey-hooks";
+
+function Toppings({ toppings }: { toppings: string[] }) {
+  const [chosen, { toggle }] = useSet<string>();
+
+  return toppings.map((topping) => (
+    <label key={topping}>
+      <input
+        type="checkbox"
+        checked={chosen.has(topping)}
+        onChange={() => {
+          toggle(topping);
+        }}
+      />
+      {topping}
+    </label>
   ));
 }
 ```
