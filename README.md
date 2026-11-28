@@ -74,6 +74,7 @@ Requires React 18 or newer.
 - [`useUpdateEffect`](#useupdateeffect): an effect that skips the first render
 - [`useLockFn`](#uselockfn): stop an async action running twice at once
 - [`useDeepCompareEffect`](#usedeepcompareeffect): an effect that compares dependencies by contents
+- [`useAsyncEffect`](#useasynceffect): an async effect, cancelled when it goes stale
 
 ---
 
@@ -2279,6 +2280,46 @@ function Results({ color, size }: { color: string; size: number }) {
   }, [filters]);
 
   return <ResultList />;
+}
+```
+
+---
+
+### `useAsyncEffect`
+
+```ts
+function useAsyncEffect(
+  effect: (signal: AbortSignal) => Promise<unknown>,
+  deps?: DependencyList,
+): void;
+```
+
+`useEffect` for async work. `effect` gets an `AbortSignal` that is aborted when the
+dependencies change and when the component unmounts. Pass it to `fetch` to cancel the request,
+and check `signal.aborted` after each `await` to skip updates from a stale run. If `effect`
+fails, the error is reported like an uncaught exception (to the console and the window's
+`error` event) rather than swallowed. An `AbortError`, or the signal's own abort reason, is
+ignored, since it is expected after cancelling. With no `deps` it runs after every render, as
+`useEffect` does. To run async work on demand and track its status, use
+[`useAsync`](#useasync).
+
+```tsx
+import { useState } from "react";
+import { useAsyncEffect } from "react-honey-hooks";
+
+function Profile({ userId }: { userId: string }) {
+  const [user, setUser] = useState<User | null>(null);
+
+  useAsyncEffect(
+    async (signal) => {
+      const response = await fetch(`/api/users/${userId}`, { signal });
+      const loaded = (await response.json()) as User;
+      if (!signal.aborted) setUser(loaded);
+    },
+    [userId],
+  );
+
+  return user && <h1>{user.name}</h1>;
 }
 ```
 
