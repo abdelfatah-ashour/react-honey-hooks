@@ -45,6 +45,7 @@ Requires React 18 or newer.
 - [`useInView`](#useinview): know when an element scrolls into view
 - [`useInterval`](#useinterval): run something every few milliseconds
 - [`useTimeout`](#usetimeout): run something once after a delay
+- [`useRafTimeout`](#useraftimeout): run something once after a delay, on an animation frame
 - [`useLocalStorage`](#uselocalstorage): state that survives reloads and syncs across tabs
 - [`useSessionStorage`](#usesessionstorage): state that survives reloads in this tab only
 - [`useMediaQuery`](#usemediaquery): match a CSS media query
@@ -1455,6 +1456,37 @@ function Toast({ message, onDismiss }: { message: string; onDismiss: () => void 
   useTimeout(onDismiss, 4000);
 
   return <div role="status">{message}</div>;
+}
+```
+
+---
+
+### `useRafTimeout`
+
+```ts
+function useRafTimeout(callback: () => void, ms: number | null): void;
+```
+
+[`useTimeout`](#usetimeout) timed with animation frames: calls `callback` once, on the first
+frame at least `ms` after mounting. Browsers pause frames while the tab is hidden, so it waits
+until the tab is shown instead of firing in the background, which suits visual work. Changing
+`ms` starts the wait again from now. `null`, or a negative, `NaN` or infinite `ms`, cancels it
+until a valid one is given, and 0 calls it on the next frame. The latest `callback` is always
+called, so it need not be memoised. Nothing runs on the server.
+
+```tsx
+import { useState } from "react";
+import { useRafTimeout } from "react-honey-hooks";
+
+function SavedToast() {
+  const [visible, setVisible] = useState(true);
+  useRafTimeout(
+    () => {
+      setVisible(false);
+    },
+    visible ? 3000 : null,
+  );
+  return visible && <p role="status">Saved</p>;
 }
 ```
 
