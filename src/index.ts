@@ -33,6 +33,7 @@ export {
 } from "./useCounter";
 export { useDebouncedCallback, type DebouncedFunction } from "./useDebouncedCallback";
 export { useDebouncedValue } from "./useDebouncedValue";
+export { useDeepCompareEffect } from "./useDeepCompareEffect";
 export { useDocumentTitle, type DocumentTitleOptions } from "./useDocumentTitle";
 export { useDynamicList, type DynamicList } from "./useDynamicList";
 export { useElementSize, type ElementSize, type ElementSizeOptions } from "./useElementSize";

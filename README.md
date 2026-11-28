@@ -73,6 +73,7 @@ Requires React 18 or newer.
 - [`useUnmount`](#useunmount): run something when a component unmounts
 - [`useUpdateEffect`](#useupdateeffect): an effect that skips the first render
 - [`useLockFn`](#uselockfn): stop an async action running twice at once
+- [`useDeepCompareEffect`](#usedeepcompareeffect): an effect that compares dependencies by contents
 
 ---
 
@@ -2248,6 +2249,36 @@ function PayButton({ orderId }: { orderId: string }) {
     await api.pay(orderId);
   });
   return <button onClick={() => void pay()}>Pay</button>;
+}
+```
+
+---
+
+### `useDeepCompareEffect`
+
+```ts
+function useDeepCompareEffect(effect: EffectCallback, deps: DependencyList): void;
+```
+
+`useEffect` that compares `deps` by their contents rather than by identity, so a new object or
+array with the same data, such as one created during render, doesn't re-run the effect.
+Primitives are compared with `Object.is`; arrays and plain objects key by key, deeply; dates by
+time; regular expressions by source and flags; maps by keys and (deeply) values; and sets by
+members. Other objects, such as class instances, must be the same object. The cleanup runs
+before each re-run and on unmount, as with `useEffect`. Every render walks the whole of `deps`,
+so keep them to plain, modest data without cycles.
+
+```tsx
+import { useDeepCompareEffect } from "react-honey-hooks";
+
+function Results({ color, size }: { color: string; size: number }) {
+  const filters = { color, size }; // a new object on every render
+
+  useDeepCompareEffect(() => {
+    void fetchResults(filters);
+  }, [filters]);
+
+  return <ResultList />;
 }
 ```
 
