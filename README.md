@@ -31,6 +31,7 @@ Requires React 18 or newer.
 - [`useDebouncedEffect`](#usedebouncedeffect): an effect that waits for its dependencies to settle
 - [`useThrottledCallback`](#usethrottledcallback): a function that runs at most every few ms
 - [`useThrottledValue`](#usethrottledvalue): a value that updates at most every few ms
+- [`useThrottledEffect`](#usethrottledeffect): an effect that runs at most every few ms
 - [`useEventListener`](#useeventlistener): listen to any DOM event, typed
 - [`useHotkey`](#usehotkey): keyboard shortcuts such as `mod+k`
 - [`useLongPress`](#uselongpress): press and hold an element
@@ -879,6 +880,39 @@ function ReadingProgress() {
   const { y } = useWindowScroll();
   const throttledY = useThrottledValue(y, 100);
   return <ProgressBar value={throttledY} />;
+}
+```
+
+---
+
+### `useThrottledEffect`
+
+```ts
+function useThrottledEffect(effect: EffectCallback, deps: DependencyList, ms: number): void;
+```
+
+An effect that runs at most once every `ms`, for dependencies that change very often, such as a
+scroll position. It doesn't run on mount, only after `deps` change. The first change runs it at
+once and starts a wait. Changes during the wait collapse into one run, with the latest
+`effect`, when it ends, and that run starts a new wait. The cleanup `effect` returns runs
+before the next run and on unmount, and a pending run is dropped on unmount. With `ms` of 0 or
+less (or `NaN`) it runs on every change with no delay.
+
+```tsx
+import { useThrottledEffect, useWindowScroll } from "react-honey-hooks";
+
+function Article({ id }: { id: string }) {
+  const { y } = useWindowScroll();
+
+  useThrottledEffect(
+    () => {
+      saveReadingPosition(id, y);
+    },
+    [id, y],
+    1000,
+  );
+
+  return <ArticleBody id={id} />;
 }
 ```
 

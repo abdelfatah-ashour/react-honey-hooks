@@ -96,6 +96,7 @@ export {
   type ThrottledFunction,
   type ThrottleOptions,
 } from "./useThrottledCallback";
+export { useThrottledEffect } from "./useThrottledEffect";
 export { useThrottledValue } from "./useThrottledValue";
 export { useTimeout } from "./useTimeout";
 export { useToggle, type ToggleActions } from "./useToggle";
