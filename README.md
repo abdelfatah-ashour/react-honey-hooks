@@ -32,6 +32,7 @@ Requires React 18 or newer.
 - [`useEventListener`](#useeventlistener): listen to any DOM event, typed
 - [`useHotkey`](#usehotkey): keyboard shortcuts such as `mod+k`
 - [`useLongPress`](#uselongpress): press and hold an element
+- [`useFileDrop`](#usefiledrop): accept files dropped onto an element
 - [`useHover`](#usehover): know when the pointer is over an element
 - [`useFocusWithin`](#usefocuswithin): know when focus is inside an element
 - [`useElementSize`](#useelementsize): measure an element as it resizes
@@ -998,6 +999,65 @@ function MessageBubble({ onOpen, onShowActions }: MessageBubbleProps) {
     <button ref={ref} onClick={onOpen}>
       …
     </button>
+  );
+}
+```
+
+---
+
+### `useFileDrop`
+
+```ts
+function useFileDrop(
+  ref: RefObject<HTMLElement | null>,
+  onDrop: (accepted: File[], rejected: File[]) => void,
+  options?: FileDropOptions,
+): FileDrop;
+
+interface FileDropOptions {
+  accept?: string; // as in <input type="file" accept>, e.g. "image/*,.pdf"; default any file
+  multiple?: boolean; // default true; false accepts only the first file
+  enabled?: boolean; // default true
+}
+
+interface FileDrop {
+  readonly isOver: boolean; // whether files are being dragged over the element
+}
+```
+
+Turns an element into a drop zone for files.
+
+- `isOver` is true while files are dragged over it, and doesn't flicker as the pointer crosses
+  its children, so it is safe for highlighting the zone.
+- `onDrop` receives the dropped files split by `accept`, which takes MIME types (`image/png`),
+  wildcards (`image/*`) and extensions (`.pdf`, any case). With `multiple: false`, only the
+  first accepted file is accepted.
+- Drags without files, such as selected text or links, are ignored, and a dropped file isn't
+  opened by the browser in place of your page.
+- The latest `onDrop` is always called, so inline functions are fine.
+
+Keep a file `<input>` as well, so people who can't drag, including keyboard users, can choose
+files too.
+
+```tsx
+import { useRef } from "react";
+import { useFileDrop } from "react-honey-hooks";
+
+function AvatarUpload({ upload }: { upload: (file: File) => void }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const { isOver } = useFileDrop(
+    ref,
+    (accepted, rejected) => {
+      if (accepted[0]) upload(accepted[0]);
+      if (rejected.length > 0) alert("Please drop a single image.");
+    },
+    { accept: "image/*", multiple: false },
+  );
+
+  return (
+    <div ref={ref} className={isOver ? "drop-zone active" : "drop-zone"}>
+      Drop a photo here
+    </div>
   );
 }
 ```

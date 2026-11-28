@@ -23,6 +23,7 @@ export {
   type EventListenerHookOptions,
   type EventListenerTarget,
 } from "./useEventListener";
+export { useFileDrop, type FileDrop, type FileDropOptions } from "./useFileDrop";
 export { useFocusTrap, type FocusTrapOptions } from "./useFocusTrap";
 export { useFocusWithin } from "./useFocusWithin";
 export { useFullscreen, type Fullscreen } from "./useFullscreen";
