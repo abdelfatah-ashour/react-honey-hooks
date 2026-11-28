@@ -3,3 +3,6 @@ coverage
 package-lock.json
 .vitest
 .claude
+docs/build
+docs/.docusaurus
+docs/package-lock.json

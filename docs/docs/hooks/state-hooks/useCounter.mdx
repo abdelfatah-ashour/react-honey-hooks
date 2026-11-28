@@ -1,0 +1,57 @@
+---
+title: useCounter
+slug: /hooks/useCounter
+---
+
+import LiveDemo from "@site/src/components/LiveDemo";
+import Demo from "@site/src/demos/useCounter";
+import source from "!!raw-loader!@site/src/demos/useCounter";
+
+```ts
+function useCounter(initial?: number, options?: CounterOptions): readonly [number, CounterActions];
+
+interface CounterOptions {
+  min?: number;
+  max?: number;
+}
+
+interface CounterActions {
+  inc: (delta?: number) => void;
+  dec: (delta?: number) => void;
+  set: (value: number | ((current: number) => number)) => void;
+  reset: () => void;
+}
+```
+
+A number starting at `initial` (0 unless given) that always stays within `min` and `max`:
+`inc` and `dec` stop at the limits, `set` keeps its value in range, an initial value outside
+the limits starts at the nearest one, and if the limits change the count moves into the new
+range. `reset` goes back to the initial value from the first render. `NaN` is ignored. `inc`
+and `dec` step by 1 unless given a number, so they can be passed straight to `onClick`. The
+actions object and its functions never change and always use the latest limits.
+
+## Live demo
+
+<LiveDemo demo={Demo} source={source} />
+
+## Example
+
+```tsx
+import { useCounter } from "react-honey-hooks";
+
+function Quantity() {
+  const [quantity, { inc, dec }] = useCounter(1, { min: 1, max: 10 });
+
+  return (
+    <>
+      <button onClick={dec} disabled={quantity === 1}>
+        −
+      </button>
+      {quantity}
+      <button onClick={inc} disabled={quantity === 10}>
+        +
+      </button>
+    </>
+  );
+}
+```

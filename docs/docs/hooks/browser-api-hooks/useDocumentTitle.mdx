@@ -1,0 +1,32 @@
+---
+title: useDocumentTitle
+slug: /hooks/useDocumentTitle
+---
+
+```ts
+function useDocumentTitle(title: string, options?: DocumentTitleOptions): void;
+
+interface DocumentTitleOptions {
+  restoreOnUnmount?: boolean; // default false
+}
+```
+
+Sets the browser tab's title, and updates it whenever `title` changes. With
+`restoreOnUnmount`, the title from before the component mounted comes back when it unmounts,
+which suits a temporary title such as an unread count or "Unsaved changes". The option is
+read when the component unmounts. It does nothing during server rendering.
+
+In React 19 you can also render `<title>` anywhere in your components. This hook also works in
+React 18, and can restore the previous title.
+
+```tsx
+import { useDocumentTitle } from "react-honey-hooks";
+
+function Inbox({ unread }: { unread: number }) {
+  useDocumentTitle(unread > 0 ? `Inbox (${String(unread)})` : "Inbox", {
+    restoreOnUnmount: true,
+  });
+
+  return <MessageList />;
+}
+```

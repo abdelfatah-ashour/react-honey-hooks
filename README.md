@@ -5,6 +5,8 @@
 [![types: TypeScript](https://img.shields.io/npm/types/react-honey-hooks)](https://www.npmjs.com/package/react-honey-hooks)
 [![license: MIT](https://img.shields.io/npm/l/react-honey-hooks)](./LICENSE)
 
+📖 **[Documentation with live examples](https://abdelfatah-ashour.github.io/react-honey-hooks/)**
+
 **70+ small, typed React hooks for React and Next.js apps.** A TypeScript hooks library for
 state, `localStorage`, URL query params, debounce and throttle, timers, click outside,
 keyboard shortcuts, media queries, element size, browser APIs and more. Every hook is
@@ -3548,12 +3550,18 @@ Other changes since v1:
 
 ```bash
 npm install
+npm install --prefix docs                         # the docs site's own packages
 npx playwright install chromium firefox webkit   # once, for the e2e tests
 npm test          # unit tests: Vitest + jsdom
 npm run test:e2e  # builds dist/, then runs it in real Chromium, Firefox and WebKit
-npm run check     # typecheck + lint + format check + unit + e2e tests
+npm run check     # typecheck + lint + format check + unit + e2e + bundle + docs tests
 npm run build     # tsup → dist/ (ESM, CJS, .d.ts)
+npm run docs:start  # the docs site at http://localhost:3000/react-honey-hooks/
 ```
+
+The docs site in `docs/` is built with Docusaurus and published to GitHub Pages from `master`.
+Each hook has a page in `docs/docs/hooks/`; `npm run docs:scaffold` writes a starting page from
+this README for any hook that has none, and never overwrites one.
 
 ## License
 

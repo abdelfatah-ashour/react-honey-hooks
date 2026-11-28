@@ -1,0 +1,24 @@
+---
+title: useUnmount
+slug: /hooks/useUnmount
+---
+
+```ts
+function useUnmount(fn: () => unknown): void;
+```
+
+Calls the latest `fn` when the component unmounts, and at no other time. `fn` need not be
+memoised, so it can read the latest props and state, and it can be async. Like any effect
+cleanup, it doesn't run on the server, and React's development Strict Mode also runs it after
+its extra mount.
+
+```tsx
+import { useUnmount } from "react-honey-hooks";
+
+function Editor({ draft }: { draft: string }) {
+  useUnmount(() => {
+    saveDraft(draft);
+  });
+  return <DraftEditor draft={draft} />;
+}
+```

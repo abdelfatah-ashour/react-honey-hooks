@@ -1,0 +1,15 @@
+{
+  "extends": "@docusaurus/tsconfig",
+  "compilerOptions": {
+    "strict": true,
+    "jsx": "react-jsx",
+    "baseUrl": ".",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "paths": {
+      "@site/*": ["./*"],
+      "react-honey-hooks": ["../src/index.ts"]
+    }
+  },
+  "include": ["docusaurus.config.ts", "sidebars.ts", "src"],
+  "exclude": ["src/**/*.test.tsx"]
+}

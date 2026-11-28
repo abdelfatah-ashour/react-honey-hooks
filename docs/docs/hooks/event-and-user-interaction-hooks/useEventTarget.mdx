@@ -1,0 +1,45 @@
+---
+title: useEventTarget
+slug: /hooks/useEventTarget
+---
+
+```ts
+function useEventTarget(options: { initialValue: string }): readonly [string, EventTargetActions];
+function useEventTarget(options: { initialValue: boolean }): readonly [boolean, EventTargetActions];
+function useEventTarget<T>(options: {
+  initialValue: T;
+  transform: (value: FieldValue) => T;
+}): readonly [T, EventTargetActions];
+
+type FieldValue = string | boolean;
+
+interface EventTargetActions {
+  onChange: (event: { target: EventTarget | null }) => void;
+  reset: () => void;
+}
+```
+
+State bound to a form field: pass `value` and `onChange` to an `<input>`, `<textarea>` or
+`<select>`. `onChange` reads the field's `value`, or a checkbox's `checked` state, and
+`transform` maps it to the value to keep, such as text to a number. `reset` goes back to
+`initialValue`. Events from elements with no value are ignored. `onChange` and `reset` never
+change, and the latest `transform` is always used.
+
+```tsx
+import { useEventTarget } from "react-honey-hooks";
+
+function Order() {
+  const [name, nameField] = useEventTarget({ initialValue: "" });
+  const [quantity, quantityField] = useEventTarget({
+    initialValue: 1,
+    transform: (value) => Math.max(1, Number(value) || 1),
+  });
+
+  return (
+    <>
+      <input value={name} onChange={nameField.onChange} />
+      <input type="number" value={quantity} onChange={quantityField.onChange} />
+    </>
+  );
+}
+```

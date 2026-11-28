@@ -1,0 +1,79 @@
+---
+title: Getting started
+sidebar_position: 1
+---
+
+**70+ small, typed React hooks for React and Next.js apps.** State, `localStorage`, URL query
+params, debounce and throttle, timers, click outside, keyboard shortcuts, media queries, element
+size, browser APIs and more. Every hook is SSR-safe, so it works in the Next.js App Router and
+Pages Router, Remix and any other server-rendered React app, as well as in single-page apps built
+with Vite.
+
+## Installation
+
+```bash
+npm install react-honey-hooks
+```
+
+```bash
+pnpm add react-honey-hooks
+```
+
+```bash
+yarn add react-honey-hooks
+```
+
+Requires React 18 or newer.
+
+## Quick start
+
+Import the hooks you need by name:
+
+```tsx
+import { useState } from "react";
+import { useDebouncedValue, useLocalStorage, useMediaQuery } from "react-honey-hooks";
+
+function Search() {
+  const [query, setQuery] = useState("");
+  const debouncedQuery = useDebouncedValue(query, 300); // fetch with this one
+  const [theme, setTheme] = useLocalStorage<"light" | "dark">("theme", "light");
+  const isMobile = useMediaQuery("(max-width: 640px)");
+
+  return (
+    <div data-theme={theme}>
+      <input value={query} onChange={(event) => setQuery(event.target.value)} />
+      <button onClick={() => setTheme(theme === "light" ? "dark" : "light")}>Toggle theme</button>
+      {!isMobile && <p>Searching for “{debouncedQuery}”</p>}
+    </div>
+  );
+}
+```
+
+## Using with Next.js
+
+React Honey Hooks works with both Next.js routers.
+
+**App Router.** Hooks can only run in Client Components, so call them from a file that starts
+with the `"use client"` directive. Server Components can import that component as usual:
+
+```tsx
+"use client";
+
+import { useWindowScroll } from "react-honey-hooks";
+
+export function BackToTop() {
+  const { y } = useWindowScroll();
+  return y > 400 && <button onClick={() => window.scrollTo({ top: 0 })}>Back to top</button>;
+}
+```
+
+**Pages Router.** Import and call the hooks in any page or component.
+
+Next.js renders Client Components on the server first, which is why every hook is SSR-safe:
+each section below says what the hook returns during server rendering. To show content that
+only makes sense in the browser, such as a value read from `localStorage` or the user's time
+zone, without a hydration mismatch, use [`useIsClient`](/docs/hooks/useIsClient).
+
+[`useQuery`](/docs/hooks/useQuery) and [`useQueryState`](/docs/hooks/useQueryState) read `window.location` directly
+and don't see navigations made with `next/link` or `useRouter`. In a Next.js app, prefer
+`useSearchParams` from `next/navigation` for query params the Next.js router changes.

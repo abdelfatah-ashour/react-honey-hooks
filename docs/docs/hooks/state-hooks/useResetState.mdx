@@ -1,0 +1,35 @@
+---
+title: useResetState
+slug: /hooks/useResetState
+---
+
+```ts
+function useResetState<T>(
+  initial: T | (() => T),
+): readonly [T, Dispatch<SetStateAction<T>>, () => void];
+```
+
+`useState` with a third item, `reset`, which goes back to the initial value. `initial` can be a
+function, called once; `reset` reuses its result instead of calling it again. Like `useState`,
+it keeps the first render's initial value and ignores later ones. `setState` and `reset` never
+change.
+
+```tsx
+import { useResetState } from "react-honey-hooks";
+
+function Note() {
+  const [text, setText, reset] = useResetState("Buy milk");
+
+  return (
+    <>
+      <textarea
+        value={text}
+        onChange={(event) => {
+          setText(event.target.value);
+        }}
+      />
+      <button onClick={reset}>Discard changes</button>
+    </>
+  );
+}
+```

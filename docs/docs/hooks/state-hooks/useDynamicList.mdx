@@ -1,0 +1,70 @@
+---
+title: useDynamicList
+slug: /hooks/useDynamicList
+---
+
+```ts
+function useDynamicList<T>(initial?: readonly T[]): DynamicList<T>;
+
+interface DynamicList<T> {
+  readonly list: readonly T[];
+  readonly getKey: (index: number) => number | undefined;
+  readonly insert: (index: number, item: T) => void;
+  readonly push: (item: T) => void;
+  readonly unshift: (item: T) => void;
+  readonly remove: (index: number) => void;
+  readonly replace: (index: number, item: T) => void;
+  readonly move: (from: number, to: number) => void;
+  readonly pop: () => void;
+  readonly shift: () => void;
+  readonly reset: (list?: readonly T[]) => void;
+}
+```
+
+A list for forms whose rows are added, removed and reordered. `getKey(index)` gives each item
+a key that follows it when other items are added, removed or moved, so React keeps each row's
+inputs and state with the right item. Use it as the row's `key` instead of the index.
+`replace` keeps the item's key, and `reset` replaces the list with `list`, or the first
+render's list, giving every item a new key.
+
+An index that isn't a whole number within the list is ignored (`insert` also accepts the
+list's length, to add at the end), as are `pop` and `shift` on an empty list. The list then
+stays the same array. Several updates in one event apply in turn. The functions other than
+`getKey` never change.
+
+```tsx
+import { useDynamicList } from "react-honey-hooks";
+
+function Guests() {
+  const { list, getKey, push, remove, replace } = useDynamicList([""]);
+
+  return (
+    <>
+      {list.map((name, index) => (
+        <div key={getKey(index)}>
+          <input
+            value={name}
+            onChange={(event) => {
+              replace(index, event.target.value);
+            }}
+          />
+          <button
+            onClick={() => {
+              remove(index);
+            }}
+          >
+            Remove
+          </button>
+        </div>
+      ))}
+      <button
+        onClick={() => {
+          push("");
+        }}
+      >
+        Add guest
+      </button>
+    </>
+  );
+}
+```

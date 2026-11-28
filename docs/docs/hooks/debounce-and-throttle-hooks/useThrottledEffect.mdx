@@ -1,0 +1,33 @@
+---
+title: useThrottledEffect
+slug: /hooks/useThrottledEffect
+---
+
+```ts
+function useThrottledEffect(effect: EffectCallback, deps: DependencyList, ms: number): void;
+```
+
+An effect that runs at most once every `ms`, for dependencies that change very often, such as a
+scroll position. It doesn't run on mount, only after `deps` change. The first change runs it at
+once and starts a wait. Changes during the wait collapse into one run, with the latest
+`effect`, when it ends, and that run starts a new wait. The cleanup `effect` returns runs
+before the next run and on unmount, and a pending run is dropped on unmount. With `ms` of 0 or
+less (or `NaN`) it runs on every change with no delay.
+
+```tsx
+import { useThrottledEffect, useWindowScroll } from "react-honey-hooks";
+
+function Article({ id }: { id: string }) {
+  const { y } = useWindowScroll();
+
+  useThrottledEffect(
+    () => {
+      saveReadingPosition(id, y);
+    },
+    [id, y],
+    1000,
+  );
+
+  return <ArticleBody id={id} />;
+}
+```

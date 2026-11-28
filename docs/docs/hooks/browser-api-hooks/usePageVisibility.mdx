@@ -1,0 +1,30 @@
+---
+title: usePageVisibility
+slug: /hooks/usePageVisibility
+---
+
+```ts
+function usePageVisibility(): boolean;
+```
+
+Returns whether the page is visible, and re-renders when the user switches tabs, minimises
+the window or locks the screen (the `visibilitychange` event). Use it to pause polling,
+video or animations nobody can see. During server rendering, and on the first render while
+hydrating, it returns `true`.
+
+```tsx
+import { useEffect } from "react";
+import { usePageVisibility } from "react-honey-hooks";
+
+function LivePrices({ refresh }: { refresh: () => void }) {
+  const visible = usePageVisibility();
+
+  useEffect(() => {
+    if (!visible) return;
+    const id = setInterval(refresh, 5000);
+    return () => clearInterval(id);
+  }, [visible, refresh]);
+
+  return <PriceTable />;
+}
+```

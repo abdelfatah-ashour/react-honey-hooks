@@ -1,0 +1,45 @@
+---
+title: useDebouncedValue
+slug: /hooks/useDebouncedValue
+---
+
+import LiveDemo from "@site/src/components/LiveDemo";
+import Demo from "@site/src/demos/useDebouncedValue";
+import source from "!!raw-loader!@site/src/demos/useDebouncedValue";
+
+```ts
+function useDebouncedValue<T>(value: T, delayMs: number): T;
+```
+
+Returns `value`, but only updates once `value` has stopped changing for `delayMs`. The first
+render returns `value` straight away, and changing `delayMs` restarts the wait. Use it to
+derive expensive work (a fetch, a filter over a big list) from fast-changing input.
+
+## Live demo
+
+<LiveDemo demo={Demo} source={source} />
+
+## Example
+
+```tsx
+import { useState } from "react";
+import { useDebouncedValue } from "react-honey-hooks";
+
+function ProductSearch() {
+  const [query, setQuery] = useState("");
+  const debouncedQuery = useDebouncedValue(query, 300);
+  const results = useProducts(debouncedQuery); // only refetches after typing pauses
+
+  return (
+    <>
+      <input
+        value={query}
+        onChange={(event) => {
+          setQuery(event.target.value);
+        }}
+      />
+      <ProductList products={results} />
+    </>
+  );
+}
+```

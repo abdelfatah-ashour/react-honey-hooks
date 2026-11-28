@@ -1,0 +1,24 @@
+---
+title: useMount
+slug: /hooks/useMount
+---
+
+```ts
+function useMount(fn: () => unknown): void;
+```
+
+Calls `fn` once, after the component first mounts. Later renders don't call it again, even
+with a different `fn`. `fn` can be async: what it returns is ignored rather than treated as a
+cleanup (use [`useUnmount`](/docs/hooks/useUnmount) for that). Like any effect, it doesn't run on the
+server, and React's development Strict Mode runs it twice.
+
+```tsx
+import { useMount } from "react-honey-hooks";
+
+function Dashboard() {
+  useMount(() => {
+    analytics.track("dashboard_viewed");
+  });
+  return <Charts />;
+}
+```

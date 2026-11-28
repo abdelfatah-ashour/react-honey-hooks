@@ -1,0 +1,40 @@
+---
+title: useDebouncedCallback
+slug: /hooks/useDebouncedCallback
+---
+
+```ts
+function useDebouncedCallback<A extends unknown[]>(
+  fn: (...args: A) => void,
+  delayMs: number,
+): DebouncedFunction<A>;
+
+interface DebouncedFunction<A extends unknown[]> {
+  (...args: A): void;
+  readonly cancel: () => void; // drop the pending call
+  readonly flush: () => void; // run the pending call now
+}
+```
+
+Returns a function that, however often it is called, runs `fn` once with the last arguments
+after `delayMs` without further calls. A delay of 0 still collapses calls made in the same
+task. The latest `fn` is always used, so inline functions are fine, and the returned function
+keeps its identity for the component's lifetime. A pending call keeps the delay it was
+scheduled with, and is dropped when the component unmounts.
+
+```tsx
+import { useDebouncedCallback } from "react-honey-hooks";
+
+function NoteEditor({ save }: { save: (text: string) => void }) {
+  const saveSoon = useDebouncedCallback(save, 1000);
+
+  return (
+    <textarea
+      onChange={(event) => {
+        saveSoon(event.target.value);
+      }}
+      onBlur={saveSoon.flush}
+    />
+  );
+}
+```

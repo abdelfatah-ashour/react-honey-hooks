@@ -1,0 +1,30 @@
+---
+title: useResponsive
+slug: /hooks/useResponsive
+---
+
+```ts
+function useResponsive(): Responsive<{ xs: 0; sm: 576; md: 768; lg: 992; xl: 1200 }>;
+function useResponsive<B extends Breakpoints>(breakpoints: B): Responsive<B>;
+
+type Breakpoints = Readonly<Record<string, number>>;
+type Responsive<B extends Breakpoints> = { readonly [K in keyof B]: boolean };
+```
+
+Says which breakpoints the viewport has reached: for each name in `breakpoints`, whether the
+viewport is at least that many CSS pixels wide, as a `min-width` media query. The defaults are
+`{ xs: 0, sm: 576, md: 768, lg: 992, xl: 1200 }`. It re-renders when the viewport crosses a
+breakpoint and returns the same object until it does. `breakpoints` can be a new object on
+every render, since it is compared by its contents. Every breakpoint is `false` on the server
+and while hydrating, so there is no hydration mismatch. For a single query, use
+[`useMediaQuery`](/docs/hooks/useMediaQuery).
+
+```tsx
+import { useResponsive } from "react-honey-hooks";
+
+function Gallery() {
+  const { md, lg } = useResponsive();
+  const columns = lg ? 3 : md ? 2 : 1;
+  return <Grid columns={columns} />;
+}
+```

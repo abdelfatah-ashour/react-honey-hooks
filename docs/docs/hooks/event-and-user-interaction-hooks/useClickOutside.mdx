@@ -1,0 +1,61 @@
+---
+title: useClickOutside
+slug: /hooks/useClickOutside
+---
+
+import LiveDemo from "@site/src/components/LiveDemo";
+import Demo from "@site/src/demos/useClickOutside";
+import source from "!!raw-loader!@site/src/demos/useClickOutside";
+
+```ts
+function useClickOutside(
+  refs: RefObject<Element | null> | readonly RefObject<Element | null>[],
+  handler: (event: MouseEvent | TouchEvent) => void,
+  options?: ClickOutsideOptions,
+): void;
+
+interface ClickOutsideOptions {
+  enabled?: boolean; // defaults to true
+}
+```
+
+Calls `handler` when a mouse press or touch starts outside the referenced element, or
+outside all of them when you pass several refs (handy for a trigger plus a portalled popover).
+Presses on those elements or their descendants are ignored, and unattached refs are skipped.
+Pass `{ enabled: false }` to stop listening. The latest `refs` and `handler` are always used,
+so inline arrays and functions are fine and no `useMemo`/`useCallback` is needed.
+
+## Live demo
+
+<LiveDemo demo={Demo} source={source} />
+
+## Example
+
+```tsx
+import { useRef, useState } from "react";
+import { createPortal } from "react-dom";
+import { useClickOutside } from "react-honey-hooks";
+
+function Dropdown() {
+  const [open, setOpen] = useState(false);
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const menuRef = useRef<HTMLUListElement>(null);
+
+  useClickOutside(
+    [triggerRef, menuRef],
+    () => {
+      setOpen(false);
+    },
+    { enabled: open },
+  );
+
+  return (
+    <>
+      <button ref={triggerRef} onClick={() => setOpen((o) => !o)}>
+        Menu
+      </button>
+      {open && createPortal(<ul ref={menuRef}>{/* … */}</ul>, document.body)}
+    </>
+  );
+}
+```

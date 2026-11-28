@@ -1,0 +1,29 @@
+---
+title: useRafInterval
+slug: /hooks/useRafInterval
+---
+
+```ts
+function useRafInterval(callback: () => void, ms: number | null): void;
+```
+
+[`useInterval`](/docs/hooks/useInterval) timed with animation frames: calls `callback` on the first frame
+each time `ms` has passed since the last call, or since it started. Browsers pause frames while
+the tab is hidden, so it stops in the background, and when the tab is shown again it calls once
+instead of catching up on every missed call. That suits animation and other visual work. Pass
+`null` to pause; 0, a negative, `NaN` or an infinite `ms` also pauses. Resuming or changing
+`ms` counts from zero again. The latest `callback` is always called without restarting, so it
+need not be memoised. Nothing runs on the server.
+
+```tsx
+import { useState } from "react";
+import { useRafInterval } from "react-honey-hooks";
+
+function Slideshow({ slides }: { slides: string[] }) {
+  const [index, setIndex] = useState(0);
+  useRafInterval(() => {
+    setIndex((current) => (current + 1) % slides.length);
+  }, 5000);
+  return <img src={slides[index]} alt="" />;
+}
+```

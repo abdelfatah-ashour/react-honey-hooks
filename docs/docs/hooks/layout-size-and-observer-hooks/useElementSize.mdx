@@ -1,0 +1,40 @@
+---
+title: useElementSize
+slug: /hooks/useElementSize
+---
+
+```ts
+function useElementSize(ref: RefObject<Element | null>, options?: ElementSizeOptions): ElementSize;
+
+interface ElementSize {
+  readonly width: number;
+  readonly height: number;
+}
+
+interface ElementSizeOptions {
+  box?: "content-box" | "border-box"; // default "content-box"
+}
+```
+
+Measures the element held by `ref` with a `ResizeObserver` and re-renders when its size
+changes, whether from the window resizing, its content changing or its styles changing.
+
+- Sizes are in CSS pixels and can be fractional. `"content-box"` excludes padding and border;
+  `"border-box"` includes them.
+- It is `0 × 0` during server rendering, before the first measurement and in browsers without
+  `ResizeObserver`.
+- It keeps the last size while the ref holds no element, and returns the same object while the
+  size is unchanged, so it is safe in effect dependencies.
+- If the ref moves to another element, the next render measures that one instead.
+
+```tsx
+import { useRef } from "react";
+import { useElementSize } from "react-honey-hooks";
+
+function ResponsiveCard() {
+  const ref = useRef<HTMLDivElement>(null);
+  const { width } = useElementSize(ref);
+
+  return <div ref={ref}>{width < 400 ? <CompactLayout /> : <WideLayout />}</div>;
+}
+```

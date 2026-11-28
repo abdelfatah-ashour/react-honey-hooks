@@ -1,0 +1,47 @@
+---
+title: useToggle
+slug: /hooks/useToggle
+---
+
+import LiveDemo from "@site/src/components/LiveDemo";
+import Demo from "@site/src/demos/useToggle";
+import source from "!!raw-loader!@site/src/demos/useToggle";
+
+```ts
+function useToggle(initial?: boolean): readonly [boolean, ToggleActions];
+
+interface ToggleActions {
+  toggle: () => void;
+  setTrue: () => void;
+  setFalse: () => void;
+  set: (value: boolean) => void;
+}
+```
+
+A boolean state with named setters, starting at `initial` (`false` unless given). The actions
+object and its functions never change, so they are safe to pass to memoised children or list in
+effect dependencies. `toggle` ignores its arguments, so it can be passed straight to `onClick`,
+and calling it several times in one event flips the value once per call.
+
+## Live demo
+
+<LiveDemo demo={Demo} source={source} />
+
+## Example
+
+```tsx
+import { useToggle } from "react-honey-hooks";
+
+function Faq() {
+  const [open, { toggle, setFalse }] = useToggle();
+
+  return (
+    <>
+      <button aria-expanded={open} onClick={toggle}>
+        Shipping
+      </button>
+      {open && <Answer onClose={setFalse} />}
+    </>
+  );
+}
+```

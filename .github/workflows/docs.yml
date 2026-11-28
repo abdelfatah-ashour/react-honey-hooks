@@ -1,0 +1,44 @@
+name: Docs
+
+# Builds the docs site in docs/ and publishes it to GitHub Pages at
+# https://abdelfatah-ashour.github.io/react-honey-hooks/. Pages must use "GitHub Actions" as its
+# source (Settings > Pages). The site's tests run in the CI workflow, as part of `npm run check`.
+on:
+  push:
+    branches: [master]
+  workflow_dispatch:
+
+# One deployment at a time, and never cancel one that has started.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: docs/package-lock.json
+      # The site imports the hooks straight from src/, so only the docs' own packages are needed.
+      - run: npm ci --prefix docs
+      - run: npm --prefix docs run build
+      - uses: actions/upload-pages-artifact@v5
+        with:
+          path: docs/build
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v5

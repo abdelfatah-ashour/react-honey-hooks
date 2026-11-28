@@ -1,0 +1,40 @@
+---
+title: useQuery
+slug: /hooks/useQuery
+---
+
+```ts
+function useQuery<K extends string = string>(): Query<K>;
+
+interface Query<K extends string = string> {
+  readonly params: Readonly<Partial<Record<K, string>>>;
+  readonly getAll: (key: K) => readonly string[];
+}
+```
+
+Reads the current URL's query string. It re-reads on browser back/forward navigation
+(`popstate`) and keeps the same object identity while the URL is unchanged, so it is safe to
+use in effect dependencies. During server rendering `params` is `{}`.
+
+Pass the keys you expect to get them type-checked: reading an undeclared key is a compile
+error, and every value is `string | undefined` because any key can be missing from the URL.
+For repeated keys (`?tag=a&tag=b`) `params` holds the last value; `getAll` returns them all.
+
+```tsx
+import { useQuery } from "react-honey-hooks";
+
+// https://example.com/products?category=books&tag=new&tag=sale
+function Products() {
+  const { params, getAll } = useQuery<"category" | "sort" | "tag">();
+  const { category = "all", sort = "relevance" } = params;
+
+  return (
+    <p>
+      Showing {category} ({getAll("tag").join(", ")}), sorted by {sort}
+    </p>
+  );
+}
+```
+
+It also re-renders when [`useQueryState`](/docs/hooks/useQueryState) changes the URL. It does not observe
+`history.pushState` calls made by client-side routers; use your router's own hook there.

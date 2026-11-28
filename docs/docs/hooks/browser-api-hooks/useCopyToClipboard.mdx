@@ -1,0 +1,37 @@
+---
+title: useCopyToClipboard
+slug: /hooks/useCopyToClipboard
+---
+
+```ts
+function useCopyToClipboard(resetMs?: number): CopyToClipboard;
+
+interface CopyToClipboard {
+  readonly copy: (text: string) => Promise<boolean>;
+  readonly copied: boolean;
+  readonly error: Error | null;
+}
+```
+
+Copies text with the Clipboard API. `copy(text)` resolves `true` and sets `copied`, which
+turns back to `false` after `resetMs` (2000 by default; each copy restarts the wait, and
+`Infinity` keeps it until the next copy). It never throws: if the API is missing (pages served
+over plain `http:`, old browsers) or the browser refuses the write, it resolves `false` and
+sets `error`. A later successful copy clears `error`. `copy` keeps its identity.
+
+```tsx
+import { useCopyToClipboard } from "react-honey-hooks";
+
+function InstallCommand() {
+  const { copy, copied, error } = useCopyToClipboard();
+  const command = "npm install react-honey-hooks";
+
+  return (
+    <p>
+      <code>{command}</code>
+      <button onClick={() => void copy(command)}>{copied ? "Copied!" : "Copy"}</button>
+      {error && <span role="alert">Couldn't copy: {error.message}</span>}
+    </p>
+  );
+}
+```

@@ -1,0 +1,31 @@
+---
+title: useRafTimeout
+slug: /hooks/useRafTimeout
+---
+
+```ts
+function useRafTimeout(callback: () => void, ms: number | null): void;
+```
+
+[`useTimeout`](/docs/hooks/useTimeout) timed with animation frames: calls `callback` once, on the first
+frame at least `ms` after mounting. Browsers pause frames while the tab is hidden, so it waits
+until the tab is shown instead of firing in the background, which suits visual work. Changing
+`ms` starts the wait again from now. `null`, or a negative, `NaN` or infinite `ms`, cancels it
+until a valid one is given, and 0 calls it on the next frame. The latest `callback` is always
+called, so it need not be memoised. Nothing runs on the server.
+
+```tsx
+import { useState } from "react";
+import { useRafTimeout } from "react-honey-hooks";
+
+function SavedToast() {
+  const [visible, setVisible] = useState(true);
+  useRafTimeout(
+    () => {
+      setVisible(false);
+    },
+    visible ? 3000 : null,
+  );
+  return visible && <p role="status">Saved</p>;
+}
+```

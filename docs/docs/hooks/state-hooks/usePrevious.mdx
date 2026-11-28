@@ -1,0 +1,23 @@
+---
+title: usePrevious
+slug: /hooks/usePrevious
+---
+
+```ts
+function usePrevious<T>(value: T): T | undefined;
+```
+
+Returns the value `value` had before it last changed, or `undefined` until it first changes.
+Re-renders that pass the same value (compared with `Object.is`) don't move it on, so unrelated
+state updates don't lose the previous value. Objects are compared by identity.
+
+```tsx
+import { usePrevious } from "react-honey-hooks";
+
+function Price({ amount }: { amount: number }) {
+  const previousAmount = usePrevious(amount);
+  const trend = previousAmount === undefined ? "" : amount > previousAmount ? "up" : "down";
+
+  return <span className={trend}>{amount}</span>;
+}
+```

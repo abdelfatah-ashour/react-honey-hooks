@@ -21,5 +21,14 @@
     "noEmit": true,
     "paths": { "react-honey-hooks": ["./src/index.ts"] }
   },
-  "include": ["src", "e2e", "bundle", "*.config.ts"]
+  "include": [
+    "src",
+    "e2e",
+    "bundle",
+    "docs/scripts",
+    "docs/tests",
+    "docs/site",
+    "docs/src/demos",
+    "*.config.ts"
+  ]
 }

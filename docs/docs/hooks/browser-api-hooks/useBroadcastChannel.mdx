@@ -1,0 +1,40 @@
+---
+title: useBroadcastChannel
+slug: /hooks/useBroadcastChannel
+---
+
+```ts
+function useBroadcastChannel<T>(
+  name: string,
+  onMessage?: (message: T) => void,
+): (message: T) => void;
+```
+
+Sends and receives messages on the [`BroadcastChannel`](https://developer.mozilla.org/docs/Web/API/BroadcastChannel)
+called `name`, which links every tab, window and iframe of the same origin. It returns a `post`
+function that keeps its identity for the component's life. The latest `onMessage` receives
+messages from everyone else on the channel, but not the hook's own, so it doesn't need to be
+memoised.
+
+- Changing `name` moves to that channel, and unmounting closes it.
+- Messages are copied with the structured clone algorithm, so send plain data (no functions or
+  class instances). They are not type-checked: `T` is what you expect other tabs to send.
+- On the server, before mount, after unmount and in browsers without `BroadcastChannel`, `post`
+  does nothing.
+
+```tsx
+import { useState } from "react";
+import { useBroadcastChannel } from "react-honey-hooks";
+
+function CartBadge() {
+  const [count, setCount] = useState(0);
+  const post = useBroadcastChannel<number>("cart", setCount); // other tabs update this one
+
+  function add() {
+    setCount(count + 1);
+    post(count + 1); // and this one updates the others
+  }
+
+  return <button onClick={add}>Cart: {count}</button>;
+}
+```

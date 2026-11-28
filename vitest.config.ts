@@ -214,6 +214,28 @@ export default defineConfig({
       },
       {
         extends: true,
+        // The docs site's scripts and the check that every hook has a docs page.
+        test: {
+          name: "docs",
+          environment: "node",
+          globals: true,
+          include: ["docs/scripts/**/*.test.ts", "docs/tests/**/*.test.ts"],
+        },
+      },
+      {
+        extends: true,
+        // Opens the built docs site in a real browser, so `npm run test:docs` builds it first.
+        test: {
+          name: "docs-site",
+          environment: "node",
+          globals: true,
+          include: ["docs/site/**/*.test.ts"],
+          testTimeout: 30_000,
+          hookTimeout: 30_000,
+        },
+      },
+      {
+        extends: true,
         // Bundle tests read the built package, so `npm run test:bundle` builds it first.
         test: {
           name: "bundle",
@@ -224,7 +246,8 @@ export default defineConfig({
       },
       e2eProject({
         name: "e2e",
-        include: ["e2e/**/*.test.{ts,tsx}"],
+        // The docs site's live demos are tested here too, against the same built bundle.
+        include: ["e2e/**/*.test.{ts,tsx}", "docs/src/demos/**/*.test.tsx"],
         exclude: EXCLUSIVE_E2E,
         sequence: { groupOrder: 0 },
       }),

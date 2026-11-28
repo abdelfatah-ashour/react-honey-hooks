@@ -1,0 +1,23 @@
+---
+title: useTimeout
+slug: /hooks/useTimeout
+---
+
+```ts
+function useTimeout(callback: () => void, delayMs: number | null): void;
+```
+
+Calls `callback` once, `delayMs` milliseconds after mounting. Changing `delayMs` starts the
+wait again from now, and `null` (or a negative or non-finite delay) cancels it until a valid
+delay is given. A delay of 0 calls it after the current task. The latest `callback` is always
+called, and nothing runs after the component unmounts.
+
+```tsx
+import { useTimeout } from "react-honey-hooks";
+
+function Toast({ message, onDismiss }: { message: string; onDismiss: () => void }) {
+  useTimeout(onDismiss, 4000);
+
+  return <div role="status">{message}</div>;
+}
+```

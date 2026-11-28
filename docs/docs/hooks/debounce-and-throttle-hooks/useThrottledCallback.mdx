@@ -1,0 +1,58 @@
+---
+title: useThrottledCallback
+slug: /hooks/useThrottledCallback
+---
+
+```ts
+function useThrottledCallback<A extends unknown[]>(
+  fn: (...args: A) => void,
+  ms: number,
+  options?: ThrottleOptions,
+): ThrottledFunction<A>;
+
+interface ThrottleOptions {
+  leading?: boolean; // run the call that starts a wait at once; default true
+  trailing?: boolean; // run the last call made during a wait when it ends; default true
+}
+
+interface ThrottledFunction<A extends unknown[]> {
+  (...args: A): void;
+  readonly cancel: () => void; // drop the pending call and end the wait
+  readonly flush: () => void; // run the pending call now and end the wait
+}
+```
+
+Returns a function that runs `fn` at most once every `ms`, however often it is called. Where
+[`useDebouncedCallback`](/docs/hooks/useDebouncedCallback) waits for calls to stop, this keeps running
+at a steady rate while they continue: good for scroll, resize and pointer handlers, or saving
+while someone types.
+
+- The first call runs at once and starts a wait. Calls during the wait collapse into one call
+  with the last arguments when it ends, which starts a new wait, so `fn` never runs closer
+  than `ms` apart.
+- `leading: false` makes the first call wait too; `trailing: false` drops calls made during
+  the wait. With both off, `fn` never runs.
+- A delay of 0 or less (or `NaN`) doesn't throttle. With `Infinity`, later calls wait for
+  `flush` or `cancel`.
+- The latest `fn` and options are always used, so inline functions are fine. The returned
+  function keeps its identity, and a pending call is dropped when the component unmounts.
+
+```tsx
+import { useThrottledCallback } from "react-honey-hooks";
+
+function ScrollSpy({ onProgress }: { onProgress: (percent: number) => void }) {
+  const report = useThrottledCallback(onProgress, 100);
+
+  return (
+    <div
+      style={{ overflow: "auto", height: 400 }}
+      onScroll={(event) => {
+        const { scrollTop, scrollHeight, clientHeight } = event.currentTarget;
+        report((scrollTop / (scrollHeight - clientHeight)) * 100);
+      }}
+    >
+      {/* long content */}
+    </div>
+  );
+}
+```

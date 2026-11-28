@@ -1,0 +1,44 @@
+---
+title: useQueryState
+slug: /hooks/useQueryState
+---
+
+```ts
+function useQueryState<K extends string = string>(): readonly [Query<K>, SetQuery<K>];
+
+type SetQuery<K extends string = string> = (
+  updates: Partial<Record<K, string | readonly string[] | null>>,
+  options?: { mode?: "replace" | "push" }, // defaults to "replace"
+) => void;
+```
+
+Reads the query string exactly like `useQuery`, and adds `setQuery` to change it without a
+router:
+
+- A string sets a key, an array sets repeated keys (`?tag=a&tag=b`), and `null` or `[]`
+  removes it. Keys you leave out are kept, and updated keys keep their place in the URL.
+- By default the current history entry is replaced. Pass `{ mode: "push" }` to add an entry,
+  so the browser's Back button undoes the change.
+- Every `useQuery` and `useQueryState` on the page re-renders with the new URL.
+- An update that changes nothing writes nothing, and `history.state` is kept, so routers that
+  store data there are not disturbed. `setQuery` keeps its identity.
+
+```tsx
+import { useQueryState } from "react-honey-hooks";
+
+// https://example.com/products?category=books&page=3
+function Pagination() {
+  const [{ params }, setQuery] = useQueryState<"page">();
+  const page = Number(params.page ?? "1");
+
+  return (
+    <button
+      onClick={() => {
+        setQuery({ page: String(page + 1) }, { mode: "push" });
+      }}
+    >
+      Next page
+    </button>
+  );
+}
+```

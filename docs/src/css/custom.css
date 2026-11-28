@@ -1,0 +1,29 @@
+/* Honey-coloured theme for the Docusaurus classic theme. */
+:root {
+  --ifm-color-primary: #b7791f;
+  --ifm-color-primary-dark: #a56d1c;
+  --ifm-color-primary-darker: #9c671a;
+  --ifm-color-primary-darkest: #805516;
+  --ifm-color-primary-light: #c98522;
+  --ifm-color-primary-lighter: #d28b24;
+  --ifm-color-primary-lightest: #dc9c3f;
+  --ifm-code-font-size: 95%;
+}
+
+[data-theme="dark"] {
+  --ifm-color-primary: #f6ad55;
+  --ifm-color-primary-dark: #f49c33;
+  --ifm-color-primary-darker: #f39422;
+  --ifm-color-primary-darkest: #d9790c;
+  --ifm-color-primary-light: #f8be77;
+  --ifm-color-primary-lighter: #f9c688;
+  --ifm-color-primary-lightest: #fbddb9;
+}
+
+/* The box a live demo renders in, above its source code. */
+.demo {
+  border: 1px solid var(--ifm-color-emphasis-300);
+  border-radius: var(--ifm-global-radius);
+  padding: 1rem;
+  margin-bottom: var(--ifm-leading);
+}

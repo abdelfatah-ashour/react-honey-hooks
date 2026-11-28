@@ -18,7 +18,12 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
           cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            docs/package-lock.json
       - run: npm ci
+      # `npm run check` builds the docs site and tests it in a real browser.
+      - run: npm ci --prefix docs
       # e2e tests run the built bundle in real browsers.
       - run: npx playwright install --with-deps chromium firefox webkit
       - run: npm run check

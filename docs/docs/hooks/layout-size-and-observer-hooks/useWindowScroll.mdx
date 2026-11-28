@@ -1,0 +1,43 @@
+---
+title: useWindowScroll
+slug: /hooks/useWindowScroll
+---
+
+```ts
+function useWindowScroll(): WindowScroll;
+
+interface WindowScroll {
+  readonly x: number;
+  readonly y: number;
+}
+```
+
+Returns how far the page is scrolled, in CSS pixels, and re-renders as it scrolls.
+
+- It updates at most once per animation frame, however many scroll events the browser sends,
+  so it stays cheap during fast scrolling.
+- During server rendering and on the first render while hydrating it is `{ x: 0, y: 0 }`, so
+  hydration never mismatches.
+- It returns the same object while the position is unchanged.
+
+To show something when an element scrolls into view, [`useInView`](/docs/hooks/useInView) is cheaper: it
+only re-renders when the element enters or leaves.
+
+```tsx
+import { useWindowScroll } from "react-honey-hooks";
+
+function BackToTop() {
+  const { y } = useWindowScroll();
+
+  if (y < 800) return null;
+  return (
+    <button
+      onClick={() => {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }}
+    >
+      Back to top
+    </button>
+  );
+}
+```

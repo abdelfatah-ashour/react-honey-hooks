@@ -99,16 +99,20 @@
   "scripts": {
     "build": "tsup",
     "dev": "tsup --watch",
-    "test": "vitest run --project unit",
-    "test:watch": "vitest --project unit",
+    "test": "vitest run --project unit --project docs",
+    "test:watch": "vitest --project unit --project docs",
     "test:e2e": "tsup && vitest run --project e2e --project e2e-exclusive",
     "test:bundle": "tsup && vitest run --project bundle",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "tsc --noEmit && npm --prefix docs run typecheck",
     "lint": "eslint .",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "check": "npm run typecheck && npm run lint && npm run format:check && npm test && npm run test:e2e && npm run test:bundle",
-    "prepublishOnly": "npm run check && npm run build"
+    "check": "npm run typecheck && npm run lint && npm run format:check && npm test && npm run test:e2e && npm run test:bundle && npm run test:docs",
+    "prepublishOnly": "npm run check && npm run build",
+    "docs:scaffold": "jiti docs/scripts/scaffold.ts",
+    "docs:start": "npm --prefix docs start",
+    "docs:build": "npm --prefix docs run build",
+    "test:docs": "npm run docs:build && vitest run --project docs-site"
   },
   "peerDependencies": {
     "react": ">=18"

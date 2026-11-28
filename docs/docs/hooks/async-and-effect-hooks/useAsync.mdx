@@ -1,0 +1,93 @@
+---
+title: useAsync
+slug: /hooks/useAsync
+---
+
+```ts
+function useAsync<A extends unknown[], R>(
+  fn: (signal: AbortSignal, ...args: A) => Promise<R>,
+  options?: AsyncOptions,
+): AsyncResult<A, R>;
+
+interface AsyncOptions {
+  retry?: RetryOptions;
+  pollMs?: number;
+  pollWhenHidden?: boolean;
+}
+
+interface RetryOptions {
+  count?: number; // 3 unless given
+  delayMs?: number; // 1000 unless given, doubling for each later retry
+  shouldRetry?: (error: Error, attempt: number) => boolean;
+}
+
+interface AsyncResult<A extends unknown[], R> {
+  readonly status: "idle" | "pending" | "success" | "error";
+  readonly data: R | undefined; // the last successful result
+  readonly error: Error | undefined; // why the last call failed
+  readonly run: (...args: A) => Promise<R | undefined>;
+  readonly cancel: () => void;
+}
+```
+
+Runs async work when you call `run`, and tracks its status, result and error.
+
+- `fn` receives an `AbortSignal` first: pass it to `fetch` so abandoned requests stop.
+- Starting a new call aborts the one in progress, and only the newest call's result counts, so
+  a slow early response can't overwrite a newer one.
+- `data` keeps the last successful result while a new call is pending, so the page doesn't
+  flash empty. `error` is cleared by the next success.
+- `run` resolves to the result, or to `undefined` if the call failed, was superseded or was
+  cancelled. It never rejects, so you don't need `catch`.
+- `cancel` aborts the call in progress and goes back to the status before it. Unmounting aborts
+  it too.
+- The latest `fn` is always used, and `run` and `cancel` keep their identity.
+
+Two options add behaviour, and neither is on unless given:
+
+- `retry` retries a failed call before reporting it: up to `count` times, waiting `delayMs` and
+  then twice as long before each next try, while `status` stays `"pending"`. `shouldRetry`
+  can stop early, such as for a 404. Cancelling or a newer call stops the retries.
+- `pollMs` runs the call again, with the same arguments, `pollMs` after each call settles,
+  whether it succeeded or failed. While the tab is hidden it waits for the tab to be shown, then
+  polls at once, unless `pollWhenHidden` is set. A new `run` restarts the wait, and `cancel` and
+  unmounting stop polling.
+
+To load when a value changes, call `run` from an effect:
+
+```tsx
+import { useEffect } from "react";
+import { useAsync } from "react-honey-hooks";
+
+function UserCard({ id }: { id: string }) {
+  const { status, data, error, run } = useAsync(async (signal, userId: string) => {
+    const response = await fetch(`/api/users/${userId}`, { signal });
+    if (!response.ok) throw new Error(`Request failed: ${String(response.status)}`);
+    return (await response.json()) as User;
+  });
+
+  useEffect(() => {
+    void run(id);
+  }, [run, id]);
+
+  if (status === "error") return <p role="alert">{error?.message}</p>;
+  return <p>{data ? data.name : "Loading…"}</p>;
+}
+```
+
+To keep a value fresh, poll it, and retry when the network blips:
+
+```tsx
+function OrderStatus({ orderId }: { orderId: string }) {
+  const { data, run } = useAsync(fetchOrderStatus, {
+    pollMs: 5000,
+    retry: { count: 2, delayMs: 500 },
+  });
+
+  useEffect(() => {
+    void run(orderId);
+  }, [run, orderId]);
+
+  return <p>Status: {data ?? "…"}</p>;
+}
+```

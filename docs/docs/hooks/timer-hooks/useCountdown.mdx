@@ -1,0 +1,50 @@
+---
+title: useCountdown
+slug: /hooks/useCountdown
+---
+
+```ts
+function useCountdown(target: Date | number | string, options?: CountdownOptions): Countdown;
+
+interface CountdownOptions {
+  onExpire?: () => void;
+}
+
+interface Countdown {
+  readonly days: number;
+  readonly hours: number;
+  readonly minutes: number;
+  readonly seconds: number;
+  readonly totalMilliseconds: number;
+  readonly isExpired: boolean;
+}
+```
+
+Updates once per second until `target` is reached, then stops its timer. Remaining time
+never goes negative; a past or invalid date is reported as expired.
+
+`onExpire` is called once each time a running countdown reaches zero, including after you
+switch to a new future target. It is not called on mount when the target has already
+passed (check `isExpired` for that). The latest `onExpire` is always used, so it need not be
+memoised.
+
+```tsx
+import { useCountdown } from "react-honey-hooks";
+
+const LAUNCH = new Date("2027-01-01T00:00:00Z");
+
+function Launch() {
+  const { days, hours, minutes, seconds, isExpired } = useCountdown(LAUNCH, {
+    onExpire: () => {
+      console.log("Launched");
+    },
+  });
+
+  if (isExpired) return <p>We have lift-off 🚀</p>;
+  return (
+    <p>
+      {days}d {hours}h {minutes}m {seconds}s
+    </p>
+  );
+}
+```

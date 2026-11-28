@@ -1,0 +1,38 @@
+---
+title: useMutationObserver
+slug: /hooks/useMutationObserver
+---
+
+```ts
+function useMutationObserver(
+  ref: RefObject<Element | null>,
+  callback: MutationCallback, // (mutations: MutationRecord[], observer) => void
+  options?: MutationObserverInit, // default { childList: true, subtree: true }
+): void;
+```
+
+Calls `callback` when the element's content changes, using a `MutationObserver`. Use it to
+react to DOM that React doesn't control, such as a third-party widget or an editor.
+
+- By default it reports children added or removed anywhere inside. Pass `options` to watch
+  attributes (`attributes`, `attributeFilter`) or text (`characterData`) instead.
+- Options are compared by value, so writing them inline is fine. Options that watch nothing
+  throw the browser's `TypeError`.
+- The latest `callback` is always called, so inline functions are fine.
+- It follows the ref to a new element, and disconnects on unmount.
+
+```tsx
+import { useRef, useState } from "react";
+import { useMutationObserver } from "react-honey-hooks";
+
+function ChatWidget() {
+  const ref = useRef<HTMLDivElement>(null);
+  const [unread, setUnread] = useState(0);
+  useMutationObserver(ref, (mutations) => {
+    const added = mutations.reduce((count, mutation) => count + mutation.addedNodes.length, 0);
+    setUnread((count) => count + added);
+  });
+
+  return <div ref={ref} id="third-party-chat" aria-label={`${String(unread)} new messages`} />;
+}
+```

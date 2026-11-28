@@ -42,6 +42,22 @@ A bug fix starts with a failing test that reproduces the bug.
 - Add a JSDoc comment to each exported hook and document it in `README.md` (TypeScript
   examples only).
 
+## Docs site
+
+The docs site in `docs/` is a Docusaurus site with its own `package.json` (`npm install --prefix
+docs`), published to GitHub Pages at https://abdelfatah-ashour.github.io/react-honey-hooks/ by
+`.github/workflows/docs.yml` on every push to `master`. It imports the hooks from `src/`.
+
+- Each hook has a hand-edited page in `docs/docs/hooks/<category>/<hookName>.mdx`. For a new
+  hook, run `npm run docs:scaffold` to write a starting page from its README section; it never
+  overwrites a page. `docs/tests/coverage.test.ts` fails if an exported hook has no page.
+- Live demos live in `docs/src/demos/<hookName>.tsx`, embedded in the page with `<LiveDemo>`,
+  and are tested with real user events in `docs/src/demos/<hookName>.test.tsx` (run by the e2e
+  project against `dist/`). A hook without a demo must be listed in
+  `docs/tests/hooksAwaitingDemo.ts`; take it off when you add the demo.
+- `docs/site/site.test.ts` (`npm run test:docs`) builds the site and opens every page under the
+  `/react-honey-hooks/` base path in Chromium, failing on any failed request or error.
+
 ## Commands
 
 ```bash
@@ -49,6 +65,9 @@ npm test             # unit tests: Vitest (jsdom)
 npm run test:watch
 npm run test:e2e     # build, then run e2e/ in real browsers (npx playwright install first)
 npm run test:bundle  # build, then check that each hook bundles alone (tree-shaking)
-npm run check        # typecheck + lint + format check + unit + e2e + bundle; must pass before committing
+npm run test:docs    # build the docs site, then open every page in Chromium
+npm run docs:start   # docs site dev server
+npm run docs:scaffold # write a starting docs page for each hook that has none
+npm run check        # typecheck + lint + format check + unit + e2e + bundle + docs; must pass before committing
 npm run build        # tsup -> dist/
 ```

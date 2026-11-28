@@ -1,0 +1,34 @@
+---
+title: useSessionStorage
+slug: /hooks/useSessionStorage
+---
+
+```ts
+function useSessionStorage<T>(
+  key: string,
+  initialValue: T,
+): readonly [value: T, set: SetStoredValue<T>, remove: () => void];
+```
+
+Works exactly like [`useLocalStorage`](/docs/hooks/useLocalStorage), but keeps the value in
+`sessionStorage`: it survives reloads, but belongs to this tab and is gone when the tab closes.
+Hooks using the same key in this tab stay in sync, and the same key in `localStorage` is a
+separate value.
+
+```tsx
+import { useSessionStorage } from "react-honey-hooks";
+
+function CheckoutSteps() {
+  const [step, setStep] = useSessionStorage("checkout-step", 1);
+
+  return (
+    <button
+      onClick={() => {
+        setStep((s) => s + 1);
+      }}
+    >
+      Step {step}: continue
+    </button>
+  );
+}
+```
