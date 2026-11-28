@@ -64,6 +64,7 @@ Requires React 18 or newer.
 - [`useResetState`](#useresetstate): `useState` with a `reset` back to the initial value
 - [`useGetState`](#usegetstate): `useState` with a `getState` that never reads a stale value
 - [`useControllableValue`](#usecontrollablevalue): a value a component's parent can control, or not
+- [`useCookieState`](#usecookiestate): state kept in a cookie
 
 ---
 
@@ -1868,6 +1869,71 @@ function Rating(props: ControllableValueProps<number>) {
 
 // <Rating defaultValue={3} /> keeps its own value;
 // <Rating value={stars} onChange={setStars} /> is controlled.
+```
+
+---
+
+### `useCookieState`
+
+```ts
+function useCookieState(
+  name: string,
+  options?: CookieStateOptions,
+): readonly [string | undefined, SetCookieState]; // string when there's a defaultValue
+
+interface CookieStateOptions extends CookieOptions {
+  defaultValue?: string;
+}
+
+interface CookieOptions {
+  path?: string; // "/" unless given
+  domain?: string;
+  maxAge?: number; // seconds
+  expires?: Date;
+  sameSite?: "strict" | "lax" | "none";
+  secure?: boolean;
+}
+
+type SetCookieState = (
+  value: string | undefined | ((current: string | undefined) => string | undefined),
+  options?: CookieOptions,
+) => void;
+```
+
+The value of the cookie `name`, or `defaultValue` while it is missing. `setValue` writes the
+cookie with the hook's cookie options, which a call can override, and `setValue(undefined)`
+deletes it. Without `maxAge` or `expires` the cookie lasts for the browser session. Names and
+values are percent-encoded, so any text round-trips, and cookies written unencoded by other code
+can still be read.
+
+Every hook reading the same cookie updates when one of them writes it. Cookies changed in other
+ways, such as by the server or by other code, are only seen on the next render. On the server
+and while hydrating, the value is `defaultValue`, so there is no hydration mismatch. Where the
+page may not use cookies, such as in a sandboxed iframe, the value stays `defaultValue` and
+writes do nothing. `setValue` never changes and always uses the latest name and options.
+
+```tsx
+import { useCookieState } from "react-honey-hooks";
+
+function CookieBanner() {
+  const [consent, setConsent] = useCookieState("consent", {
+    maxAge: 60 * 60 * 24 * 365,
+    sameSite: "lax",
+  });
+
+  if (consent) return null;
+  return (
+    <div role="dialog">
+      <button
+        onClick={() => {
+          setConsent("accepted");
+        }}
+      >
+        Accept
+      </button>
+    </div>
+  );
+}
 ```
 
 ---

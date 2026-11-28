@@ -73,6 +73,24 @@ const wheel: BrowserCommand<[deltaY: number]> = async (context, deltaY) => {
   await context.page.mouse.wheel(0, deltaY);
 };
 
+/** A cookie as the browser stores it, with the attributes page code can't read. */
+interface BrowserCookie {
+  name: string;
+  value: string;
+  path: string;
+  /** Seconds since the epoch, or -1 for a session cookie. */
+  expires: number;
+}
+
+/** The browser's cookies for the page, with their attributes. */
+const getCookies: BrowserCommand = async (context): Promise<BrowserCookie[]> => {
+  if (context.provider.name !== "playwright") {
+    throw new Error(`getCookies is not supported by the ${context.provider.name} provider`);
+  }
+  const cookies = await context.context.cookies(context.page.url());
+  return cookies.map(({ name, value, path, expires }) => ({ name, value, path, expires }));
+};
+
 /** The user preferences `emulateMedia` can set; `null` goes back to the browser's own value. */
 interface MediaPreferences {
   reducedMotion?: "reduce" | "no-preference" | null;
@@ -121,6 +139,7 @@ function e2eProject(test: {
         headless: true,
         provider: playwright(),
         commands: {
+          getCookies,
           goOfflineFor,
           grantPermission,
           mouseDown,

@@ -12,6 +12,12 @@ export {
   type ControllableValueProps,
   type SetControllableValue,
 } from "./useControllableValue";
+export {
+  useCookieState,
+  type CookieOptions,
+  type CookieStateOptions,
+  type SetCookieState,
+} from "./useCookieState";
 export { useCopyToClipboard, type CopyToClipboard } from "./useCopyToClipboard";
 export {
   useCountdown,

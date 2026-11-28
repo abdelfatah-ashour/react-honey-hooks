@@ -1,6 +1,7 @@
 // Custom browser commands registered in vitest.config.ts.
 declare module "vitest/browser" {
   interface BrowserCommands {
+    getCookies: () => Promise<{ name: string; value: string; path: string; expires: number }[]>;
     goOfflineFor: (ms: number) => Promise<void>;
     grantPermission: (name: string) => Promise<boolean>;
     mouseDown: () => Promise<void>;
