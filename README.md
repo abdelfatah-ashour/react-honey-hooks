@@ -72,6 +72,7 @@ Requires React 18 or newer.
 - [`useMount`](#usemount): run something once when a component mounts
 - [`useUnmount`](#useunmount): run something when a component unmounts
 - [`useUpdateEffect`](#useupdateeffect): an effect that skips the first render
+- [`useLockFn`](#uselockfn): stop an async action running twice at once
 
 ---
 
@@ -2220,6 +2221,33 @@ function Settings({ volume }: { volume: number }) {
     toast(`Volume set to ${String(volume)}`);
   }, [volume]);
   return <VolumeSlider />;
+}
+```
+
+---
+
+### `useLockFn`
+
+```ts
+function useLockFn<A extends unknown[], R>(
+  fn: (...args: A) => Promise<R>,
+): (...args: A) => Promise<R | undefined>;
+```
+
+Wraps an async function so only one call runs at a time, such as a payment button clicked
+twice. While a call is running, further calls are ignored: they don't call `fn` and resolve to
+`undefined`. Once the call settles, the lock is released whether it succeeded or failed, and a
+failure is passed on to whoever made the call. The returned function keeps its identity for the
+component's lifetime and always calls the latest `fn`.
+
+```tsx
+import { useLockFn } from "react-honey-hooks";
+
+function PayButton({ orderId }: { orderId: string }) {
+  const pay = useLockFn(async () => {
+    await api.pay(orderId);
+  });
+  return <button onClick={() => void pay()}>Pay</button>;
 }
 ```
 
