@@ -105,6 +105,7 @@ export { useSetState, type SetMergedState, type StatePatch } from "./useSetState
 export { useStableCallback } from "./useStableCallback";
 export { useStep, type StepOptions, type Steps } from "./useStep";
 export { useTextSelection, type TextSelection } from "./useTextSelection";
+export { useTheme, type Theme, type ThemeMode, type ThemeOptions } from "./useTheme";
 export {
   useThrottledCallback,
   type ThrottledFunction,

@@ -200,6 +200,7 @@ and don't see navigations made with `next/link` or `useRouter`. In a Next.js app
 
 - [`useIsClient`](#useisclient): render browser-only content without a hydration mismatch
 - [`usePrefersColorScheme`](#usepreferscolorscheme): follow the system's light or dark mode
+- [`useTheme`](#usetheme): a light/dark/system theme switch that remembers the choice
 - [`usePrefersReducedMotion`](#useprefersreducedmotion): respect the reduced-motion setting
 
 **Ref and callback hooks**
@@ -3105,6 +3106,60 @@ function ThemeRoot({ children }: { children: ReactNode }) {
   }, [scheme]);
 
   return children;
+}
+```
+
+---
+
+### `useTheme`
+
+```ts
+function useTheme(options?: ThemeOptions): Theme;
+
+interface ThemeOptions {
+  storageKey?: string; // "theme" unless given
+}
+
+interface Theme {
+  readonly theme: "light" | "dark";
+  readonly mode: ThemeMode;
+  readonly setMode: (mode: ThemeMode) => void;
+}
+
+type ThemeMode = "light" | "dark" | "system";
+```
+
+A light/dark theme switch that can follow the system. `mode` is what the user chose:
+`"light"`, `"dark"` or `"system"` (the default). `theme` is the color scheme to show, following
+the system's `prefers-color-scheme` in `"system"` mode. The mode is kept in `localStorage` under
+`storageKey`, so it survives reloads and syncs across tabs; anything stored there that isn't a
+mode counts as `"system"`. It doesn't touch the page, so apply `theme` yourself, such as with a
+class on `<html>`. On the server and while hydrating it is `{ mode: "system", theme: "light" }`.
+`setMode` never changes, and writes under the latest `storageKey`.
+
+```tsx
+import { useEffect } from "react";
+import { useTheme } from "react-honey-hooks";
+
+function ThemeSwitch() {
+  const { theme, mode, setMode } = useTheme();
+
+  useEffect(() => {
+    document.documentElement.dataset.theme = theme;
+  }, [theme]);
+
+  return (
+    <select
+      value={mode}
+      onChange={(event) => {
+        setMode(event.target.value as typeof mode);
+      }}
+    >
+      <option value="system">System</option>
+      <option value="light">Light</option>
+      <option value="dark">Dark</option>
+    </select>
+  );
 }
 ```
 
