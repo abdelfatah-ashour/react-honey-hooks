@@ -208,6 +208,7 @@ and don't see navigations made with `next/link` or `useRouter`. In a Next.js app
 
 - [`useLatest`](#uselatest): a ref that always holds the latest value
 - [`useStableCallback`](#usestablecallback): a callback that never changes but calls the latest code
+- [`useEventEmitter`](#useeventemitter): an event channel between components
 
 ---
 
@@ -3297,6 +3298,55 @@ function Picker() {
     setCount(count + 1);
   });
   return <Row onPick={onPick} />;
+}
+```
+
+---
+
+### `useEventEmitter`
+
+```ts
+function useEventEmitter<T = void>(): EventEmitter<T>;
+
+interface EventEmitter<T> {
+  emit: (value: T) => void;
+  subscribe: (listener: (value: T) => void) => () => void;
+  useSubscription: (listener: (value: T) => void) => void;
+}
+```
+
+Creates an event channel that keeps its identity for the component's lifetime. Pass it to other
+components, by props or context, so they can talk without lifting state, such as a "refresh"
+signal. `emit(value)` calls every subscriber, and `subscribe(listener)` returns a function that
+unsubscribes. `useSubscription(listener)`, called inside a component, listens while that
+component is mounted and always calls its latest `listener`, so it need not be memoised. Each
+emit reaches the subscribers there were when it started: one added during it waits for the next
+emit, and one removed during it still gets this one. Subscribing a function twice calls it
+twice, and each unsubscribe removes one subscription.
+
+```tsx
+import { type EventEmitter, useEventEmitter } from "react-honey-hooks";
+
+function Page() {
+  const refresh = useEventEmitter();
+  return (
+    <>
+      <button
+        onClick={() => {
+          refresh.emit();
+        }}
+      >
+        Refresh
+      </button>
+      <Feed refresh={refresh} />
+    </>
+  );
+}
+
+function Feed({ refresh }: { refresh: EventEmitter<void> }) {
+  const { data, run } = useAsync(loadFeed);
+  refresh.useSubscription(() => void run());
+  return <FeedList items={data} />;
 }
 ```
 

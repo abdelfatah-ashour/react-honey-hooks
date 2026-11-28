@@ -40,6 +40,7 @@ export { useDocumentTitle, type DocumentTitleOptions } from "./useDocumentTitle"
 export { useDrop, type Drop, type DropOptions } from "./useDrop";
 export { useDynamicList, type DynamicList } from "./useDynamicList";
 export { useElementSize, type ElementSize, type ElementSizeOptions } from "./useElementSize";
+export { useEventEmitter, type EventEmitter } from "./useEventEmitter";
 export {
   useEventListener,
   type EventListenerHookOptions,
