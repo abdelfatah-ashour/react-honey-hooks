@@ -126,5 +126,13 @@ export {
 export { useUnmount } from "./useUnmount";
 export { useUpdateEffect } from "./useUpdateEffect";
 export { useWakeLock, type WakeLock } from "./useWakeLock";
+export {
+  useWebSocket,
+  type ReconnectOptions,
+  type WebSocketConnection,
+  type WebSocketData,
+  type WebSocketOptions,
+  type WebSocketReadyState,
+} from "./useWebSocket";
 export { useWindowScroll, type WindowScroll } from "./useWindowScroll";
 export { useWindowSize, type WindowSize } from "./useWindowSize";

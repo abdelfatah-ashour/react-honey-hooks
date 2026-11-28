@@ -2,6 +2,7 @@ import { fileURLToPath } from "node:url";
 import { playwright } from "@vitest/browser-playwright";
 import { defineConfig } from "vitest/config";
 import type { BrowserCommand } from "vitest/node";
+import { WebSocketServer } from "ws";
 
 /**
  * Cuts the real browser's network for `ms` milliseconds, which page code can't do itself.
@@ -91,6 +92,32 @@ const getCookies: BrowserCommand = async (context): Promise<BrowserCookie[]> => 
   return cookies.map(({ name, value, path, expires }) => ({ name, value, path, expires }));
 };
 
+/** Echo servers started by `startEchoServer`, by port. */
+const echoServers = new Map<number, WebSocketServer>();
+
+/**
+ * Starts a WebSocket server on a free local port that sends every message back, and resolves to
+ * its port. Servers stay up for the rest of the run.
+ */
+const startEchoServer: BrowserCommand = async () => {
+  const server = new WebSocketServer({ host: "127.0.0.1", port: 0 });
+  await new Promise((resolve) => server.once("listening", resolve));
+  server.on("connection", (socket) => {
+    socket.on("message", (data, isBinary) => {
+      socket.send(data, { binary: isBinary });
+    });
+  });
+  const address = server.address();
+  if (address === null || typeof address === "string") throw new Error("expected a TCP address");
+  echoServers.set(address.port, server);
+  return address.port;
+};
+
+/** Cuts every connection to the echo server on `port`, as if the network dropped. */
+const dropEchoClients: BrowserCommand<[port: number]> = (_context, port) => {
+  for (const client of echoServers.get(port)?.clients ?? []) client.terminate();
+};
+
 /** The user preferences `emulateMedia` can set; `null` goes back to the browser's own value. */
 interface MediaPreferences {
   reducedMotion?: "reduce" | "no-preference" | null;
@@ -139,6 +166,7 @@ function e2eProject(test: {
         headless: true,
         provider: playwright(),
         commands: {
+          dropEchoClients,
           getCookies,
           goOfflineFor,
           grantPermission,
@@ -147,6 +175,7 @@ function e2eProject(test: {
           wheel,
           emulateMedia,
           setGeolocation,
+          startEchoServer,
         },
         instances: [
           { browser: "chromium" as const },

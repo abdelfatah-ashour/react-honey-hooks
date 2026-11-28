@@ -185,6 +185,7 @@ and don't see navigations made with `next/link` or `useRouter`. In a Next.js app
 
 - [`useCopyToClipboard`](#usecopytoclipboard): copy text and show that it worked
 - [`useBroadcastChannel`](#usebroadcastchannel): message other tabs of your site
+- [`useWebSocket`](#usewebsocket): a WebSocket connection that reconnects
 - [`useOnlineStatus`](#useonlinestatus): know when the network drops
 - [`useNetwork`](#usenetwork): the network connection, with its speed where the browser reports it
 - [`usePageVisibility`](#usepagevisibility): know when the tab is hidden
@@ -2689,6 +2690,59 @@ function CartBadge() {
   }
 
   return <button onClick={add}>Cart: {count}</button>;
+}
+```
+
+---
+
+### `useWebSocket`
+
+```ts
+function useWebSocket(url: string | null, options?: WebSocketOptions): WebSocketConnection;
+
+interface WebSocketOptions {
+  protocols?: string | string[];
+  onOpen?: (event: Event) => void;
+  onMessage?: (event: MessageEvent) => void;
+  onError?: (event: Event) => void;
+  onClose?: (event: CloseEvent) => void;
+  reconnect?: { attempts?: number; intervalMs?: number } | false; // 3 tries, 3000 ms apart
+}
+
+interface WebSocketConnection {
+  readonly readyState: "connecting" | "open" | "closing" | "closed";
+  readonly lastMessage: MessageEvent | null;
+  readonly send: (data: WebSocketData) => boolean;
+  readonly connect: () => void;
+  readonly disconnect: () => void;
+}
+```
+
+Connects to a WebSocket server at `url` while the component is mounted. `send` sends only while
+the connection is open and returns whether it did. If the connection closes without the page
+asking, such as when the server restarts or the network drops, it reconnects up to
+`reconnect.attempts` times in a row, `reconnect.intervalMs` apart, and counts from zero again
+once a connection opens. Pass `reconnect: false` to turn that off. `disconnect` closes without
+reconnecting, and `connect` opens a new connection. A `null` url means no connection, and
+changing `url` closes the old connection and opens one to the new url. Unmounting closes the
+connection and cancels any pending reconnect. The latest callbacks are always called, without
+reconnecting, and the functions keep their identity. On the server it is closed and sends
+nothing.
+
+```tsx
+import { useState } from "react";
+import { useWebSocket } from "react-honey-hooks";
+
+function LivePrices() {
+  const [prices, setPrices] = useState<Record<string, number>>({});
+  const { readyState } = useWebSocket("wss://example.com/prices", {
+    onMessage: (event) => {
+      setPrices(JSON.parse(event.data as string) as Record<string, number>);
+    },
+  });
+
+  if (readyState !== "open") return <p>Connecting…</p>;
+  return <PriceTable prices={prices} />;
 }
 ```
 
