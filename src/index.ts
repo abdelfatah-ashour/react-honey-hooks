@@ -23,6 +23,7 @@ export {
   type EventListenerHookOptions,
   type EventListenerTarget,
 } from "./useEventListener";
+export { useFocusTrap, type FocusTrapOptions } from "./useFocusTrap";
 export { useHotkey, type HotkeyOptions } from "./useHotkey";
 export { useHover } from "./useHover";
 export { useIdle } from "./useIdle";

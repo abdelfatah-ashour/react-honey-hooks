@@ -22,6 +22,7 @@ Requires React 18 or newer.
 - [`useBroadcastChannel`](#usebroadcastchannel): message other tabs of your site
 - [`useClickOutside`](#useclickoutside): detect presses outside an element
 - [`useScrollLock`](#usescrolllock): stop the page scrolling behind a modal
+- [`useFocusTrap`](#usefocustrap): keep keyboard focus inside a modal
 - [`useBeforeUnload`](#usebeforeunload): warn before leaving with unsaved changes
 - [`useDocumentTitle`](#usedocumenttitle): set the browser tab's title
 - [`useCopyToClipboard`](#usecopytoclipboard): copy text and show that it worked
@@ -496,6 +497,57 @@ function Drawer({ open, children }: { open: boolean; children: React.ReactNode }
   useScrollLock(open);
 
   return open ? <aside className="drawer">{children}</aside> : null;
+}
+```
+
+---
+
+### `useFocusTrap`
+
+```ts
+function useFocusTrap(
+  ref: RefObject<HTMLElement | null>,
+  active?: boolean, // default true
+  options?: FocusTrapOptions,
+): void;
+
+interface FocusTrapOptions {
+  restoreFocus?: boolean; // return focus to where it was when the trap stops, default true
+}
+```
+
+Keeps keyboard focus inside an element while `active` is true, so keyboard and screen reader
+users can't Tab out of an open modal into the page behind it.
+
+- When it becomes active, it focuses the first focusable element inside, or the container itself
+  if there is none. If focus is already inside, for example on an `autoFocus` field, it stays.
+- Tab on the last element goes to the first, and Shift+Tab on the first goes to the last. Focus
+  moving outside, for example by a click, is brought back.
+- Disabled, `hidden` and `inert` elements are skipped, and so are elements hidden with CSS.
+- When it stops or unmounts, focus returns to the element that had it before, such as the
+  button that opened the dialog, unless `restoreFocus` is false.
+- With a dialog open over another, only the newest trap acts; closing it hands focus back to
+  the one below.
+
+Close the dialog on Escape with [`useHotkey`](#usehotkey), and pair it with
+[`useScrollLock`](#usescrolllock). A native `<dialog>` opened with `showModal()` traps focus
+itself.
+
+```tsx
+import { useRef } from "react";
+import { useFocusTrap, useHotkey } from "react-honey-hooks";
+
+function Modal({ onClose, children }: { onClose: () => void; children: React.ReactNode }) {
+  const ref = useRef<HTMLDivElement>(null);
+  useFocusTrap(ref);
+  useHotkey("Escape", onClose, { ignoreInputs: false });
+
+  return (
+    <div ref={ref} role="dialog" aria-modal="true">
+      {children}
+      <button onClick={onClose}>Close</button>
+    </div>
+  );
 }
 ```
 
