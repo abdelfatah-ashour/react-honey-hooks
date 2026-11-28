@@ -29,6 +29,7 @@ Requires React 18 or newer.
 - [`useDebouncedValue`](#usedebouncedvalue): a value that waits for changes to settle
 - [`useDebouncedCallback`](#usedebouncedcallback): a function that waits for calls to stop
 - [`useThrottledCallback`](#usethrottledcallback): a function that runs at most every few ms
+- [`useThrottledValue`](#usethrottledvalue): a value that updates at most every few ms
 - [`useEventListener`](#useeventlistener): listen to any DOM event, typed
 - [`useHotkey`](#usehotkey): keyboard shortcuts such as `mod+k`
 - [`useLongPress`](#uselongpress): press and hold an element
@@ -811,6 +812,31 @@ function ScrollSpy({ onProgress }: { onProgress: (percent: number) => void }) {
       {/* long content */}
     </div>
   );
+}
+```
+
+---
+
+### `useThrottledValue`
+
+```ts
+function useThrottledValue<T>(value: T, ms: number): T;
+```
+
+Returns `value`, updated at most once every `ms`. Use it for values that change very often,
+such as a scroll position or pointer coordinates, when a little lag is fine but waiting for
+them to stop, as [`useDebouncedValue`](#usedebouncedvalue) does, is not. The first value is
+returned at once, and so is the first change. Changes during the wait that follows collapse
+into one update with the latest value when it ends. With `ms` of 0 or less (or `NaN`) it follows
+`value` straight away. A pending update is dropped when the component unmounts.
+
+```tsx
+import { useThrottledValue, useWindowScroll } from "react-honey-hooks";
+
+function ReadingProgress() {
+  const { y } = useWindowScroll();
+  const throttledY = useThrottledValue(y, 100);
+  return <ProgressBar value={throttledY} />;
 }
 ```
 
