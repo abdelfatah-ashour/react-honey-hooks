@@ -71,5 +71,6 @@ export {
   type UndoControls,
   type UndoStateOptions,
 } from "./useUndoState";
+export { useWakeLock, type WakeLock } from "./useWakeLock";
 export { useWindowScroll, type WindowScroll } from "./useWindowScroll";
 export { useWindowSize, type WindowSize } from "./useWindowSize";

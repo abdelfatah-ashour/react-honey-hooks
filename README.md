@@ -49,6 +49,7 @@ Requires React 18 or newer.
 - [`useIdle`](#useidle): know when the user stops interacting
 - [`usePermission`](#usepermission): whether a browser permission is granted
 - [`useGeolocation`](#usegeolocation): the user's position
+- [`useWakeLock`](#usewakelock): keep the screen on
 - [`useIsClient`](#useisclient): render browser-only content without a hydration mismatch
 - [`usePrefersColorScheme`](#usepreferscolorscheme): follow the system's light or dark mode
 - [`usePrefersReducedMotion`](#useprefersreducedmotion): respect the reduced-motion setting
@@ -1721,6 +1722,53 @@ function NearbyStores() {
   if (status === "error") return <p>Couldn't get your location: {error?.message}</p>;
   if (!position) return <p>Locating…</p>;
   return <StoreList near={position.coords} />;
+}
+```
+
+---
+
+### `useWakeLock`
+
+```ts
+function useWakeLock(): WakeLock;
+
+interface WakeLock {
+  readonly active: boolean; // whether the screen is being kept on now
+  readonly supported: boolean;
+  readonly error: Error | null; // why the last request failed
+  readonly request: () => Promise<boolean>; // resolves whether it worked
+  readonly release: () => Promise<void>;
+}
+```
+
+Keeps the screen from dimming or locking, for example while showing a recipe, a boarding
+pass or a presentation.
+
+- Nothing happens until you call `request()`. It resolves whether the screen will stay on.
+  Call it from a click or key press: some browsers, such as Safari, refuse it otherwise.
+- A refusal, such as low battery or a browser policy, is reported in `error` and not retried.
+- Browsers release the lock whenever the tab is hidden. It is taken again when the tab is
+  visible, until you call `release()`, and it is released when the component unmounts.
+- `supported` is `false` in browsers without the Screen Wake Lock API, where `request()`
+  resolves `false`.
+
+```tsx
+import { useWakeLock } from "react-honey-hooks";
+
+function RecipeSteps() {
+  const { active, supported, request, release } = useWakeLock();
+
+  if (!supported) return null;
+  return (
+    <label>
+      <input
+        type="checkbox"
+        checked={active}
+        onChange={() => void (active ? release() : request())}
+      />
+      Keep the screen on while cooking
+    </label>
+  );
 }
 ```
 
