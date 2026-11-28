@@ -67,6 +67,13 @@ export { useGetState } from "./useGetState";
 export { useHotkey, type HotkeyOptions } from "./useHotkey";
 export { useHover } from "./useHover";
 export { useIdle } from "./useIdle";
+export {
+  useInfiniteScroll,
+  type InfiniteScroll,
+  type InfiniteScrollOptions,
+  type InfiniteScrollStatus,
+  type Page,
+} from "./useInfiniteScroll";
 export { useInterval } from "./useInterval";
 export { useInView, type InViewOptions } from "./useInView";
 export { useIsClient } from "./useIsClient";

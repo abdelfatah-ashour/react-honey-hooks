@@ -174,6 +174,7 @@ and don't see navigations made with `next/link` or `useRouter`. In a Next.js app
 
 - [`useElementSize`](#useelementsize): measure an element as it resizes
 - [`useInView`](#useinview): know when an element scrolls into view
+- [`useInfiniteScroll`](#useinfinitescroll): load a list page by page as it scrolls
 - [`useMutationObserver`](#usemutationobserver): react to changes in an element's content
 - [`useWindowSize`](#usewindowsize): the window's width and height
 - [`useScroll`](#usescroll): an element's scroll position
@@ -2408,6 +2409,77 @@ function LazyChart({ data }: { data: readonly number[] }) {
   const visible = useInView(ref, { once: true, rootMargin: "200px" });
 
   return <div ref={ref}>{visible ? <Chart data={data} /> : <ChartSkeleton />}</div>;
+}
+```
+
+---
+
+### `useInfiniteScroll`
+
+```ts
+function useInfiniteScroll<T, C>(
+  loadPage: (cursor: C | undefined, signal: AbortSignal) => Promise<Page<T, C>>,
+  options?: InfiniteScrollOptions,
+): InfiniteScroll<T>;
+
+interface Page<T, C> {
+  items: T[];
+  next?: C | undefined; // undefined on the last page
+}
+
+interface InfiniteScrollOptions {
+  sentinel?: RefObject<Element | null>;
+  rootMargin?: string; // "200px" unless given
+  deps?: DependencyList;
+}
+
+interface InfiniteScroll<T> {
+  readonly items: T[];
+  readonly status: "loading" | "loadingMore" | "idle" | "error";
+  readonly error: Error | undefined;
+  readonly hasMore: boolean;
+  readonly loadMore: () => void;
+  readonly reload: () => void;
+}
+```
+
+Loads a list page by page, such as a feed that grows as you scroll. `loadPage(cursor, signal)`
+loads the page at `cursor` (`undefined` for the first) and returns its `items` and the `next`
+cursor, which is `undefined` on the last page. The first page loads on mount. With a
+`sentinel`, an element after the list, the next page loads while the sentinel is within
+`rootMargin` of view, page after page until it leaves view. `loadMore` loads the next page too.
+Only one page loads at a time.
+
+If a page fails, the items so far are kept, `status` is `"error"`, and `loadMore` tries that
+page again. `reload`, or a change in `deps`, aborts any load in progress, drops the items and
+starts from the first page. Unmounting aborts the load too, and a stale page is ignored. The
+latest `loadPage` is always called, and the functions keep their identity. On the server it is
+loading with no items.
+
+```tsx
+import { useRef } from "react";
+import { useInfiniteScroll } from "react-honey-hooks";
+
+function Feed({ query }: { query: string }) {
+  const sentinel = useRef<HTMLDivElement>(null);
+  const { items, status, hasMore, loadMore } = useInfiniteScroll(
+    async (cursor: string | undefined, signal) => {
+      const response = await fetch(`/api/posts?q=${query}&after=${cursor ?? ""}`, { signal });
+      return (await response.json()) as { items: Post[]; next?: string };
+    },
+    { sentinel, deps: [query] },
+  );
+
+  return (
+    <>
+      {items.map((post) => (
+        <PostCard key={post.id} post={post} />
+      ))}
+      <div ref={sentinel} />
+      {status === "error" && <button onClick={loadMore}>Try again</button>}
+      {!hasMore && <p>You're all caught up</p>}
+    </>
+  );
 }
 ```
 
