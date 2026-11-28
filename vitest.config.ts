@@ -50,6 +50,21 @@ const mouseUp: BrowserCommand = async (context) => {
   await context.page.mouse.up();
 };
 
+/**
+ * Sets the position the browser reports to Geolocation. The page also needs the "geolocation"
+ * permission, from `grantPermission`.
+ */
+const setGeolocation: BrowserCommand<[latitude: number, longitude: number]> = async (
+  context,
+  latitude,
+  longitude,
+) => {
+  if (context.provider.name !== "playwright") {
+    throw new Error(`setGeolocation is not supported by the ${context.provider.name} provider`);
+  }
+  await context.context.setGeolocation({ latitude, longitude });
+};
+
 /** Scrolls the real mouse wheel by `deltaY` pixels where the pointer is. */
 const wheel: BrowserCommand<[deltaY: number]> = async (context, deltaY) => {
   if (context.provider.name !== "playwright") {
@@ -113,7 +128,15 @@ export default defineConfig({
             enabled: true,
             headless: true,
             provider: playwright(),
-            commands: { goOfflineFor, grantPermission, mouseDown, mouseUp, wheel, emulateMedia },
+            commands: {
+              goOfflineFor,
+              grantPermission,
+              mouseDown,
+              mouseUp,
+              wheel,
+              emulateMedia,
+              setGeolocation,
+            },
             instances: [{ browser: "chromium" }, { browser: "firefox" }, { browser: "webkit" }],
           },
         },

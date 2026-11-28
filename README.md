@@ -48,6 +48,7 @@ Requires React 18 or newer.
 - [`usePageVisibility`](#usepagevisibility): know when the tab is hidden
 - [`useIdle`](#useidle): know when the user stops interacting
 - [`usePermission`](#usepermission): whether a browser permission is granted
+- [`useGeolocation`](#usegeolocation): the user's position
 - [`useIsClient`](#useisclient): render browser-only content without a hydration mismatch
 - [`usePrefersColorScheme`](#usepreferscolorscheme): follow the system's light or dark mode
 - [`usePrefersReducedMotion`](#useprefersreducedmotion): respect the reduced-motion setting
@@ -1660,6 +1661,66 @@ function LocationButton({ onLocate }: { onLocate: () => void }) {
     return <p>Location is blocked. Allow it in your browser's site settings.</p>;
   }
   return <button onClick={onLocate}>Use my location</button>;
+}
+```
+
+---
+
+### `useGeolocation`
+
+```ts
+function useGeolocation(options?: GeolocationOptions): GeolocationState;
+
+interface GeolocationOptions {
+  enabled?: boolean; // default true; false asks nothing yet
+  watch?: boolean; // keep following the position, default false
+  enableHighAccuracy?: boolean;
+  timeout?: number;
+  maximumAge?: number;
+}
+
+interface GeolocationState {
+  readonly status: "idle" | "pending" | "success" | "error" | "unsupported";
+  readonly position: GeolocationPosition | null;
+  readonly error: GeolocationPositionError | null; // code 1 is permission denied
+}
+```
+
+Gets the user's position from the browser.
+
+- It asks as soon as it mounts, and the browser may prompt the user. To ask only when the user
+  chooses, start with `enabled: false` (`"idle"`) and enable it on a click.
+- With `watch`, it follows the position as it changes, until disabled or unmounted.
+- `position` keeps the last known position after a later error, and when disabled.
+- Changing the options asks again; `status` is `"pending"` until the new answer.
+- It is `"unsupported"` without the Geolocation API, and `"pending"` during server rendering
+  (`"idle"` when disabled).
+
+Check [`usePermission("geolocation")`](#usepermission) first if you'd rather not prompt users
+who already refused.
+
+```tsx
+import { useState } from "react";
+import { useGeolocation } from "react-honey-hooks";
+
+function NearbyStores() {
+  const [asked, setAsked] = useState(false);
+  const { status, position, error } = useGeolocation({ enabled: asked });
+
+  if (status === "idle") {
+    return (
+      <button
+        onClick={() => {
+          setAsked(true);
+        }}
+      >
+        Find stores near me
+      </button>
+    );
+  }
+  if (status === "error") return <p>Couldn't get your location: {error?.message}</p>;
+  if (!position) return <p>Locating…</p>;
+  return <StoreList near={position.coords} />;
 }
 ```
 

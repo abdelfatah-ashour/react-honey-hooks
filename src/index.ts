@@ -25,6 +25,12 @@ export {
 } from "./useEventListener";
 export { useFocusTrap, type FocusTrapOptions } from "./useFocusTrap";
 export { useFocusWithin } from "./useFocusWithin";
+export {
+  useGeolocation,
+  type GeolocationOptions,
+  type GeolocationState,
+  type GeolocationStatus,
+} from "./useGeolocation";
 export { useHotkey, type HotkeyOptions } from "./useHotkey";
 export { useHover } from "./useHover";
 export { useIdle } from "./useIdle";
