@@ -65,6 +65,7 @@ Requires React 18 or newer.
 - [`useGetState`](#usegetstate): `useState` with a `getState` that never reads a stale value
 - [`useControllableValue`](#usecontrollablevalue): a value a component's parent can control, or not
 - [`useCookieState`](#usecookiestate): state kept in a cookie
+- [`useSelections`](#useselections): checkboxes for a list, with select all
 
 ---
 
@@ -1932,6 +1933,76 @@ function CookieBanner() {
         Accept
       </button>
     </div>
+  );
+}
+```
+
+---
+
+### `useSelections`
+
+```ts
+function useSelections<T>(items: readonly T[], options?: SelectionsOptions<T>): Selections<T>;
+
+interface SelectionsOptions<T> {
+  defaultSelected?: readonly T[];
+  getKey?: (item: T) => unknown; // the item itself unless given
+}
+
+interface Selections<T> {
+  readonly selected: T[];
+  readonly isSelected: (item: T) => boolean;
+  readonly select: (item: T) => void;
+  readonly unselect: (item: T) => void;
+  readonly toggle: (item: T) => void;
+  readonly selectAll: () => void;
+  readonly unselectAll: () => void;
+  readonly toggleAll: () => void;
+  readonly setSelected: (items: readonly T[]) => void;
+  readonly allSelected: boolean;
+  readonly noneSelected: boolean;
+  readonly partiallySelected: boolean;
+}
+```
+
+Tracks which of `items` are selected, as for a list of checkboxes with a select-all box. Items
+are matched by `getKey`, such as `(row) => row.id`, so the selection survives new objects for
+the same items, such as after a refetch. `selected` lists only the selected items that are in
+`items`, in their order; an item that leaves the list and comes back is still selected.
+`selectAll` selects every item, `unselectAll` clears the selection, and `toggleAll` does one or
+the other. `partiallySelected` is the select-all box's indeterminate state. With no items,
+`allSelected` is `false`. The actions never change and always use the latest `items` and
+`getKey`.
+
+```tsx
+import { useSelections } from "react-honey-hooks";
+
+function Inbox({ emails }: { emails: Email[] }) {
+  const { isSelected, toggle, toggleAll, allSelected, partiallySelected } = useSelections(emails, {
+    getKey: (email) => email.id,
+  });
+
+  return (
+    <>
+      <input
+        type="checkbox"
+        checked={allSelected}
+        ref={(box) => {
+          if (box) box.indeterminate = partiallySelected;
+        }}
+        onChange={toggleAll}
+      />
+      {emails.map((email) => (
+        <input
+          key={email.id}
+          type="checkbox"
+          checked={isSelected(email)}
+          onChange={() => {
+            toggle(email);
+          }}
+        />
+      ))}
+    </>
   );
 }
 ```

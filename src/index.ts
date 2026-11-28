@@ -78,6 +78,7 @@ export {
 export { useResetState } from "./useResetState";
 export { useScript, type ScriptStatus } from "./useScript";
 export { useScrollLock } from "./useScrollLock";
+export { useSelections, type Selections, type SelectionsOptions } from "./useSelections";
 export { useSessionStorage } from "./useSessionStorage";
 export { useSet, type SetActions } from "./useSet";
 export { useSetState, type SetMergedState, type StatePatch } from "./useSetState";
