@@ -47,6 +47,7 @@ export { useInView, type InViewOptions } from "./useInView";
 export { useIsClient } from "./useIsClient";
 export { useLocalStorage, type SetStoredValue } from "./useLocalStorage";
 export { useLongPress, type LongPressOptions } from "./useLongPress";
+export { useMap, type MapActions } from "./useMap";
 export { useMediaQuery } from "./useMediaQuery";
 export { useMutationObserver } from "./useMutationObserver";
 export { useOnlineStatus } from "./useOnlineStatus";

@@ -58,6 +58,7 @@ Requires React 18 or newer.
 - [`usePrevious`](#useprevious): the value before it last changed
 - [`useToggle`](#usetoggle): a boolean with `toggle`, `setTrue` and `setFalse`
 - [`useCounter`](#usecounter): a number with `inc`, `dec` and optional limits
+- [`useMap`](#usemap): a `Map` in state, with `set` and `remove`
 
 ---
 
@@ -1608,6 +1609,46 @@ function Quantity() {
       </button>
     </>
   );
+}
+```
+
+---
+
+### `useMap`
+
+```ts
+function useMap<K, V>(
+  entries?: Iterable<readonly [K, V]>,
+): readonly [ReadonlyMap<K, V>, MapActions<K, V>];
+
+interface MapActions<K, V> {
+  set: (key: K, value: V) => void;
+  setAll: (entries: Iterable<readonly [K, V]>) => void;
+  remove: (key: K) => void;
+  clear: () => void;
+  reset: () => void;
+}
+```
+
+A `Map` held in state, starting with `entries`. It is never changed in place: each change gives
+a new map, so it works as an effect dependency or a memoised prop. An action that changes
+nothing, such as setting a key to the value it already has (compared with `Object.is`) or
+removing a missing key, keeps the same map and doesn't re-render. `reset` goes back to the
+entries from the first render. The actions object and its functions never change.
+
+```tsx
+import { useMap } from "react-honey-hooks";
+
+function Basket({ fruits }: { fruits: string[] }) {
+  const [basket, { set, remove }] = useMap<string, number>();
+
+  return fruits.map((fruit) => (
+    <p key={fruit}>
+      {fruit}: {basket.get(fruit) ?? 0}
+      <button onClick={() => set(fruit, (basket.get(fruit) ?? 0) + 1)}>Add</button>
+      <button onClick={() => remove(fruit)}>Remove</button>
+    </p>
+  ));
 }
 ```
 
