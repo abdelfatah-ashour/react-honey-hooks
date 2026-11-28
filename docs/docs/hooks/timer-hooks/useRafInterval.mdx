@@ -5,7 +5,6 @@ slug: /hooks/useRafInterval
 
 import LiveDemo from "@site/src/components/LiveDemo";
 import Demo from "@site/src/demos/useRafInterval";
-import source from "!!raw-loader!@site/src/demos/useRafInterval";
 
 ```ts
 function useRafInterval(callback: () => void, ms: number | null): void;
@@ -21,7 +20,7 @@ need not be memoised. Nothing runs on the server.
 
 ## Live demo
 
-<LiveDemo demo={Demo} source={source} />
+<LiveDemo demo={Demo} />
 
 ## Example
 

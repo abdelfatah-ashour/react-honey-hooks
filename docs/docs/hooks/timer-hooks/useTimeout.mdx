@@ -5,7 +5,6 @@ slug: /hooks/useTimeout
 
 import LiveDemo from "@site/src/components/LiveDemo";
 import Demo from "@site/src/demos/useTimeout";
-import source from "!!raw-loader!@site/src/demos/useTimeout";
 
 ```ts
 function useTimeout(callback: () => void, delayMs: number | null): void;
@@ -18,7 +17,7 @@ called, and nothing runs after the component unmounts.
 
 ## Live demo
 
-<LiveDemo demo={Demo} source={source} />
+<LiveDemo demo={Demo} />
 
 ## Example
 

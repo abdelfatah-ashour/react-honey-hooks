@@ -5,7 +5,6 @@ slug: /hooks/useInterval
 
 import LiveDemo from "@site/src/components/LiveDemo";
 import Demo from "@site/src/demos/useInterval";
-import source from "!!raw-loader!@site/src/demos/useInterval";
 
 ```ts
 function useInterval(callback: () => void, delayMs: number | null): void;
@@ -18,7 +17,7 @@ without restarting it, so inline functions are fine.
 
 ## Live demo
 
-<LiveDemo demo={Demo} source={source} />
+<LiveDemo demo={Demo} />
 
 ## Example
 

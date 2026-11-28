@@ -5,7 +5,6 @@ slug: /hooks/usePrevious
 
 import LiveDemo from "@site/src/components/LiveDemo";
 import Demo from "@site/src/demos/usePrevious";
-import source from "!!raw-loader!@site/src/demos/usePrevious";
 
 ```ts
 function usePrevious<T>(value: T): T | undefined;
@@ -17,7 +16,7 @@ state updates don't lose the previous value. Objects are compared by identity.
 
 ## Live demo
 
-<LiveDemo demo={Demo} source={source} />
+<LiveDemo demo={Demo} />
 
 ## Example
 

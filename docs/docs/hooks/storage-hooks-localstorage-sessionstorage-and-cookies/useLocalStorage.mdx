@@ -5,7 +5,6 @@ slug: /hooks/useLocalStorage
 
 import LiveDemo from "@site/src/components/LiveDemo";
 import Demo from "@site/src/demos/useLocalStorage";
-import source from "!!raw-loader!@site/src/demos/useLocalStorage";
 
 ```ts
 function useLocalStorage<T>(
@@ -33,7 +32,7 @@ Values must survive `JSON.stringify`: no functions, `Date`s come back as strings
 
 ## Live demo
 
-<LiveDemo demo={Demo} source={source} />
+<LiveDemo demo={Demo} />
 
 ## Example
 

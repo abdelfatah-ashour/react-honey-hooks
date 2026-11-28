@@ -5,7 +5,6 @@ slug: /hooks/useIdle
 
 import LiveDemo from "@site/src/components/LiveDemo";
 import Demo from "@site/src/demos/useIdle";
-import source from "!!raw-loader!@site/src/demos/useIdle";
 
 ```ts
 function useIdle(ms: number): boolean;
@@ -25,7 +24,7 @@ Frequent events such as `pointermove` only record the time, so listening is chea
 
 ## Live demo
 
-<LiveDemo demo={Demo} source={source} />
+<LiveDemo demo={Demo} />
 
 ## Example
 

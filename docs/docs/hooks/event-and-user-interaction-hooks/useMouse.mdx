@@ -5,7 +5,6 @@ slug: /hooks/useMouse
 
 import LiveDemo from "@site/src/components/LiveDemo";
 import Demo from "@site/src/demos/useMouse";
-import source from "!!raw-loader!@site/src/demos/useMouse";
 
 ```ts
 function useMouse(ref?: RefObject<Element | null>): MouseState | null;
@@ -36,7 +35,7 @@ and until the mouse first moves over the page, and stops listening on unmount.
 
 ## Live demo
 
-<LiveDemo demo={Demo} source={source} />
+<LiveDemo demo={Demo} />
 
 ## Example
 

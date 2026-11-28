@@ -5,7 +5,6 @@ slug: /hooks/useSetState
 
 import LiveDemo from "@site/src/components/LiveDemo";
 import Demo from "@site/src/demos/useSetState";
-import source from "!!raw-loader!@site/src/demos/useSetState";
 
 ```ts
 function useSetState<T extends object>(initial: T | (() => T)): readonly [T, SetMergedState<T>];
@@ -23,7 +22,7 @@ function, called once. `setState` never changes.
 
 ## Live demo
 
-<LiveDemo demo={Demo} source={source} />
+<LiveDemo demo={Demo} />
 
 ## Example
 
