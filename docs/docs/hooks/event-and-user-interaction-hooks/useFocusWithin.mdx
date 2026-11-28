@@ -17,6 +17,8 @@ and re-renders as focus moves in and out, by keyboard or by mouse.
 - It is right from the first render when focus starts inside, for example on an `autoFocus`
   field.
 - It checks the ref's current element, so it follows the ref to a new element.
+- It stays `true` while focus moves between elements inside, so content rendered only while
+  focused, like the suggestions below, stays open as Tab moves into it.
 - It is `false` during server rendering.
 
 For styling alone, CSS `:focus-within` is simpler. Use this when focus changes what renders,
