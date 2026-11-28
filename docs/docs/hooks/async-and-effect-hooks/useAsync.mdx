@@ -3,6 +3,10 @@ title: useAsync
 slug: /hooks/useAsync
 ---
 
+import LiveDemo from "@site/src/components/LiveDemo";
+import Demo from "@site/src/demos/useAsync";
+import source from "!!raw-loader!@site/src/demos/useAsync";
+
 ```ts
 function useAsync<A extends unknown[], R>(
   fn: (signal: AbortSignal, ...args: A) => Promise<R>,
@@ -52,6 +56,12 @@ Two options add behaviour, and neither is on unless given:
   whether it succeeded or failed. While the tab is hidden it waits for the tab to be shown, then
   polls at once, unless `pollWhenHidden` is set. A new `run` restarts the wait, and `cancel` and
   unmounting stop polling.
+
+## Live demo
+
+<LiveDemo demo={Demo} source={source} />
+
+## Example
 
 To load when a value changes, call `run` from an effect:
 

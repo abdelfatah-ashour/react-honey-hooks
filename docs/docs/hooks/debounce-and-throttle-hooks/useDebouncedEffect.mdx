@@ -3,6 +3,10 @@ title: useDebouncedEffect
 slug: /hooks/useDebouncedEffect
 ---
 
+import LiveDemo from "@site/src/components/LiveDemo";
+import Demo from "@site/src/demos/useDebouncedEffect";
+import source from "!!raw-loader!@site/src/demos/useDebouncedEffect";
+
 ```ts
 function useDebouncedEffect(effect: EffectCallback, deps: DependencyList, ms: number): void;
 ```
@@ -13,6 +17,12 @@ mount, only after `deps` change. Each change restarts the wait, and so does chan
 When it runs, it uses the latest `effect`. The cleanup `effect` returns runs before the next
 run and on unmount, and a pending run is dropped on unmount. With `ms` of 0 or less (or `NaN`)
 it runs on every change with no delay.
+
+## Live demo
+
+<LiveDemo demo={Demo} source={source} />
+
+## Example
 
 ```tsx
 import { useState } from "react";

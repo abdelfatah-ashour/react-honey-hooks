@@ -3,6 +3,10 @@ title: usePrefersColorScheme
 slug: /hooks/usePrefersColorScheme
 ---
 
+import LiveDemo from "@site/src/components/LiveDemo";
+import Demo from "@site/src/demos/usePrefersColorScheme";
+import source from "!!raw-loader!@site/src/demos/usePrefersColorScheme";
+
 ```ts
 function usePrefersColorScheme(): ColorScheme;
 
@@ -12,6 +16,12 @@ type ColorScheme = "light" | "dark";
 Returns the colour scheme the user's system asks for, updating when they change it. Anything
 other than dark, including no preference, counts as `"light"`. It returns `"light"` during
 server rendering and hydration, then the real setting.
+
+## Live demo
+
+<LiveDemo demo={Demo} source={source} />
+
+## Example
 
 ```tsx
 import { useEffect, type ReactNode } from "react";

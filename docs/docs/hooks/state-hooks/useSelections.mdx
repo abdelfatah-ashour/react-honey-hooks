@@ -3,6 +3,10 @@ title: useSelections
 slug: /hooks/useSelections
 ---
 
+import LiveDemo from "@site/src/components/LiveDemo";
+import Demo from "@site/src/demos/useSelections";
+import source from "!!raw-loader!@site/src/demos/useSelections";
+
 ```ts
 function useSelections<T>(items: readonly T[], options?: SelectionsOptions<T>): Selections<T>;
 
@@ -35,6 +39,12 @@ the same items, such as after a refetch. `selected` lists only the selected item
 the other. `partiallySelected` is the select-all box's indeterminate state. With no items,
 `allSelected` is `false`. The actions never change and always use the latest `items` and
 `getKey`.
+
+## Live demo
+
+<LiveDemo demo={Demo} source={source} />
+
+## Example
 
 ```tsx
 import { useSelections } from "react-honey-hooks";

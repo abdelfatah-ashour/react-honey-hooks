@@ -3,6 +3,10 @@ title: useCopyToClipboard
 slug: /hooks/useCopyToClipboard
 ---
 
+import LiveDemo from "@site/src/components/LiveDemo";
+import Demo from "@site/src/demos/useCopyToClipboard";
+import source from "!!raw-loader!@site/src/demos/useCopyToClipboard";
+
 ```ts
 function useCopyToClipboard(resetMs?: number): CopyToClipboard;
 
@@ -18,6 +22,12 @@ turns back to `false` after `resetMs` (2000 by default; each copy restarts the w
 `Infinity` keeps it until the next copy). It never throws: if the API is missing (pages served
 over plain `http:`, old browsers) or the browser refuses the write, it resolves `false` and
 sets `error`. A later successful copy clears `error`. `copy` keeps its identity.
+
+## Live demo
+
+<LiveDemo demo={Demo} source={source} />
+
+## Example
 
 ```tsx
 import { useCopyToClipboard } from "react-honey-hooks";

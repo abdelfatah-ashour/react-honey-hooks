@@ -3,6 +3,10 @@ title: useRafInterval
 slug: /hooks/useRafInterval
 ---
 
+import LiveDemo from "@site/src/components/LiveDemo";
+import Demo from "@site/src/demos/useRafInterval";
+import source from "!!raw-loader!@site/src/demos/useRafInterval";
+
 ```ts
 function useRafInterval(callback: () => void, ms: number | null): void;
 ```
@@ -14,6 +18,12 @@ instead of catching up on every missed call. That suits animation and other visu
 `null` to pause; 0, a negative, `NaN` or an infinite `ms` also pauses. Resuming or changing
 `ms` counts from zero again. The latest `callback` is always called without restarting, so it
 need not be memoised. Nothing runs on the server.
+
+## Live demo
+
+<LiveDemo demo={Demo} source={source} />
+
+## Example
 
 ```tsx
 import { useState } from "react";

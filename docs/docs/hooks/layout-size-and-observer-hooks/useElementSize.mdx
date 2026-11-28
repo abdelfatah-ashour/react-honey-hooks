@@ -3,6 +3,10 @@ title: useElementSize
 slug: /hooks/useElementSize
 ---
 
+import LiveDemo from "@site/src/components/LiveDemo";
+import Demo from "@site/src/demos/useElementSize";
+import source from "!!raw-loader!@site/src/demos/useElementSize";
+
 ```ts
 function useElementSize(ref: RefObject<Element | null>, options?: ElementSizeOptions): ElementSize;
 
@@ -26,6 +30,12 @@ changes, whether from the window resizing, its content changing or its styles ch
 - It keeps the last size while the ref holds no element, and returns the same object while the
   size is unchanged, so it is safe in effect dependencies.
 - If the ref moves to another element, the next render measures that one instead.
+
+## Live demo
+
+<LiveDemo demo={Demo} source={source} />
+
+## Example
 
 ```tsx
 import { useRef } from "react";

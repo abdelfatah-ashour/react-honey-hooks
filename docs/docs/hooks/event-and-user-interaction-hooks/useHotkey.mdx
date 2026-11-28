@@ -3,6 +3,10 @@ title: useHotkey
 slug: /hooks/useHotkey
 ---
 
+import LiveDemo from "@site/src/components/LiveDemo";
+import Demo from "@site/src/demos/useHotkey";
+import source from "!!raw-loader!@site/src/demos/useHotkey";
+
 ```ts
 function useHotkey(
   keys: string,
@@ -28,6 +32,12 @@ Calls `handler` when a keyboard shortcut is pressed anywhere on the page.
   `ignoreInputs` is `false`.
 - An invalid shortcut such as `"ctrl+"` or `"hyper+k"` never fires.
 - The handler can call `event.preventDefault()` to stop the browser's own shortcut.
+
+## Live demo
+
+<LiveDemo demo={Demo} source={source} />
+
+## Example
 
 ```tsx
 import { useState } from "react";

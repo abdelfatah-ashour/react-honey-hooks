@@ -3,6 +3,10 @@ title: usePageVisibility
 slug: /hooks/usePageVisibility
 ---
 
+import LiveDemo from "@site/src/components/LiveDemo";
+import Demo from "@site/src/demos/usePageVisibility";
+import source from "!!raw-loader!@site/src/demos/usePageVisibility";
+
 ```ts
 function usePageVisibility(): boolean;
 ```
@@ -11,6 +15,12 @@ Returns whether the page is visible, and re-renders when the user switches tabs,
 the window or locks the screen (the `visibilitychange` event). Use it to pause polling,
 video or animations nobody can see. During server rendering, and on the first render while
 hydrating, it returns `true`.
+
+## Live demo
+
+<LiveDemo demo={Demo} source={source} />
+
+## Example
 
 ```tsx
 import { useEffect } from "react";

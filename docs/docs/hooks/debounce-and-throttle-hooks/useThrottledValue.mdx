@@ -3,6 +3,10 @@ title: useThrottledValue
 slug: /hooks/useThrottledValue
 ---
 
+import LiveDemo from "@site/src/components/LiveDemo";
+import Demo from "@site/src/demos/useThrottledValue";
+import source from "!!raw-loader!@site/src/demos/useThrottledValue";
+
 ```ts
 function useThrottledValue<T>(value: T, ms: number): T;
 ```
@@ -13,6 +17,12 @@ them to stop, as [`useDebouncedValue`](/docs/hooks/useDebouncedValue) does, is n
 returned at once, and so is the first change. Changes during the wait that follows collapse
 into one update with the latest value when it ends. With `ms` of 0 or less (or `NaN`) it follows
 `value` straight away. A pending update is dropped when the component unmounts.
+
+## Live demo
+
+<LiveDemo demo={Demo} source={source} />
+
+## Example
 
 ```tsx
 import { useThrottledValue, useWindowScroll } from "react-honey-hooks";

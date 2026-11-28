@@ -3,6 +3,10 @@ title: useMap
 slug: /hooks/useMap
 ---
 
+import LiveDemo from "@site/src/components/LiveDemo";
+import Demo from "@site/src/demos/useMap";
+import source from "!!raw-loader!@site/src/demos/useMap";
+
 ```ts
 function useMap<K, V>(
   entries?: Iterable<readonly [K, V]>,
@@ -22,6 +26,12 @@ a new map, so it works as an effect dependency or a memoised prop. An action tha
 nothing, such as setting a key to the value it already has (compared with `Object.is`) or
 removing a missing key, keeps the same map and doesn't re-render. `reset` goes back to the
 entries from the first render. The actions object and its functions never change.
+
+## Live demo
+
+<LiveDemo demo={Demo} source={source} />
+
+## Example
 
 ```tsx
 import { useMap } from "react-honey-hooks";

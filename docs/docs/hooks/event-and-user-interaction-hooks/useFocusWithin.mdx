@@ -3,6 +3,10 @@ title: useFocusWithin
 slug: /hooks/useFocusWithin
 ---
 
+import LiveDemo from "@site/src/components/LiveDemo";
+import Demo from "@site/src/demos/useFocusWithin";
+import source from "!!raw-loader!@site/src/demos/useFocusWithin";
+
 ```ts
 function useFocusWithin(ref: RefObject<Element | null>): boolean;
 ```
@@ -17,6 +21,12 @@ and re-renders as focus moves in and out, by keyboard or by mouse.
 
 For styling alone, CSS `:focus-within` is simpler. Use this when focus changes what renders,
 such as showing a search box's suggestions only while you're in it.
+
+## Live demo
+
+<LiveDemo demo={Demo} source={source} />
+
+## Example
 
 ```tsx
 import { useRef } from "react";

@@ -3,6 +3,10 @@ title: useEventListener
 slug: /hooks/useEventListener
 ---
 
+import LiveDemo from "@site/src/components/LiveDemo";
+import Demo from "@site/src/demos/useEventListener";
+import source from "!!raw-loader!@site/src/demos/useEventListener";
+
 ```ts
 // window (the default), document, or an element ref; the event type is checked against it
 function useEventListener<K extends keyof WindowEventMap>(
@@ -34,6 +38,12 @@ right event type (`KeyboardEvent` for `"keydown"`, and so on), and an event name
 doesn't have is a compile error. The latest `handler` is always called without
 re-subscribing, so inline functions are fine. The listener moves when the ref's element,
 `type` or options change, and `{ enabled: false }` removes it.
+
+## Live demo
+
+<LiveDemo demo={Demo} source={source} />
+
+## Example
 
 ```tsx
 import { useRef, useState } from "react";

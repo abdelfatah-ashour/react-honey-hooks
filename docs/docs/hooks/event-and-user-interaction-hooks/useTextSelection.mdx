@@ -3,6 +3,10 @@ title: useTextSelection
 slug: /hooks/useTextSelection
 ---
 
+import LiveDemo from "@site/src/components/LiveDemo";
+import Demo from "@site/src/demos/useTextSelection";
+import source from "!!raw-loader!@site/src/demos/useTextSelection";
+
 ```ts
 function useTextSelection(ref?: RefObject<Element | null>): TextSelection;
 
@@ -17,6 +21,12 @@ the selection changes, such as to show a "quote" button beside it. Given a `ref`
 of the selection inside that element counts, so a selection elsewhere gives no text. It is
 `{ text: "", rect: null }` when nothing is selected and on the server, and it stops listening
 on unmount.
+
+## Live demo
+
+<LiveDemo demo={Demo} source={source} />
+
+## Example
 
 ```tsx
 import { useRef } from "react";

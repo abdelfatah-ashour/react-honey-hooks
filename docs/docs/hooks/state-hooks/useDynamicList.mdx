@@ -3,6 +3,10 @@ title: useDynamicList
 slug: /hooks/useDynamicList
 ---
 
+import LiveDemo from "@site/src/components/LiveDemo";
+import Demo from "@site/src/demos/useDynamicList";
+import source from "!!raw-loader!@site/src/demos/useDynamicList";
+
 ```ts
 function useDynamicList<T>(initial?: readonly T[]): DynamicList<T>;
 
@@ -31,6 +35,12 @@ An index that isn't a whole number within the list is ignored (`insert` also acc
 list's length, to add at the end), as are `pop` and `shift` on an empty list. The list then
 stays the same array. Several updates in one event apply in turn. The functions other than
 `getKey` never change.
+
+## Live demo
+
+<LiveDemo demo={Demo} source={source} />
+
+## Example
 
 ```tsx
 import { useDynamicList } from "react-honey-hooks";

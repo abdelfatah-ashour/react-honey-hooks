@@ -3,6 +3,10 @@ title: useDocumentTitle
 slug: /hooks/useDocumentTitle
 ---
 
+import LiveDemo from "@site/src/components/LiveDemo";
+import Demo from "@site/src/demos/useDocumentTitle";
+import source from "!!raw-loader!@site/src/demos/useDocumentTitle";
+
 ```ts
 function useDocumentTitle(title: string, options?: DocumentTitleOptions): void;
 
@@ -18,6 +22,12 @@ read when the component unmounts. It does nothing during server rendering.
 
 In React 19 you can also render `<title>` anywhere in your components. This hook also works in
 React 18, and can restore the previous title.
+
+## Live demo
+
+<LiveDemo demo={Demo} source={source} />
+
+## Example
 
 ```tsx
 import { useDocumentTitle } from "react-honey-hooks";

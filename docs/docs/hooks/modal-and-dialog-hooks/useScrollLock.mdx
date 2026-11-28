@@ -3,6 +3,10 @@ title: useScrollLock
 slug: /hooks/useScrollLock
 ---
 
+import LiveDemo from "@site/src/components/LiveDemo";
+import Demo from "@site/src/demos/useScrollLock";
+import source from "!!raw-loader!@site/src/demos/useScrollLock";
+
 ```ts
 function useScrollLock(locked?: boolean): void; // default true
 ```
@@ -15,6 +19,12 @@ open. Scrolling inside an element with its own overflow, such as the modal, stil
 - Locks are counted: with a dialog open over another dialog, the page stays locked until both
   release it. The page's own inline `overflow` and `padding-right` are restored after the last.
 - It does nothing during server rendering.
+
+## Live demo
+
+<LiveDemo demo={Demo} source={source} />
+
+## Example
 
 ```tsx
 import { useScrollLock } from "react-honey-hooks";

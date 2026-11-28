@@ -3,6 +3,10 @@ title: useResetState
 slug: /hooks/useResetState
 ---
 
+import LiveDemo from "@site/src/components/LiveDemo";
+import Demo from "@site/src/demos/useResetState";
+import source from "!!raw-loader!@site/src/demos/useResetState";
+
 ```ts
 function useResetState<T>(
   initial: T | (() => T),
@@ -13,6 +17,12 @@ function useResetState<T>(
 function, called once; `reset` reuses its result instead of calling it again. Like `useState`,
 it keeps the first render's initial value and ignores later ones. `setState` and `reset` never
 change.
+
+## Live demo
+
+<LiveDemo demo={Demo} source={source} />
+
+## Example
 
 ```tsx
 import { useResetState } from "react-honey-hooks";

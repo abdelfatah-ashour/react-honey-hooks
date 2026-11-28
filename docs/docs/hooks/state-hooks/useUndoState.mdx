@@ -3,6 +3,10 @@ title: useUndoState
 slug: /hooks/useUndoState
 ---
 
+import LiveDemo from "@site/src/components/LiveDemo";
+import Demo from "@site/src/demos/useUndoState";
+import source from "!!raw-loader!@site/src/demos/useUndoState";
+
 ```ts
 function useUndoState<T>(
   initial: T | (() => T),
@@ -33,6 +37,12 @@ Works like `useState`, and remembers earlier values so they can be undone and re
   `set(() => myFunction)`.
 - `set`, `undo`, `redo` and `clearHistory` keep their identity, so they are safe in effect
   dependencies and memoised children.
+
+## Live demo
+
+<LiveDemo demo={Demo} source={source} />
+
+## Example
 
 ```tsx
 import { useUndoState } from "react-honey-hooks";

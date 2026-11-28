@@ -3,6 +3,10 @@ title: useLongPress
 slug: /hooks/useLongPress
 ---
 
+import LiveDemo from "@site/src/components/LiveDemo";
+import Demo from "@site/src/demos/useLongPress";
+import source from "!!raw-loader!@site/src/demos/useLongPress";
+
 ```ts
 function useLongPress(
   ref: RefObject<HTMLElement | null>,
@@ -30,6 +34,12 @@ Calls `handler` with the `pointerdown` event when the element is pressed and hel
 
 Only pointer presses count, so give keyboard users another way to reach the same action, for
 example a menu button.
+
+## Live demo
+
+<LiveDemo demo={Demo} source={source} />
+
+## Example
 
 ```tsx
 import { useRef } from "react";

@@ -3,6 +3,10 @@ title: useInterval
 slug: /hooks/useInterval
 ---
 
+import LiveDemo from "@site/src/components/LiveDemo";
+import Demo from "@site/src/demos/useInterval";
+import source from "!!raw-loader!@site/src/demos/useInterval";
+
 ```ts
 function useInterval(callback: () => void, delayMs: number | null): void;
 ```
@@ -11,6 +15,12 @@ Calls `callback` every `delayMs` milliseconds. Pass `null` to pause. Any delay t
 positive, finite number also pauses, because a 0 ms interval would run as fast as the browser
 allows. Changing `delayMs` restarts the interval. The latest `callback` is always called
 without restarting it, so inline functions are fine.
+
+## Live demo
+
+<LiveDemo demo={Demo} source={source} />
+
+## Example
 
 ```tsx
 import { useState } from "react";

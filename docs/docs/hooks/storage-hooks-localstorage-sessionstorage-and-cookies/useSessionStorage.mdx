@@ -3,6 +3,10 @@ title: useSessionStorage
 slug: /hooks/useSessionStorage
 ---
 
+import LiveDemo from "@site/src/components/LiveDemo";
+import Demo from "@site/src/demos/useSessionStorage";
+import source from "!!raw-loader!@site/src/demos/useSessionStorage";
+
 ```ts
 function useSessionStorage<T>(
   key: string,
@@ -14,6 +18,12 @@ Works exactly like [`useLocalStorage`](/docs/hooks/useLocalStorage), but keeps t
 `sessionStorage`: it survives reloads, but belongs to this tab and is gone when the tab closes.
 Hooks using the same key in this tab stay in sync, and the same key in `localStorage` is a
 separate value.
+
+## Live demo
+
+<LiveDemo demo={Demo} source={source} />
+
+## Example
 
 ```tsx
 import { useSessionStorage } from "react-honey-hooks";

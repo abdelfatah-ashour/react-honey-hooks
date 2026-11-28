@@ -3,6 +3,10 @@ title: useHover
 slug: /hooks/useHover
 ---
 
+import LiveDemo from "@site/src/components/LiveDemo";
+import Demo from "@site/src/demos/useHover";
+import source from "!!raw-loader!@site/src/demos/useHover";
+
 ```ts
 function useHover(ref: RefObject<Element | null>): boolean;
 ```
@@ -16,6 +20,12 @@ Returns whether a mouse or pen pointer is over the element, including over its c
 
 For purely visual effects, CSS `:hover` is simpler. Use this when hovering changes what
 renders, for example to load a preview.
+
+## Live demo
+
+<LiveDemo demo={Demo} source={source} />
+
+## Example
 
 ```tsx
 import { useRef } from "react";

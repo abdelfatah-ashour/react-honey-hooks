@@ -3,6 +3,10 @@ title: useFocusTrap
 slug: /hooks/useFocusTrap
 ---
 
+import LiveDemo from "@site/src/components/LiveDemo";
+import Demo from "@site/src/demos/useFocusTrap";
+import source from "!!raw-loader!@site/src/demos/useFocusTrap";
+
 ```ts
 function useFocusTrap(
   ref: RefObject<HTMLElement | null>,
@@ -31,6 +35,12 @@ users can't Tab out of an open modal into the page behind it.
 Close the dialog on Escape with [`useHotkey`](/docs/hooks/useHotkey), and pair it with
 [`useScrollLock`](/docs/hooks/useScrollLock). A native `<dialog>` opened with `showModal()` traps focus
 itself.
+
+## Live demo
+
+<LiveDemo demo={Demo} source={source} />
+
+## Example
 
 ```tsx
 import { useRef } from "react";

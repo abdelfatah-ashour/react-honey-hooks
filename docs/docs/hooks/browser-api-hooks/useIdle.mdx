@@ -3,6 +3,10 @@ title: useIdle
 slug: /hooks/useIdle
 ---
 
+import LiveDemo from "@site/src/components/LiveDemo";
+import Demo from "@site/src/demos/useIdle";
+import source from "!!raw-loader!@site/src/demos/useIdle";
+
 ```ts
 function useIdle(ms: number): boolean;
 ```
@@ -18,6 +22,12 @@ soon as the user is back.
   never goes idle.
 
 Frequent events such as `pointermove` only record the time, so listening is cheap.
+
+## Live demo
+
+<LiveDemo demo={Demo} source={source} />
+
+## Example
 
 ```tsx
 import { useIdle } from "react-honey-hooks";

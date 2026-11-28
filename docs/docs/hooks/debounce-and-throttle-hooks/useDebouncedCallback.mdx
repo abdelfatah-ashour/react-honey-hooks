@@ -3,6 +3,10 @@ title: useDebouncedCallback
 slug: /hooks/useDebouncedCallback
 ---
 
+import LiveDemo from "@site/src/components/LiveDemo";
+import Demo from "@site/src/demos/useDebouncedCallback";
+import source from "!!raw-loader!@site/src/demos/useDebouncedCallback";
+
 ```ts
 function useDebouncedCallback<A extends unknown[]>(
   fn: (...args: A) => void,
@@ -21,6 +25,12 @@ after `delayMs` without further calls. A delay of 0 still collapses calls made i
 task. The latest `fn` is always used, so inline functions are fine, and the returned function
 keeps its identity for the component's lifetime. A pending call keeps the delay it was
 scheduled with, and is dropped when the component unmounts.
+
+## Live demo
+
+<LiveDemo demo={Demo} source={source} />
+
+## Example
 
 ```tsx
 import { useDebouncedCallback } from "react-honey-hooks";

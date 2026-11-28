@@ -3,6 +3,10 @@ title: useStep
 slug: /hooks/useStep
 ---
 
+import LiveDemo from "@site/src/components/LiveDemo";
+import Demo from "@site/src/demos/useStep";
+import source from "!!raw-loader!@site/src/demos/useStep";
+
 ```ts
 function useStep(count: number, options?: StepOptions): Steps;
 
@@ -27,6 +31,12 @@ Tracks which of `count` steps is shown, for wizards, onboarding tours and carous
 - If `count` shrinks, for example when an optional step is removed, the step moves to the new
   last step instead of pointing past the end. A `count` below 1 means a single step.
 - `next`, `prev` and `goTo` keep their identity.
+
+## Live demo
+
+<LiveDemo demo={Demo} source={source} />
+
+## Example
 
 ```tsx
 import { useStep } from "react-honey-hooks";

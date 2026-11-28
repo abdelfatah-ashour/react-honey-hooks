@@ -3,6 +3,10 @@ title: usePrevious
 slug: /hooks/usePrevious
 ---
 
+import LiveDemo from "@site/src/components/LiveDemo";
+import Demo from "@site/src/demos/usePrevious";
+import source from "!!raw-loader!@site/src/demos/usePrevious";
+
 ```ts
 function usePrevious<T>(value: T): T | undefined;
 ```
@@ -10,6 +14,12 @@ function usePrevious<T>(value: T): T | undefined;
 Returns the value `value` had before it last changed, or `undefined` until it first changes.
 Re-renders that pass the same value (compared with `Object.is`) don't move it on, so unrelated
 state updates don't lose the previous value. Objects are compared by identity.
+
+## Live demo
+
+<LiveDemo demo={Demo} source={source} />
+
+## Example
 
 ```tsx
 import { usePrevious } from "react-honey-hooks";

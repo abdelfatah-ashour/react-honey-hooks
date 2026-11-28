@@ -3,6 +3,10 @@ title: useOnlineStatus
 slug: /hooks/useOnlineStatus
 ---
 
+import LiveDemo from "@site/src/components/LiveDemo";
+import Demo from "@site/src/demos/useOnlineStatus";
+import source from "!!raw-loader!@site/src/demos/useOnlineStatus";
+
 ```ts
 function useOnlineStatus(): boolean;
 ```
@@ -11,6 +15,12 @@ Returns `navigator.onLine` and re-renders on the browser's `online` and `offline
 `false` means the browser has no network connection at all; `true` does not guarantee a
 request will succeed. During server rendering, and on the first render while hydrating, it
 returns `true`.
+
+## Live demo
+
+<LiveDemo demo={Demo} source={source} />
+
+## Example
 
 ```tsx
 import { useOnlineStatus } from "react-honey-hooks";

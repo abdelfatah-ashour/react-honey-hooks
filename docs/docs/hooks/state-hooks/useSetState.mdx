@@ -3,6 +3,10 @@ title: useSetState
 slug: /hooks/useSetState
 ---
 
+import LiveDemo from "@site/src/components/LiveDemo";
+import Demo from "@site/src/demos/useSetState";
+import source from "!!raw-loader!@site/src/demos/useSetState";
+
 ```ts
 function useSetState<T extends object>(initial: T | (() => T)): readonly [T, SetMergedState<T>];
 
@@ -16,6 +20,12 @@ patch)` computes the patch from the current state, so several updates in one eve
 A patch that changes nothing, such as an empty object or values the state already has (compared
 with `Object.is`), keeps the same state object and doesn't re-render. `initial` can be a
 function, called once. `setState` never changes.
+
+## Live demo
+
+<LiveDemo demo={Demo} source={source} />
+
+## Example
 
 ```tsx
 import { useSetState } from "react-honey-hooks";

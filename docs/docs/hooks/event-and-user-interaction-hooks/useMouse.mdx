@@ -3,6 +3,10 @@ title: useMouse
 slug: /hooks/useMouse
 ---
 
+import LiveDemo from "@site/src/components/LiveDemo";
+import Demo from "@site/src/demos/useMouse";
+import source from "!!raw-loader!@site/src/demos/useMouse";
+
 ```ts
 function useMouse(ref?: RefObject<Element | null>): MouseState | null;
 
@@ -29,6 +33,12 @@ in CSS pixels. It re-renders as the mouse moves, at most once per animation fram
 `ref`, `element` also holds the position within that element, which is negative or beyond its
 size outside it, and the element's size, measured on each update. It is `null` on the server
 and until the mouse first moves over the page, and stops listening on unmount.
+
+## Live demo
+
+<LiveDemo demo={Demo} source={source} />
+
+## Example
 
 ```tsx
 import { useRef } from "react";

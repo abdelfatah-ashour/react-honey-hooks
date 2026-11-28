@@ -3,6 +3,10 @@ title: useWindowScroll
 slug: /hooks/useWindowScroll
 ---
 
+import LiveDemo from "@site/src/components/LiveDemo";
+import Demo from "@site/src/demos/useWindowScroll";
+import source from "!!raw-loader!@site/src/demos/useWindowScroll";
+
 ```ts
 function useWindowScroll(): WindowScroll;
 
@@ -22,6 +26,12 @@ Returns how far the page is scrolled, in CSS pixels, and re-renders as it scroll
 
 To show something when an element scrolls into view, [`useInView`](/docs/hooks/useInView) is cheaper: it
 only re-renders when the element enters or leaves.
+
+## Live demo
+
+<LiveDemo demo={Demo} source={source} />
+
+## Example
 
 ```tsx
 import { useWindowScroll } from "react-honey-hooks";

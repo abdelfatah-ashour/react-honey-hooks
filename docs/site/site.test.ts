@@ -115,7 +115,7 @@ describe.concurrent("the built docs site", () => {
   it.for(hooksWithDemos)("shows the live demo on the %s page", async (hook, { expect }) => {
     const { page, problems } = await open(`docs/hooks/${hook}`);
 
-    expect(await page.locator("article .demo :is(button, input)").count()).toBeGreaterThan(0);
+    expect(await page.locator("article .demo > *").count()).toBeGreaterThan(0);
     expect(problems).toEqual([]);
     await page.close();
   });

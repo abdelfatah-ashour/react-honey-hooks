@@ -3,6 +3,10 @@ title: useLockFn
 slug: /hooks/useLockFn
 ---
 
+import LiveDemo from "@site/src/components/LiveDemo";
+import Demo from "@site/src/demos/useLockFn";
+import source from "!!raw-loader!@site/src/demos/useLockFn";
+
 ```ts
 function useLockFn<A extends unknown[], R>(
   fn: (...args: A) => Promise<R>,
@@ -14,6 +18,12 @@ twice. While a call is running, further calls are ignored: they don't call `fn` 
 `undefined`. Once the call settles, the lock is released whether it succeeded or failed, and a
 failure is passed on to whoever made the call. The returned function keeps its identity for the
 component's lifetime and always calls the latest `fn`.
+
+## Live demo
+
+<LiveDemo demo={Demo} source={source} />
+
+## Example
 
 ```tsx
 import { useLockFn } from "react-honey-hooks";

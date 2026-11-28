@@ -3,6 +3,10 @@ title: useThrottledCallback
 slug: /hooks/useThrottledCallback
 ---
 
+import LiveDemo from "@site/src/components/LiveDemo";
+import Demo from "@site/src/demos/useThrottledCallback";
+import source from "!!raw-loader!@site/src/demos/useThrottledCallback";
+
 ```ts
 function useThrottledCallback<A extends unknown[]>(
   fn: (...args: A) => void,
@@ -36,6 +40,12 @@ while someone types.
   `flush` or `cancel`.
 - The latest `fn` and options are always used, so inline functions are fine. The returned
   function keeps its identity, and a pending call is dropped when the component unmounts.
+
+## Live demo
+
+<LiveDemo demo={Demo} source={source} />
+
+## Example
 
 ```tsx
 import { useThrottledCallback } from "react-honey-hooks";

@@ -3,6 +3,10 @@ title: useInView
 slug: /hooks/useInView
 ---
 
+import LiveDemo from "@site/src/components/LiveDemo";
+import Demo from "@site/src/demos/useInView";
+import source from "!!raw-loader!@site/src/demos/useInView";
+
 ```ts
 function useInView(ref: RefObject<Element | null>, options?: InViewOptions): boolean;
 
@@ -20,6 +24,12 @@ element. With `once` it stays `true` after the element first appears, which suit
 loading and entrance animations. The observer follows the ref to a new element and picks up
 changed options (an inline `threshold` array is fine), and disconnects on unmount. In the rare
 browser without `IntersectionObserver` it returns `true`, so content is never hidden forever.
+
+## Live demo
+
+<LiveDemo demo={Demo} source={source} />
+
+## Example
 
 ```tsx
 import { useRef } from "react";
