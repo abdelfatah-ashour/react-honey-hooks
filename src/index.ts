@@ -102,6 +102,7 @@ export { useSet, type SetActions } from "./useSet";
 export { useSetState, type SetMergedState, type StatePatch } from "./useSetState";
 export { useStableCallback } from "./useStableCallback";
 export { useStep, type StepOptions, type Steps } from "./useStep";
+export { useTextSelection, type TextSelection } from "./useTextSelection";
 export {
   useThrottledCallback,
   type ThrottledFunction,

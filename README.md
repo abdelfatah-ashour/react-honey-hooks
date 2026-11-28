@@ -40,6 +40,7 @@ Requires React 18 or newer.
 - [`useFileDrop`](#usefiledrop): accept files dropped onto an element
 - [`useHover`](#usehover): know when the pointer is over an element
 - [`useMouse`](#usemouse): where the mouse is, on the page or in an element
+- [`useTextSelection`](#usetextselection): the text the user has selected
 - [`useFocusWithin`](#usefocuswithin): know when focus is inside an element
 - [`useElementSize`](#useelementsize): measure an element as it resizes
 - [`useMutationObserver`](#usemutationobserver): react to changes in an element's content
@@ -1339,6 +1340,47 @@ function Spotlight() {
           : undefined,
       }}
     />
+  );
+}
+```
+
+---
+
+### `useTextSelection`
+
+```ts
+function useTextSelection(ref?: RefObject<Element | null>): TextSelection;
+
+interface TextSelection {
+  readonly text: string;
+  readonly rect: DOMRect | null;
+}
+```
+
+Returns the text the user has selected and its bounding box in the viewport, and re-renders as
+the selection changes, such as to show a "quote" button beside it. Given a `ref`, only the part
+of the selection inside that element counts, so a selection elsewhere gives no text. It is
+`{ text: "", rect: null }` when nothing is selected and on the server, and it stops listening
+on unmount.
+
+```tsx
+import { useRef } from "react";
+import { useTextSelection } from "react-honey-hooks";
+
+function Article({ body }: { body: string }) {
+  const article = useRef<HTMLElement>(null);
+  const { text, rect } = useTextSelection(article);
+
+  return (
+    <>
+      <article ref={article}>{body}</article>
+      {rect && (
+        <QuoteButton
+          text={text}
+          style={{ position: "fixed", top: rect.top - 40, left: rect.left }}
+        />
+      )}
+    </>
   );
 }
 ```
