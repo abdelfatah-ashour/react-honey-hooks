@@ -68,6 +68,7 @@ Requires React 18 or newer.
 - [`useSelections`](#useselections): checkboxes for a list, with select all
 - [`useDynamicList`](#usedynamiclist): a list of form rows with stable keys
 - [`useLatest`](#uselatest): a ref that always holds the latest value
+- [`useStableCallback`](#usestablecallback): a callback that never changes but calls the latest code
 
 ---
 
@@ -2109,6 +2110,40 @@ function Autosave({ draft }: { draft: string }) {
   }, [latestDraft]);
 
   return null;
+}
+```
+
+---
+
+### `useStableCallback`
+
+```ts
+function useStableCallback<T, A extends unknown[], R>(
+  fn: (this: T, ...args: A) => R,
+): (this: T, ...args: A) => R;
+```
+
+Returns a function that keeps its identity for the component's whole life and always calls the
+latest `fn`, passing on its arguments and `this` and returning its result. Pass it to memoised
+children or list it in effect dependencies without them re-rendering or re-running whenever
+`fn` changes. It is updated once a render commits, before any effects run, so call it from
+effects and event handlers rather than while rendering.
+
+```tsx
+import { memo, useState } from "react";
+import { useStableCallback } from "react-honey-hooks";
+
+const Row = memo(function Row({ onPick }: { onPick: () => void }) {
+  return <button onClick={onPick}>Pick</button>;
+});
+
+function Picker() {
+  const [count, setCount] = useState(0);
+  // `Row` doesn't re-render when `count` changes, yet each click sees the latest count.
+  const onPick = useStableCallback(() => {
+    setCount(count + 1);
+  });
+  return <Row onPick={onPick} />;
 }
 ```
 
