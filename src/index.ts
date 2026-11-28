@@ -93,6 +93,7 @@ export { useRafInterval } from "./useRafInterval";
 export { useRafTimeout } from "./useRafTimeout";
 export { useResetState } from "./useResetState";
 export { useScript, type ScriptStatus } from "./useScript";
+export { useScroll, type ScrollPosition } from "./useScroll";
 export { useScrollLock } from "./useScrollLock";
 export { useSelections, type Selections, type SelectionsOptions } from "./useSelections";
 export { useSessionStorage } from "./useSessionStorage";

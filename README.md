@@ -52,6 +52,7 @@ Requires React 18 or newer.
 - [`useMediaQuery`](#usemediaquery): match a CSS media query
 - [`useWindowSize`](#usewindowsize): the window's width and height
 - [`useWindowScroll`](#usewindowscroll): the page's scroll position
+- [`useScroll`](#usescroll): an element's scroll position
 - [`useOnlineStatus`](#useonlinestatus): know when the network drops
 - [`usePageVisibility`](#usepagevisibility): know when the tab is hidden
 - [`useIdle`](#useidle): know when the user stops interacting
@@ -1694,6 +1695,43 @@ function BackToTop() {
     >
       Back to top
     </button>
+  );
+}
+```
+
+---
+
+### `useScroll`
+
+```ts
+function useScroll(ref: RefObject<Element | null>): ScrollPosition;
+
+interface ScrollPosition {
+  readonly x: number;
+  readonly y: number;
+}
+```
+
+Returns how far the element held by `ref` is scrolled, `{ x, y }` in CSS pixels, and
+re-renders as it scrolls, at most once per animation frame. For the page itself, use
+[`useWindowScroll`](#usewindowscroll). It is `{ x: 0, y: 0 }` on the server and until there is an
+element, keeps the last position while the ref holds no element, and returns the same object
+while the position is unchanged. It follows the ref to a new element after a render, and stops
+listening when the component unmounts.
+
+```tsx
+import { useRef } from "react";
+import { useScroll } from "react-honey-hooks";
+
+function Chat() {
+  const messages = useRef<HTMLDivElement>(null);
+  const { y } = useScroll(messages);
+
+  return (
+    <div ref={messages} style={{ overflow: "auto" }}>
+      {y > 200 && <JumpToTopButton />}
+      <MessageList />
+    </div>
   );
 }
 ```
