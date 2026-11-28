@@ -63,6 +63,7 @@ export {
   type SetQuery,
   type SetQueryOptions,
 } from "./useQueryState";
+export { useResetState } from "./useResetState";
 export { useScript, type ScriptStatus } from "./useScript";
 export { useScrollLock } from "./useScrollLock";
 export { useSessionStorage } from "./useSessionStorage";

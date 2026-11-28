@@ -61,6 +61,7 @@ Requires React 18 or newer.
 - [`useMap`](#usemap): a `Map` in state, with `set` and `remove`
 - [`useSet`](#useset): a `Set` in state, with `add`, `remove` and `toggle`
 - [`useSetState`](#usesetstate): object state that merges updates
+- [`useResetState`](#useresetstate): `useState` with a `reset` back to the initial value
 
 ---
 
@@ -1735,6 +1736,41 @@ function SignUp() {
           setForm({ email: event.target.value });
         }}
       />
+    </>
+  );
+}
+```
+
+---
+
+### `useResetState`
+
+```ts
+function useResetState<T>(
+  initial: T | (() => T),
+): readonly [T, Dispatch<SetStateAction<T>>, () => void];
+```
+
+`useState` with a third item, `reset`, which goes back to the initial value. `initial` can be a
+function, called once; `reset` reuses its result instead of calling it again. Like `useState`,
+it keeps the first render's initial value and ignores later ones. `setState` and `reset` never
+change.
+
+```tsx
+import { useResetState } from "react-honey-hooks";
+
+function Note() {
+  const [text, setText, reset] = useResetState("Buy milk");
+
+  return (
+    <>
+      <textarea
+        value={text}
+        onChange={(event) => {
+          setText(event.target.value);
+        }}
+      />
+      <button onClick={reset}>Discard changes</button>
     </>
   );
 }
