@@ -1,7 +1,7 @@
 # 🍯 React Honey Hooks
 
 Small, typed React hooks. Zero dependencies, ESM + CJS, SSR-safe, and tested in real
-Chromium, Firefox and WebKit. Tree-shakeable: all 33 hooks are under 6 kB minified and
+Chromium, Firefox and WebKit. Tree-shakeable: all 45 hooks are under 9 kB minified and
 gzipped, and your bundle only includes the ones you import.
 
 ```bash
