@@ -163,6 +163,7 @@ and don't see navigations made with `next/link` or `useRouter`. In a Next.js app
 - [`useFocusWithin`](#usefocuswithin): know when focus is inside an element
 - [`useTextSelection`](#usetextselection): the text the user has selected
 - [`useFileDrop`](#usefiledrop): accept files dropped onto an element
+- [`useDrop`](#usedrop): accept text, links and files dropped onto an element
 
 **Modal and dialog hooks**
 
@@ -1982,6 +1983,49 @@ function MessageBubble({ onOpen, onShowActions }: MessageBubbleProps) {
     <button ref={ref} onClick={onOpen}>
       …
     </button>
+  );
+}
+```
+
+---
+
+### `useDrop`
+
+```ts
+function useDrop(ref: RefObject<HTMLElement | null>, options: DropOptions): Drop;
+
+interface DropOptions {
+  onFiles?: ((files: File[], event: DragEvent) => void) | undefined;
+  onUri?: ((uri: string, event: DragEvent) => void) | undefined;
+  onText?: ((text: string, event: DragEvent) => void) | undefined;
+}
+
+interface Drop {
+  readonly isOver: boolean;
+}
+```
+
+Turns the element held by `ref` into a drop zone for files, links and text. `isOver` says
+whether something it handles is being dragged over it. Only kinds of data with a callback are
+handled, and each drop goes to one callback: `onFiles` if it carries files, otherwise `onUri`
+with the first URL of a link, otherwise `onText`. Other drags are ignored and left to the
+browser. Moving across the element's children doesn't make `isOver` flicker, and a handled drop
+isn't opened by the browser. The latest callbacks are always used; listeners follow the ref to a
+new element and are removed on unmount. To accept only some file types, use
+[`useFileDrop`](#usefiledrop).
+
+```tsx
+import { useRef } from "react";
+import { useDrop } from "react-honey-hooks";
+
+function Bookmarks({ onAdd }: { onAdd: (url: string) => void }) {
+  const zone = useRef<HTMLDivElement>(null);
+  const { isOver } = useDrop(zone, { onUri: onAdd });
+
+  return (
+    <div ref={zone} className={isOver ? "zone zone--over" : "zone"}>
+      Drag a link here to bookmark it
+    </div>
   );
 }
 ```

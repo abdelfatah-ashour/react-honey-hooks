@@ -37,6 +37,7 @@ export { useDebouncedEffect } from "./useDebouncedEffect";
 export { useDebouncedValue } from "./useDebouncedValue";
 export { useDeepCompareEffect } from "./useDeepCompareEffect";
 export { useDocumentTitle, type DocumentTitleOptions } from "./useDocumentTitle";
+export { useDrop, type Drop, type DropOptions } from "./useDrop";
 export { useDynamicList, type DynamicList } from "./useDynamicList";
 export { useElementSize, type ElementSize, type ElementSizeOptions } from "./useElementSize";
 export {
