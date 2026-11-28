@@ -186,3 +186,225 @@ describe("useAsync", () => {
     expect(renderOnServer(createElement(Probe))).toBe("idle");
   });
 });
+
+describe("useAsync with retry", () => {
+  beforeEach(() => {
+    vi.useFakeTimers();
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
+  /** Fails `failures` times, then resolves to the attempt number. */
+  function flaky(failures: number) {
+    let attempts = 0;
+    return vi.fn(() => {
+      attempts++;
+      return attempts <= failures
+        ? Promise.reject(new Error(`failure ${String(attempts)}`))
+        : Promise.resolve(attempts);
+    });
+  }
+
+  it("retries a failed call after delayMs, doubling the wait each time, staying pending", async () => {
+    const fn = flaky(2);
+    const { result } = renderHook(() => useAsync(fn, { retry: { count: 3, delayMs: 100 } }));
+
+    let returned: Promise<number | undefined> | undefined;
+    await act(async () => {
+      returned = result.current.run();
+      await vi.advanceTimersByTimeAsync(99);
+    });
+    expect(fn).toHaveBeenCalledTimes(1);
+    expect(result.current.status).toBe("pending");
+
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(1);
+    });
+    expect(fn).toHaveBeenCalledTimes(2);
+
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(199);
+    });
+    expect(fn).toHaveBeenCalledTimes(2);
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(1);
+    });
+    expect(fn).toHaveBeenCalledTimes(3);
+    expect(result.current).toMatchObject({ status: "success", data: 3 });
+    await expect(returned).resolves.toBe(3);
+  });
+
+  it("reports the last error once count retries have failed, and retries 3 times 1 s apart by default", async () => {
+    const fn = flaky(10);
+    const { result } = renderHook(() => useAsync(fn, { retry: {} }));
+
+    await act(async () => {
+      void result.current.run();
+      await vi.advanceTimersByTimeAsync(1000 + 2000 + 4000);
+    });
+    expect(fn).toHaveBeenCalledTimes(4);
+    expect(result.current.status).toBe("error");
+    expect(result.current.error?.message).toBe("failure 4");
+  });
+
+  it("stops retrying when shouldRetry says no, passing it the error and the retry number", async () => {
+    const fn = flaky(10);
+    const shouldRetry = vi.fn((_error: Error, attempt: number) => attempt < 1);
+    const { result } = renderHook(() =>
+      useAsync(fn, { retry: { count: 5, delayMs: 10, shouldRetry } }),
+    );
+
+    await act(async () => {
+      void result.current.run();
+      await vi.advanceTimersByTimeAsync(1000);
+    });
+    expect(fn).toHaveBeenCalledTimes(2);
+    expect(shouldRetry.mock.calls.map(([error, attempt]) => [error.message, attempt])).toEqual([
+      ["failure 1", 0],
+      ["failure 2", 1],
+    ]);
+    expect(result.current.status).toBe("error");
+  });
+
+  it("cancel and unmount stop a retry that is waiting", async () => {
+    const fn = flaky(10);
+    const { result, unmount } = renderHook(() => useAsync(fn, { retry: { delayMs: 100 } }));
+
+    await act(async () => {
+      void result.current.run();
+      await vi.advanceTimersByTimeAsync(50);
+    });
+    act(() => {
+      result.current.cancel();
+    });
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(10_000);
+    });
+    expect(fn).toHaveBeenCalledTimes(1);
+    expect(result.current.status).toBe("idle");
+
+    await act(async () => {
+      void result.current.run();
+      await vi.advanceTimersByTimeAsync(50);
+    });
+    unmount();
+    expect(vi.getTimerCount()).toBe(0);
+    expect(fn).toHaveBeenCalledTimes(2);
+  });
+});
+
+describe("useAsync with polling", () => {
+  beforeEach(() => {
+    vi.useFakeTimers();
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
+  /** Resolves to how many times it was called, with the arguments it got. */
+  function counter() {
+    let calls = 0;
+    return vi.fn((_signal: AbortSignal, room: string) => {
+      calls++;
+      return Promise.resolve(`${room} #${String(calls)}`);
+    });
+  }
+
+  it("runs again with the last arguments pollMs after each call settles, until cancelled", async () => {
+    const fn = counter();
+    const { result } = renderHook(() => useAsync(fn, { pollMs: 1000 }));
+
+    await act(async () => {
+      void result.current.run("lobby");
+      await vi.advanceTimersByTimeAsync(999);
+    });
+    expect(fn).toHaveBeenCalledTimes(1);
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(1);
+    });
+    expect(fn).toHaveBeenCalledTimes(2);
+    expect(fn).toHaveBeenLastCalledWith(expect.any(AbortSignal), "lobby");
+    expect(result.current.data).toBe("lobby #2");
+
+    act(() => {
+      result.current.cancel();
+    });
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(10_000);
+    });
+    expect(fn).toHaveBeenCalledTimes(2);
+  });
+
+  /** Hides or shows the tab, as switching tabs does. */
+  function setHidden(hidden: boolean) {
+    vi.spyOn(document, "hidden", "get").mockReturnValue(hidden);
+    vi.spyOn(document, "visibilityState", "get").mockReturnValue(hidden ? "hidden" : "visible");
+    act(() => {
+      document.dispatchEvent(new Event("visibilitychange"));
+    });
+  }
+
+  it("waits while the tab is hidden, and polls as soon as it is shown again", async () => {
+    const fn = counter();
+    const { result } = renderHook(() => useAsync(fn, { pollMs: 1000 }));
+    await act(async () => {
+      void result.current.run("lobby");
+      await vi.advanceTimersByTimeAsync(0);
+    });
+
+    setHidden(true);
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(10_000);
+    });
+    expect(fn).toHaveBeenCalledTimes(1);
+
+    setHidden(false);
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(0);
+    });
+    expect(fn).toHaveBeenCalledTimes(2);
+  });
+
+  it("keeps polling while hidden with pollWhenHidden, and after a call fails", async () => {
+    let calls = 0;
+    const fn = vi.fn(() => {
+      calls++;
+      return calls === 1 ? Promise.reject(new Error("blip")) : Promise.resolve(calls);
+    });
+    const { result } = renderHook(() => useAsync(fn, { pollMs: 1000, pollWhenHidden: true }));
+    setHidden(true);
+
+    await act(async () => {
+      void result.current.run();
+      await vi.advanceTimersByTimeAsync(0);
+    });
+    expect(result.current.status).toBe("error");
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(2000);
+    });
+    expect(fn).toHaveBeenCalledTimes(3);
+    expect(result.current).toMatchObject({ status: "success", data: 3 });
+  });
+
+  it("stops polling on unmount, and a new run restarts the wait with its own arguments", async () => {
+    const fn = counter();
+    const { result, unmount } = renderHook(() => useAsync(fn, { pollMs: 1000 }));
+    await act(async () => {
+      void result.current.run("a");
+      await vi.advanceTimersByTimeAsync(500);
+      void result.current.run("b");
+      await vi.advanceTimersByTimeAsync(999);
+    });
+    expect(fn.mock.calls.map(([, room]) => room)).toEqual(["a", "b"]);
+    await act(async () => {
+      await vi.advanceTimersByTimeAsync(1);
+    });
+    expect(fn.mock.calls.map(([, room]) => room)).toEqual(["a", "b", "b"]);
+
+    unmount();
+    expect(vi.getTimerCount()).toBe(0);
+  });
+});

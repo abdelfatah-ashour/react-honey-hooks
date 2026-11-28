@@ -1,4 +1,11 @@
-export { useAsync, type AsyncResult, type AsyncState, type AsyncStatus } from "./useAsync";
+export {
+  useAsync,
+  type AsyncOptions,
+  type AsyncResult,
+  type AsyncState,
+  type AsyncStatus,
+  type RetryOptions,
+} from "./useAsync";
 export { useAsyncEffect } from "./useAsyncEffect";
 export { useBeforeUnload } from "./useBeforeUnload";
 export { useBroadcastChannel } from "./useBroadcastChannel";

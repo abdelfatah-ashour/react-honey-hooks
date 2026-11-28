@@ -62,4 +62,43 @@ describe("useAsync in a real browser", () => {
     await new Promise((resolve) => setTimeout(resolve, 1600));
     await expect.element(screen.getByText('Results for "bee"')).toBeVisible();
   });
+
+  it("retries a flaky request until it works, then polls it for fresh data", async () => {
+    let calls = 0;
+    const fetchScore = () => {
+      calls++;
+      // The first two calls fail, as a flaky network would.
+      return calls <= 2
+        ? Promise.reject(new Error("Network error"))
+        : Promise.resolve(`Score ${String(calls)}`);
+    };
+    function Scoreboard() {
+      const { status, data, run, cancel } = useAsync(fetchScore, {
+        retry: { count: 3, delayMs: 20 },
+        pollMs: 100,
+      });
+      return (
+        <>
+          <button type="button" onClick={() => void run()}>
+            Start
+          </button>
+          <button type="button" onClick={cancel}>
+            Stop
+          </button>
+          <p>Status: {status}</p>
+          <p>{data ?? "No score"}</p>
+        </>
+      );
+    }
+    const screen = await render(<Scoreboard />);
+
+    await userEvent.click(screen.getByRole("button", { name: "Start" }));
+    await expect.element(screen.getByText("Score 3")).toBeVisible();
+    await expect.element(screen.getByText("Score 5")).toBeVisible();
+
+    await userEvent.click(screen.getByRole("button", { name: "Stop" }));
+    const stoppedAt = calls;
+    await new Promise((resolve) => setTimeout(resolve, 300));
+    expect(calls).toBe(stoppedAt);
+  });
 });

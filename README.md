@@ -1067,7 +1067,20 @@ function CookieBanner() {
 ```ts
 function useAsync<A extends unknown[], R>(
   fn: (signal: AbortSignal, ...args: A) => Promise<R>,
+  options?: AsyncOptions,
 ): AsyncResult<A, R>;
+
+interface AsyncOptions {
+  retry?: RetryOptions;
+  pollMs?: number;
+  pollWhenHidden?: boolean;
+}
+
+interface RetryOptions {
+  count?: number; // 3 unless given
+  delayMs?: number; // 1000 unless given, doubling for each later retry
+  shouldRetry?: (error: Error, attempt: number) => boolean;
+}
 
 interface AsyncResult<A extends unknown[], R> {
   readonly status: "idle" | "pending" | "success" | "error";
@@ -1091,6 +1104,16 @@ Runs async work when you call `run`, and tracks its status, result and error.
   it too.
 - The latest `fn` is always used, and `run` and `cancel` keep their identity.
 
+Two options add behaviour, and neither is on unless given:
+
+- `retry` retries a failed call before reporting it: up to `count` times, waiting `delayMs` and
+  then twice as long before each next try, while `status` stays `"pending"`. `shouldRetry`
+  can stop early, such as for a 404. Cancelling or a newer call stops the retries.
+- `pollMs` runs the call again, with the same arguments, `pollMs` after each call settles,
+  whether it succeeded or failed. While the tab is hidden it waits for the tab to be shown, then
+  polls at once, unless `pollWhenHidden` is set. A new `run` restarts the wait, and `cancel` and
+  unmounting stop polling.
+
 To load when a value changes, call `run` from an effect:
 
 ```tsx
@@ -1110,6 +1133,23 @@ function UserCard({ id }: { id: string }) {
 
   if (status === "error") return <p role="alert">{error?.message}</p>;
   return <p>{data ? data.name : "Loading…"}</p>;
+}
+```
+
+To keep a value fresh, poll it, and retry when the network blips:
+
+```tsx
+function OrderStatus({ orderId }: { orderId: string }) {
+  const { data, run } = useAsync(fetchOrderStatus, {
+    pollMs: 5000,
+    retry: { count: 2, delayMs: 500 },
+  });
+
+  useEffect(() => {
+    void run(orderId);
+  }, [run, orderId]);
+
+  return <p>Status: {data ?? "…"}</p>;
 }
 ```
 
