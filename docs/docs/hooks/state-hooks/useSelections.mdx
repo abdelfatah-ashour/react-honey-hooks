@@ -5,7 +5,6 @@ slug: /hooks/useSelections
 
 import LiveDemo from "@site/src/components/LiveDemo";
 import Demo from "@site/src/demos/useSelections";
-import source from "!!raw-loader!@site/src/demos/useSelections";
 
 ```ts
 function useSelections<T>(items: readonly T[], options?: SelectionsOptions<T>): Selections<T>;
@@ -42,7 +41,7 @@ the other. `partiallySelected` is the select-all box's indeterminate state. With
 
 ## Live demo
 
-<LiveDemo demo={Demo} source={source} />
+<LiveDemo demo={Demo} />
 
 ## Example
 

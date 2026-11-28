@@ -5,7 +5,6 @@ slug: /hooks/useDebouncedValue
 
 import LiveDemo from "@site/src/components/LiveDemo";
 import Demo from "@site/src/demos/useDebouncedValue";
-import source from "!!raw-loader!@site/src/demos/useDebouncedValue";
 
 ```ts
 function useDebouncedValue<T>(value: T, delayMs: number): T;
@@ -17,7 +16,7 @@ derive expensive work (a fetch, a filter over a big list) from fast-changing inp
 
 ## Live demo
 
-<LiveDemo demo={Demo} source={source} />
+<LiveDemo demo={Demo} />
 
 ## Example
 

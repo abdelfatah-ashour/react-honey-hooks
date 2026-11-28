@@ -5,7 +5,6 @@ slug: /hooks/useCountdown
 
 import LiveDemo from "@site/src/components/LiveDemo";
 import Demo from "@site/src/demos/useCountdown";
-import source from "!!raw-loader!@site/src/demos/useCountdown";
 
 ```ts
 function useCountdown(target: Date | number | string, options?: CountdownOptions): Countdown;
@@ -34,7 +33,7 @@ memoised.
 
 ## Live demo
 
-<LiveDemo demo={Demo} source={source} />
+<LiveDemo demo={Demo} />
 
 ## Example
 

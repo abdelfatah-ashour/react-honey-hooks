@@ -5,7 +5,6 @@ slug: /hooks/useDebouncedEffect
 
 import LiveDemo from "@site/src/components/LiveDemo";
 import Demo from "@site/src/demos/useDebouncedEffect";
-import source from "!!raw-loader!@site/src/demos/useDebouncedEffect";
 
 ```ts
 function useDebouncedEffect(effect: EffectCallback, deps: DependencyList, ms: number): void;
@@ -20,7 +19,7 @@ it runs on every change with no delay.
 
 ## Live demo
 
-<LiveDemo demo={Demo} source={source} />
+<LiveDemo demo={Demo} />
 
 ## Example
 

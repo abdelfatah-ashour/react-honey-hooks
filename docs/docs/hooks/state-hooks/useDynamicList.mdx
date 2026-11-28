@@ -5,7 +5,6 @@ slug: /hooks/useDynamicList
 
 import LiveDemo from "@site/src/components/LiveDemo";
 import Demo from "@site/src/demos/useDynamicList";
-import source from "!!raw-loader!@site/src/demos/useDynamicList";
 
 ```ts
 function useDynamicList<T>(initial?: readonly T[]): DynamicList<T>;
@@ -38,7 +37,7 @@ stays the same array. Several updates in one event apply in turn. The functions 
 
 ## Live demo
 
-<LiveDemo demo={Demo} source={source} />
+<LiveDemo demo={Demo} />
 
 ## Example
 

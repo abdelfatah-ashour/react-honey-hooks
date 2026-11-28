@@ -5,7 +5,6 @@ slug: /hooks/useCopyToClipboard
 
 import LiveDemo from "@site/src/components/LiveDemo";
 import Demo from "@site/src/demos/useCopyToClipboard";
-import source from "!!raw-loader!@site/src/demos/useCopyToClipboard";
 
 ```ts
 function useCopyToClipboard(resetMs?: number): CopyToClipboard;
@@ -25,7 +24,7 @@ sets `error`. A later successful copy clears `error`. `copy` keeps its identity.
 
 ## Live demo
 
-<LiveDemo demo={Demo} source={source} />
+<LiveDemo demo={Demo} />
 
 ## Example
 

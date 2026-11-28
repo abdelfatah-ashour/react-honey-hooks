@@ -119,4 +119,24 @@ describe.concurrent("the built docs site", () => {
     expect(problems).toEqual([]);
     await page.close();
   });
+
+  it.for(hooksWithDemos)(
+    "does not show the demo's source on the %s page",
+    async (hook, { expect }) => {
+      const { page } = await open(`docs/hooks/${hook}`);
+      const codeBlocks = await page.locator("article pre").allTextContents();
+
+      // Every demo is a component file with `export default function`; usage examples never are.
+      expect(codeBlocks.filter((code) => code.includes("export default function"))).toEqual([]);
+      await page.close();
+    },
+  );
+
+  it.for(hooksWithDemos)("shows the usage example under the %s demo", async (hook, { expect }) => {
+    const { page } = await open(`docs/hooks/${hook}`);
+    const examples = page.locator("article .demo ~ h2#example ~ * pre");
+
+    expect(await examples.filter({ hasText: `import { ${hook}` }).count()).toBeGreaterThan(0);
+    await page.close();
+  });
 });

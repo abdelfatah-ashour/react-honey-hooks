@@ -5,7 +5,6 @@ slug: /hooks/useMediaQuery
 
 import LiveDemo from "@site/src/components/LiveDemo";
 import Demo from "@site/src/demos/useMediaQuery";
-import source from "!!raw-loader!@site/src/demos/useMediaQuery";
 
 ```ts
 function useMediaQuery(query: string, defaultValue?: boolean): boolean;
@@ -18,7 +17,7 @@ render while hydrating, it returns `defaultValue` (`false` unless given).
 
 ## Live demo
 
-<LiveDemo demo={Demo} source={source} />
+<LiveDemo demo={Demo} />
 
 ## Example
 

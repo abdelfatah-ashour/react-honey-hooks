@@ -5,7 +5,6 @@ slug: /hooks/useElementSize
 
 import LiveDemo from "@site/src/components/LiveDemo";
 import Demo from "@site/src/demos/useElementSize";
-import source from "!!raw-loader!@site/src/demos/useElementSize";
 
 ```ts
 function useElementSize(ref: RefObject<Element | null>, options?: ElementSizeOptions): ElementSize;
@@ -33,7 +32,7 @@ changes, whether from the window resizing, its content changing or its styles ch
 
 ## Live demo
 
-<LiveDemo demo={Demo} source={source} />
+<LiveDemo demo={Demo} />
 
 ## Example
 
