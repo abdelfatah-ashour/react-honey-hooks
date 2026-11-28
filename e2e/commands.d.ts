@@ -10,6 +10,7 @@ declare module "vitest/browser" {
     wheel: (deltaY: number) => Promise<void>;
     setGeolocation: (latitude: number, longitude: number) => Promise<void>;
     startEchoServer: () => Promise<number>;
+    stopEchoServer: (port: number) => Promise<void>;
     emulateMedia: (preferences: {
       reducedMotion?: "reduce" | "no-preference" | null;
       colorScheme?: "light" | "dark" | "no-preference" | null;

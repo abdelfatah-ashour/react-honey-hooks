@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useWebSocket } from "react-honey-hooks";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, onTestFinished } from "vitest";
 import { commands, userEvent } from "vitest/browser";
 import { render } from "vitest-browser-react";
 
@@ -38,6 +38,7 @@ function Chat({ url }: { url: string }) {
 describe("useWebSocket in a real browser", () => {
   it("talks to a real server, reconnects after the connection drops, and leaves", async () => {
     const port = await commands.startEchoServer();
+    onTestFinished(() => commands.stopEchoServer(port));
     const screen = await render(<Chat url={`ws://127.0.0.1:${String(port)}`} />);
     await expect.element(screen.getByText("Status: open")).toBeVisible();
 

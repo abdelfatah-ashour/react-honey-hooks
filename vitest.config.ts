@@ -97,7 +97,7 @@ const echoServers = new Map<number, WebSocketServer>();
 
 /**
  * Starts a WebSocket server on a free local port that sends every message back, and resolves to
- * its port. Servers stay up for the rest of the run.
+ * its port. Stop it with `stopEchoServer`, or it keeps the test run from exiting.
  */
 const startEchoServer: BrowserCommand = async () => {
   const server = new WebSocketServer({ host: "127.0.0.1", port: 0 });
@@ -111,6 +111,17 @@ const startEchoServer: BrowserCommand = async () => {
   if (address === null || typeof address === "string") throw new Error("expected a TCP address");
   echoServers.set(address.port, server);
   return address.port;
+};
+
+/** Stops the echo server on `port`, closing its connections. */
+const stopEchoServer: BrowserCommand<[port: number]> = async (_context, port) => {
+  const server = echoServers.get(port);
+  if (!server) return;
+  echoServers.delete(port);
+  for (const client of server.clients) client.terminate();
+  await new Promise((resolve) => {
+    server.close(resolve);
+  });
 };
 
 /** Cuts every connection to the echo server on `port`, as if the network dropped. */
@@ -176,6 +187,7 @@ function e2eProject(test: {
           emulateMedia,
           setGeolocation,
           startEchoServer,
+          stopEchoServer,
         },
         instances: [
           { browser: "chromium" as const },
