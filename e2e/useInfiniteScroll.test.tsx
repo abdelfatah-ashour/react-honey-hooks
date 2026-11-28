@@ -42,11 +42,17 @@ describe("useInfiniteScroll in a real browser", () => {
     await expect.element(screen.getByText("Post 21")).not.toBeInTheDocument();
 
     await userEvent.hover(screen.getByTestId("feed"));
-    for (let scroll = 0; scroll < 30; scroll++) {
-      await commands.wheel(1000);
-      if (screen.getByText("The end").query()) break;
-    }
-    await expect.element(screen.getByText("The end")).toBeInTheDocument();
+    // Keep scrolling until the last page is in, like a reader would: a fixed number of wheel
+    // ticks can all land while a page is still loading on a slow machine.
+    await expect
+      .poll(
+        async () => {
+          await commands.wheel(1000);
+          return screen.getByText("The end").query();
+        },
+        { timeout: 10_000 },
+      )
+      .not.toBeNull();
     await expect.element(screen.getByText("Post 100")).toBeInTheDocument();
   });
 });
