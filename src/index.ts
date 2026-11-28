@@ -50,6 +50,7 @@ export {
   type EventTargetOptions,
   type FieldValue,
 } from "./useEventTarget";
+export { useFavicon } from "./useFavicon";
 export { useFileDrop, type FileDrop, type FileDropOptions } from "./useFileDrop";
 export { useFocusTrap, type FocusTrapOptions } from "./useFocusTrap";
 export { useFocusWithin } from "./useFocusWithin";

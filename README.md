@@ -25,6 +25,7 @@ Requires React 18 or newer.
 - [`useFocusTrap`](#usefocustrap): keep keyboard focus inside a modal
 - [`useBeforeUnload`](#usebeforeunload): warn before leaving with unsaved changes
 - [`useDocumentTitle`](#usedocumenttitle): set the browser tab's title
+- [`useFavicon`](#usefavicon): set the browser tab's icon
 - [`useCopyToClipboard`](#usecopytoclipboard): copy text and show that it worked
 - [`useDebouncedValue`](#usedebouncedvalue): a value that waits for changes to settle
 - [`useDebouncedCallback`](#usedebouncedcallback): a function that waits for calls to stop
@@ -644,6 +645,29 @@ function Inbox({ unread }: { unread: number }) {
     restoreOnUnmount: true,
   });
 
+  return <MessageList />;
+}
+```
+
+---
+
+### `useFavicon`
+
+```ts
+function useFavicon(href: string | null): void;
+```
+
+Sets the page's favicon to `href`, such as to show unread messages. `null` leaves the page's
+own icon. Every `<link rel="icon">` in the head is pointed at `href`, with a `type` taken from
+its file extension (none for an unknown extension or a `data:` URL), and a link is added if
+there are none. When `href` becomes `null` or the component unmounts, the links go back to what
+they were and an added link is removed. Nothing happens on the server.
+
+```tsx
+import { useFavicon } from "react-honey-hooks";
+
+function Inbox({ unread }: { unread: number }) {
+  useFavicon(unread > 0 ? "/favicon-unread.svg" : null);
   return <MessageList />;
 }
 ```
