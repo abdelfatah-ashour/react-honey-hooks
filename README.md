@@ -71,6 +71,7 @@ Requires React 18 or newer.
 - [`useStableCallback`](#usestablecallback): a callback that never changes but calls the latest code
 - [`useMount`](#usemount): run something once when a component mounts
 - [`useUnmount`](#useunmount): run something when a component unmounts
+- [`useUpdateEffect`](#useupdateeffect): an effect that skips the first render
 
 ---
 
@@ -2194,6 +2195,31 @@ function Editor({ draft }: { draft: string }) {
     saveDraft(draft);
   });
   return <DraftEditor draft={draft} />;
+}
+```
+
+---
+
+### `useUpdateEffect`
+
+```ts
+function useUpdateEffect(effect: EffectCallback, deps?: DependencyList): void;
+```
+
+`useEffect` that skips the first render: `effect` runs only when `deps` change after the
+component mounts, or after every later render when there are no `deps`. Its cleanup runs before
+the next run and on unmount, as with `useEffect`. React's development Strict Mode, which mounts,
+unmounts and mounts again, doesn't count as an update.
+
+```tsx
+import { useUpdateEffect } from "react-honey-hooks";
+
+function Settings({ volume }: { volume: number }) {
+  // Not on load: only once the user changes the volume.
+  useUpdateEffect(() => {
+    toast(`Volume set to ${String(volume)}`);
+  }, [volume]);
+  return <VolumeSlider />;
 }
 ```
 

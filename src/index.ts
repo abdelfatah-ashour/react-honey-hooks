@@ -101,6 +101,7 @@ export {
   type UndoStateOptions,
 } from "./useUndoState";
 export { useUnmount } from "./useUnmount";
+export { useUpdateEffect } from "./useUpdateEffect";
 export { useWakeLock, type WakeLock } from "./useWakeLock";
 export { useWindowScroll, type WindowScroll } from "./useWindowScroll";
 export { useWindowSize, type WindowSize } from "./useWindowSize";
