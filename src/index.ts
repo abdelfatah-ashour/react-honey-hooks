@@ -39,6 +39,7 @@ export {
   type GeolocationState,
   type GeolocationStatus,
 } from "./useGeolocation";
+export { useGetState } from "./useGetState";
 export { useHotkey, type HotkeyOptions } from "./useHotkey";
 export { useHover } from "./useHover";
 export { useIdle } from "./useIdle";

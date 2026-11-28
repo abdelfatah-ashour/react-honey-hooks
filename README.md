@@ -62,6 +62,7 @@ Requires React 18 or newer.
 - [`useSet`](#useset): a `Set` in state, with `add`, `remove` and `toggle`
 - [`useSetState`](#usesetstate): object state that merges updates
 - [`useResetState`](#useresetstate): `useState` with a `reset` back to the initial value
+- [`useGetState`](#usegetstate): `useState` with a `getState` that never reads a stale value
 
 ---
 
@@ -1772,6 +1773,48 @@ function Note() {
       />
       <button onClick={reset}>Discard changes</button>
     </>
+  );
+}
+```
+
+---
+
+### `useGetState`
+
+```ts
+function useGetState<T>(initial: T | (() => T)): readonly [T, Dispatch<SetStateAction<T>>, () => T];
+```
+
+`useState` with a third item, `getState`, which returns the latest value. It sees each update
+as soon as `setState` is called, before the re-render, so a callback created on an earlier
+render, such as a listener added once on mount, never reads a stale value. Functional updates
+apply to that latest value. `initial` can be a function, called once. `setState` and `getState`
+never change.
+
+```tsx
+import { useEffect } from "react";
+import { useGetState } from "react-honey-hooks";
+
+function Clicks() {
+  const [count, setCount, getCount] = useGetState(0);
+
+  useEffect(() => {
+    const id = setInterval(() => {
+      console.log("Clicks so far:", getCount());
+    }, 5000);
+    return () => {
+      clearInterval(id);
+    };
+  }, [getCount]);
+
+  return (
+    <button
+      onClick={() => {
+        setCount((current) => current + 1);
+      }}
+    >
+      Clicked {count} times
+    </button>
   );
 }
 ```
