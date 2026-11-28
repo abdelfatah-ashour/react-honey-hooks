@@ -33,6 +33,7 @@ Requires React 18 or newer.
 - [`useHotkey`](#usehotkey): keyboard shortcuts such as `mod+k`
 - [`useLongPress`](#uselongpress): press and hold an element
 - [`useHover`](#usehover): know when the pointer is over an element
+- [`useFocusWithin`](#usefocuswithin): know when focus is inside an element
 - [`useElementSize`](#useelementsize): measure an element as it resizes
 - [`useInView`](#useinview): know when an element scrolls into view
 - [`useInterval`](#useinterval): run something every few milliseconds
@@ -1027,6 +1028,42 @@ function UserLink({ user }: { user: User }) {
       {user.name}
       {hovered && <ProfilePreview userId={user.id} />}
     </a>
+  );
+}
+```
+
+---
+
+### `useFocusWithin`
+
+```ts
+function useFocusWithin(ref: RefObject<Element | null>): boolean;
+```
+
+Returns whether focus is on the element or anywhere inside it, the same as CSS `:focus-within`,
+and re-renders as focus moves in and out, by keyboard or by mouse.
+
+- It is right from the first render when focus starts inside, for example on an `autoFocus`
+  field.
+- It checks the ref's current element, so it follows the ref to a new element.
+- It is `false` during server rendering.
+
+For styling alone, CSS `:focus-within` is simpler. Use this when focus changes what renders,
+such as showing a search box's suggestions only while you're in it.
+
+```tsx
+import { useRef } from "react";
+import { useFocusWithin } from "react-honey-hooks";
+
+function SearchBox() {
+  const ref = useRef<HTMLDivElement>(null);
+  const focused = useFocusWithin(ref);
+
+  return (
+    <div ref={ref}>
+      <input type="search" aria-label="Search" />
+      {focused && <Suggestions />}
+    </div>
   );
 }
 ```
