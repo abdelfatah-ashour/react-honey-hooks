@@ -70,6 +70,7 @@ Requires React 18 or newer.
 - [`useLatest`](#uselatest): a ref that always holds the latest value
 - [`useStableCallback`](#usestablecallback): a callback that never changes but calls the latest code
 - [`useMount`](#usemount): run something once when a component mounts
+- [`useUnmount`](#useunmount): run something when a component unmounts
 
 ---
 
@@ -2169,6 +2170,30 @@ function Dashboard() {
     analytics.track("dashboard_viewed");
   });
   return <Charts />;
+}
+```
+
+---
+
+### `useUnmount`
+
+```ts
+function useUnmount(fn: () => unknown): void;
+```
+
+Calls the latest `fn` when the component unmounts, and at no other time. `fn` need not be
+memoised, so it can read the latest props and state, and it can be async. Like any effect
+cleanup, it doesn't run on the server, and React's development Strict Mode also runs it after
+its extra mount.
+
+```tsx
+import { useUnmount } from "react-honey-hooks";
+
+function Editor({ draft }: { draft: string }) {
+  useUnmount(() => {
+    saveDraft(draft);
+  });
+  return <DraftEditor draft={draft} />;
 }
 ```
 
